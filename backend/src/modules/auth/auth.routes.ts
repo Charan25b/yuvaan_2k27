@@ -5,6 +5,9 @@ import { registerUser } from "./auth.service.js";
 import { sendVerificationEmail } from "../../lib/email.js";
 import { verifyEmailSchema } from "./auth.schemas.js";
 import { verifyUserEmail } from "./auth.service.js";
+import { resendVerificationSchema } from "./auth.schemas.js";
+import { resendVerificationEmail } from "./auth.service.js";
+import { resendVerificationRateLimit } from "./auth.rate-limit.js";
 
 export const authRouter = Router();
 
@@ -100,6 +103,37 @@ authRouter.post("/verify-email", async (req, res, next) => {
       return;
     }
 
+    next(error);
+  }
+});
+
+authRouter.post("/resend-verification", 
+    resendVerificationRateLimit,
+    async (req, res, next) => {
+  try {
+    const parsed = resendVerificationSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Please provide a valid email address.",
+        },
+      });
+      return;
+    }
+
+    await resendVerificationEmail(parsed.data);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message:
+          "If the account exists and needs verification, a verification email will be sent.",
+      },
+    });
+  } catch (error) {
     next(error);
   }
 });

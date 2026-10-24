@@ -4,6 +4,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "../../lib/prisma.js";
 import type { RegisterInput } from "./auth.schemas.js";
 import type { VerifyEmailInput } from "./auth.schemas.js";
+import type { ResendVerificationInput } from "./auth.schemas.js";
+import { sendVerificationEmail } from "../../lib/email.js";
 
 export async function registerUser(input: RegisterInput) {
   const passwordHash = await argon2.hash(input.password, {
@@ -106,4 +108,72 @@ export async function verifyUserEmail(input: VerifyEmailInput) {
 
     return { verified: true };
   });
+}
+
+export async function resendVerificationEmail(
+  input: ResendVerificationInput,
+): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { email: input.email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      emailVerifiedAt: true,
+    },
+  });
+
+  // Return the same outcome for unknown and already-verified accounts.
+  if (!user || user.emailVerifiedAt) {
+    return;
+  }
+
+  const rawToken = randomBytes(32).toString("base64url");
+  const tokenHash = createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+  // Replace outstanding tokens with a fresh token.
+  await prisma.$transaction(async (tx) => {
+    await tx.emailVerificationToken.updateMany({
+      where: {
+        userId: user.id,
+        consumedAt: null,
+      },
+      data: {
+        consumedAt: new Date(),
+      },
+    });
+
+    await tx.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+  });
+
+  try {
+    await sendVerificationEmail({
+      email: user.email,
+      name: user.name,
+      token: rawToken,
+    });
+  } catch (error) {
+    // Invalidate the newly created token if email delivery fails.
+    await prisma.emailVerificationToken.updateMany({
+      where: {
+        tokenHash,
+        consumedAt: null,
+      },
+      data: {
+        consumedAt: new Date(),
+      },
+    });
+
+    throw error;
+  }
 }
