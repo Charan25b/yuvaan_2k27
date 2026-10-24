@@ -25,52 +25,43 @@ export async function requireAuth(
   try {
     const userId = req.session.userId;
 
-    if (!userId) {
-      res.status(401).json({
-        success: false,
-        error: {
-          code: "UNAUTHENTICATED",
-          message: "Please log in to continue.",
-        },
-      });
-      return;
-    }
+if (!userId) {
+  res.status(401).json({
+    error: "UNAUTHENTICATED",
+    message: "Please log in to continue.",
+  });
+  return;
+}
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        emailVerifiedAt: true,
-      },
-    });
+  where: {
+    id: userId,
+  },
+  select: {
+    id: true,
+    name: true,
+    email: true,
+    role: true,
+    emailVerifiedAt: true,
+    sessionVersion: true,
+  },
+});
 
-    if (!user || !user.emailVerifiedAt) {
-      // Remove a stale or invalid session.
-      req.session.destroy((error) => {
-        if (error) {
-          next(error);
-          return;
-        }
+if (
+  !user ||
+  !user.emailVerifiedAt ||
+  req.session.sessionVersion !== user.sessionVersion
+) {
+  req.session.destroy(() => {
+    res.clearCookie("yuvaan.sid");
+  });
 
-        res.clearCookie("yuvaan.sid", {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-        });
+  res.status(401).json({
+    error: "UNAUTHENTICATED",
+    message: "Your session is invalid or has expired. Please log in again.",
+  });
 
-        res.status(401).json({
-          success: false,
-          error: {
-            code: "UNAUTHENTICATED",
-            message: "Your session is no longer valid. Please log in again.",
-          },
-        });
-      });
-
-      return;
+  return;
     }
 
     req.authUser = user;
@@ -79,3 +70,4 @@ export async function requireAuth(
     next(error);
   }
 }
+

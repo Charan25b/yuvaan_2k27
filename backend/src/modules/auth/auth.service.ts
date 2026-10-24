@@ -7,6 +7,9 @@ import type { VerifyEmailInput } from "./auth.schemas.js";
 import type { ResendVerificationInput } from "./auth.schemas.js";
 import { sendVerificationEmail } from "../../lib/email.js";
 import type { LoginInput } from "./auth.schemas.js";
+import { sendPasswordResetEmail } from "../../lib/email.js";
+import type { ForgotPasswordInput } from "./auth.schemas.js"
+import type { ResetPasswordInput } from "./auth.schemas.js";
 
 export async function registerUser(input: RegisterInput) {
   const passwordHash = await argon2.hash(input.password, {
@@ -189,6 +192,7 @@ export async function authenticateUser(input: LoginInput) {
       passwordHash: true,
       emailVerifiedAt: true,
       role: true,
+      sessionVersion: true,
     },
   });
 
@@ -216,5 +220,161 @@ export async function authenticateUser(input: LoginInput) {
     name: user.name,
     email: user.email,
     role: user.role,
+    sessionVersion: user.sessionVersion,
   };
+}
+
+export async function requestPasswordReset(
+  input: ForgotPasswordInput,
+): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: input.email,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      passwordHash: true,
+      emailVerifiedAt: true,
+    },
+  });
+
+  // Always let the route return the same response.
+  // Google-only accounts do not have a password to reset.
+  if (
+    !user ||
+    !user.emailVerifiedAt ||
+    !user.passwordHash
+  ) {
+    return;
+  }
+
+  const rawToken = randomBytes(32).toString("base64url");
+
+  const tokenHash = createHash("sha256")
+    .update(rawToken)
+    .digest("hex");
+
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+  await prisma.$transaction(async (tx) => {
+    // Invalidate any earlier, outstanding reset links.
+    await tx.passwordResetToken.updateMany({
+      where: {
+        userId: user.id,
+        consumedAt: null,
+      },
+      data: {
+        consumedAt: new Date(),
+      },
+    });
+
+    await tx.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+  });
+
+  try {
+    await sendPasswordResetEmail({
+      email: user.email,
+      name: user.name,
+      token: rawToken,
+    });
+  } catch {
+    // A failed delivery must not leave a usable reset token.
+    await prisma.passwordResetToken.updateMany({
+      where: {
+        tokenHash,
+        consumedAt: null,
+      },
+      data: {
+        consumedAt: new Date(),
+      },
+    });
+
+    throw new Error("PASSWORD_RESET_EMAIL_FAILED");
+  }
+}
+
+export async function resetUserPassword(
+  input: ResetPasswordInput,
+): Promise<void> {
+  const tokenHash = createHash("sha256")
+    .update(input.token)
+    .digest("hex");
+
+  const passwordHash = await argon2.hash(input.password, {
+    type: argon2.argon2id,
+  });
+
+  await prisma.$transaction(async (tx) => {
+    const resetToken = await tx.passwordResetToken.findUnique({
+      where: {
+        tokenHash,
+      },
+      select: {
+        id: true,
+        userId: true,
+        expiresAt: true,
+        consumedAt: true,
+      },
+    });
+
+    if (
+      !resetToken ||
+      resetToken.consumedAt !== null ||
+      resetToken.expiresAt <= new Date()
+    ) {
+      throw new Error("INVALID_OR_EXPIRED_RESET_TOKEN");
+    }
+
+    // Conditional update prevents a token from being consumed twice.
+    const consumed = await tx.passwordResetToken.updateMany({
+      where: {
+        id: resetToken.id,
+        consumedAt: null,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+      data: {
+        consumedAt: new Date(),
+      },
+    });
+
+    if (consumed.count !== 1) {
+      throw new Error("INVALID_OR_EXPIRED_RESET_TOKEN");
+    }
+
+    await tx.user.update({
+      where: {
+        id: resetToken.userId,
+      },
+      data: {
+        passwordHash,
+        sessionVersion: {
+          increment: 1,
+        },
+      },
+    });
+
+    // Invalidate any other outstanding password-reset links.
+    await tx.passwordResetToken.updateMany({
+      where: {
+        userId: resetToken.userId,
+        id: {
+          not: resetToken.id,
+        },
+        consumedAt: null,
+      },
+      data: {
+        consumedAt: new Date(),
+      },
+    });
+  });
 }

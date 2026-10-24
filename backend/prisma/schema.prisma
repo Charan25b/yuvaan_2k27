@@ -20,6 +20,7 @@ model User {
   passwordHash    String?
   emailVerifiedAt DateTime?
   role            UserRole  @default(USER)
+  sessionVersion  Int       @default(0)
 
   accounts              Account[]
   emailVerificationTokens EmailVerificationToken[]

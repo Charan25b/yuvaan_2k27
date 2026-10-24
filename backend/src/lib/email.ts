@@ -49,6 +49,53 @@ if (error) {
 }
 }
 
+export async function sendPasswordResetEmail(input: {
+  email: string;
+  name: string;
+  token: string;
+}): Promise<void> {
+  const frontendUrl =
+    process.env.FRONTEND_URL ?? "http://localhost:3000";
+
+  const resetUrl = new URL(
+    "/reset-password",
+    frontendUrl,
+  );
+
+  resetUrl.searchParams.set("token", input.token);
+
+  const { error } = await resend.emails.send({
+    from: emailFrom,
+    to: input.email,
+    subject: "Reset your Yuvaan password",
+    text: [
+      `Hi ${input.name},`,
+      "",
+      "We received a request to reset your Yuvaan account password.",
+      "",
+      `Reset your password using this link: ${resetUrl.toString()}`,
+      "",
+      "This link expires in 30 minutes and can only be used once.",
+      "If you didn't request this, you can safely ignore this email.",
+    ].join("\n"),
+    html: `
+      <p>Hi ${escapeHtml(input.name)},</p>
+      <p>We received a request to reset your Yuvaan account password.</p>
+      <p>
+        <a href="${escapeHtml(resetUrl.toString())}">
+          Reset your password
+        </a>
+      </p>
+      <p>This link expires in 30 minutes and can only be used once.</p>
+      <p>If you didn't request this, you can safely ignore this email.</p>
+    `,
+  });
+
+  if (error) {
+    throw new Error("PASSWORD_RESET_EMAIL_FAILED");
+  }
+}
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => {
     const entities: Record<string, string> = {

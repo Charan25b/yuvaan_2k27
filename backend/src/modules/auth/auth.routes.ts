@@ -12,6 +12,12 @@ import { loginSchema } from "./auth.schemas.js";
 import { authenticateUser } from "./auth.service.js";
 import { loginRateLimit } from "./auth.rate-limit.js";
 import { requireAuth } from "./auth.middleware.js";
+import { forgotPasswordSchema } from "./auth.schemas.js";
+import { forgotPasswordRateLimit } from "./auth.rate-limit.js";
+import { requestPasswordReset } from "./auth.service.js";
+import { resetPasswordSchema } from "./auth.schemas.js";
+import { resetPasswordRateLimit } from "./auth.rate-limit.js";
+import { resetUserPassword } from "./auth.service.js";
 
 export const authRouter = Router();
 
@@ -168,6 +174,7 @@ authRouter.post("/login", loginRateLimit, async (req, res, next) => {
     });
 
     req.session.userId = user.id;
+    req.session.sessionVersion = user.sessionVersion;
 
     // Ensure the session is stored before reporting login success.
     await new Promise<void>((resolve, reject) => {
@@ -252,3 +259,69 @@ authRouter.post("/logout", (req, res, next) => {
     });
   });
 });
+
+authRouter.post(
+  "/forgot-password",
+  forgotPasswordRateLimit,
+  async (req, res, next) => {
+    try {
+      const parsed = forgotPasswordSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        res.status(400).json({
+          error: "VALIDATION_ERROR",
+          message: "Please provide a valid email address.",
+        });
+        return;
+      }
+
+      await requestPasswordReset(parsed.data);
+
+      res.status(200).json({
+        message:
+          "If an account with that email exists, password reset instructions have been sent.",
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+authRouter.post(
+  "/reset-password",
+  resetPasswordRateLimit,
+  async (req, res, next) => {
+    try {
+      const parsed = resetPasswordSchema.safeParse(req.body);
+
+      if (!parsed.success) {
+        res.status(400).json({
+          error: "VALIDATION_ERROR",
+          message: "Please provide a valid token and password.",
+        });
+        return;
+      }
+
+      await resetUserPassword(parsed.data);
+
+      res.status(200).json({
+        message:
+          "Your password has been reset successfully. Please log in again.",
+      });
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === "INVALID_OR_EXPIRED_RESET_TOKEN"
+      ) {
+        res.status(400).json({
+          error: "INVALID_OR_EXPIRED_RESET_TOKEN",
+          message:
+            "This password reset link is invalid, expired, or has already been used.",
+        });
+        return;
+      }
+
+      next(error);
+    }
+  },
+);
