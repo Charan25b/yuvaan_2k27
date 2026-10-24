@@ -1,0 +1,105 @@
+import { Router } from "express";
+
+import { registerSchema } from "./auth.schemas.js";
+import { registerUser } from "./auth.service.js";
+import { sendVerificationEmail } from "../../lib/email.js";
+import { verifyEmailSchema } from "./auth.schemas.js";
+import { verifyUserEmail } from "./auth.service.js";
+
+export const authRouter = Router();
+
+authRouter.post("/register", async (req, res, next) => {
+  try {
+    const parsed = registerSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Please check your registration details.",
+          details: parsed.error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          })),
+        },
+      });
+      return;
+    }
+
+    const result = await registerUser(parsed.data);
+
+    await sendVerificationEmail({
+      email: result.user.email,
+      name: result.user.name,
+      token: result.verificationToken,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: {
+        user: result.user,
+        message:
+          "Account created. Check your email to verify your account.",
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post("/verify-email", async (req, res, next) => {
+  try {
+    const parsed = verifyEmailSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Please provide a valid verification token.",
+        },
+      });
+      return;
+    }
+
+    await verifyUserEmail(parsed.data);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "Email verified successfully. You can now log in.",
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "INVALID_OR_EXPIRED_VERIFICATION_TOKEN"
+    ) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "INVALID_OR_EXPIRED_TOKEN",
+          message: "This verification link is invalid or has expired.",
+        },
+      });
+      return;
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "EMAIL_ALREADY_VERIFIED"
+    ) {
+      res.status(409).json({
+        success: false,
+        error: {
+          code: "EMAIL_ALREADY_VERIFIED",
+          message: "This email address has already been verified.",
+        },
+      });
+      return;
+    }
+
+    next(error);
+  }
+});
