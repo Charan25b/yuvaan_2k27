@@ -52,16 +52,35 @@ if (
   !user.emailVerifiedAt ||
   req.session.sessionVersion !== user.sessionVersion
 ) {
-  req.session.destroy(() => {
-    res.clearCookie("yuvaan.sid");
-  });
+  if (
+  !user ||
+  !user.emailVerifiedAt ||
+  req.session.sessionVersion !== user.sessionVersion
+) {
+  req.session.destroy((error) => {
+    if (error) {
+      next(error);
+      return;
+    }
 
-  res.status(401).json({
-    error: "UNAUTHENTICATED",
-    message: "Your session is invalid or has expired. Please log in again.",
+    res.clearCookie("yuvaan.sid", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.status(401).json({
+      success: false,
+      error: {
+        code: "UNAUTHENTICATED",
+        message: "Your session is invalid or has expired. Please log in again.",
+      },
+    });
   });
 
   return;
+}
     }
 
     req.authUser = user;

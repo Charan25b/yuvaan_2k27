@@ -18,6 +18,8 @@ import { requestPasswordReset } from "./auth.service.js";
 import { resetPasswordSchema } from "./auth.schemas.js";
 import { resetPasswordRateLimit } from "./auth.rate-limit.js";
 import { resetUserPassword } from "./auth.service.js";
+import { csrfTokenHandler } from "../../middleware/csrf.middleware.js";
+import { csrfProtection } from "../../middleware/csrf.middleware.js";
 
 export const authRouter = Router();
 
@@ -185,12 +187,17 @@ authRouter.post("/login", loginRateLimit, async (req, res, next) => {
     });
 
     res.status(200).json({
-      success: true,
-      data: {
-        user,
-        message: "Logged in successfully.",
-      },
-    });
+  success: true,
+  data: {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+    message: "Logged in successfully.",
+  },
+});
   } catch (error) {
     if (
       error instanceof Error &&
@@ -238,7 +245,7 @@ authRouter.get("/me", requireAuth, (req, res) => {
   });
 });
 
-authRouter.post("/logout", (req, res, next) => {
+authRouter.post("/logout", csrfProtection, (req, res, next) => {
   req.session.destroy((error) => {
     if (error) {
       next(error);
@@ -249,6 +256,7 @@ authRouter.post("/logout", (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
     });
 
     res.status(200).json({
@@ -260,8 +268,7 @@ authRouter.post("/logout", (req, res, next) => {
   });
 });
 
-authRouter.post(
-  "/forgot-password",
+authRouter.post( "/forgot-password",
   forgotPasswordRateLimit,
   async (req, res, next) => {
     try {
@@ -287,8 +294,7 @@ authRouter.post(
   },
 );
 
-authRouter.post(
-  "/reset-password",
+authRouter.post( "/reset-password",
   resetPasswordRateLimit,
   async (req, res, next) => {
     try {
@@ -325,3 +331,5 @@ authRouter.post(
     }
   },
 );
+
+authRouter.get("/csrf-token", csrfTokenHandler);

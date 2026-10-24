@@ -15,6 +15,8 @@ if (!sessionSecret || sessionSecret.length < 32) {
 
 const isProduction = process.env.NODE_ENV === "production";
 
+const SESSION_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
 export const sessionMiddleware = session({
   name: "yuvaan.sid",
   secret: sessionSecret,
@@ -28,6 +30,7 @@ export const sessionMiddleware = session({
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+    maxAge: SESSION_MAX_AGE_MS,
   },
 });

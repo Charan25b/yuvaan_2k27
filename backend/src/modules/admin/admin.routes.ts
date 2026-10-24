@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../../lib/prisma.js";
 import { requireAuth } from "../auth/auth.middleware.js";
 import { requireRole } from "../auth/authorization.middleware.js";
+import { csrfProtection } from "../../middleware/csrf.middleware.js";
 
 export const adminRouter = Router();
 
@@ -22,6 +23,7 @@ const listUsersQuerySchema = z.object({
 
 adminRouter.patch(
   "/users/:userId/role",
+  csrfProtection,
   requireAuth,
   requireRole("SUPERADMIN"),
   async (req, res, next) => {
