@@ -11,6 +11,7 @@ import { resendVerificationRateLimit } from "./auth.rate-limit.js";
 import { loginSchema } from "./auth.schemas.js";
 import { authenticateUser } from "./auth.service.js";
 import { loginRateLimit } from "./auth.rate-limit.js";
+import { requireAuth } from "./auth.middleware.js";
 
 export const authRouter = Router();
 
@@ -200,4 +201,54 @@ authRouter.post("/login", loginRateLimit, async (req, res, next) => {
 
     next(error);
   }
+});
+
+authRouter.get("/me", requireAuth, (req, res) => {
+  const user = req.authUser;
+
+  if (!user) {
+    res.status(401).json({
+      success: false,
+      error: {
+        code: "UNAUTHENTICATED",
+        message: "Please log in to continue.",
+      },
+    });
+    return;
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        emailVerifiedAt: user.emailVerifiedAt,
+      },
+    },
+  });
+});
+
+authRouter.post("/logout", (req, res, next) => {
+  req.session.destroy((error) => {
+    if (error) {
+      next(error);
+      return;
+    }
+
+    res.clearCookie("yuvaan.sid", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        message: "Logged out successfully.",
+      },
+    });
+  });
 });
