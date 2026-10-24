@@ -5,6 +5,7 @@ import { pinoHttp } from "pino-http";
 import { prisma } from "./lib/prisma.js";
 import { sessionMiddleware } from "./config/session.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
+import { adminRouter } from "./modules/admin/admin.routes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(pinoHttp());
 app.use(sessionMiddleware);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
 
 app.get("/api/v1/health", async (_req, res) => {
   try {
