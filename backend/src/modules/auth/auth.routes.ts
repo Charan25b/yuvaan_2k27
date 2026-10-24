@@ -8,6 +8,9 @@ import { verifyUserEmail } from "./auth.service.js";
 import { resendVerificationSchema } from "./auth.schemas.js";
 import { resendVerificationEmail } from "./auth.service.js";
 import { resendVerificationRateLimit } from "./auth.rate-limit.js";
+import { loginSchema } from "./auth.schemas.js";
+import { authenticateUser } from "./auth.service.js";
+import { loginRateLimit } from "./auth.rate-limit.js";
 
 export const authRouter = Router();
 
@@ -134,6 +137,67 @@ authRouter.post("/resend-verification",
       },
     });
   } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.post("/login", loginRateLimit, async (req, res, next) => {
+  try {
+    const parsed = loginSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Please provide a valid email address and password.",
+        },
+      });
+      return;
+    }
+
+    const user = await authenticateUser(parsed.data);
+
+    // Regenerate the session to help prevent session fixation.
+    await new Promise<void>((resolve, reject) => {
+      req.session.regenerate((error) => {
+        if (error) reject(error);
+        else resolve();
+      });
+    });
+
+    req.session.userId = user.id;
+
+    // Ensure the session is stored before reporting login success.
+    await new Promise<void>((resolve, reject) => {
+      req.session.save((error) => {
+        if (error) reject(error);
+        else resolve();
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        user,
+        message: "Logged in successfully.",
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "INVALID_CREDENTIALS"
+    ) {
+      res.status(401).json({
+        success: false,
+        error: {
+          code: "INVALID_CREDENTIALS",
+          message: "Invalid credentials or email not verified.",
+        },
+      });
+      return;
+    }
+
     next(error);
   }
 });

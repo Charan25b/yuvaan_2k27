@@ -6,6 +6,7 @@ import type { RegisterInput } from "./auth.schemas.js";
 import type { VerifyEmailInput } from "./auth.schemas.js";
 import type { ResendVerificationInput } from "./auth.schemas.js";
 import { sendVerificationEmail } from "../../lib/email.js";
+import type { LoginInput } from "./auth.schemas.js";
 
 export async function registerUser(input: RegisterInput) {
   const passwordHash = await argon2.hash(input.password, {
@@ -176,4 +177,44 @@ export async function resendVerificationEmail(
 
     throw error;
   }
+}
+
+export async function authenticateUser(input: LoginInput) {
+  const user = await prisma.user.findUnique({
+    where: { email: input.email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      passwordHash: true,
+      emailVerifiedAt: true,
+      role: true,
+    },
+  });
+
+  // Use one generic error for accounts that cannot log in.
+  if (
+    !user ||
+    !user.passwordHash ||
+    !user.emailVerifiedAt
+  ) {
+    throw new Error("INVALID_CREDENTIALS");
+  }
+
+  const passwordMatches = await argon2.verify(
+    user.passwordHash,
+    input.password,
+  );
+
+  if (!passwordMatches) {
+    throw new Error("INVALID_CREDENTIALS");
+  }
+
+  // Never return the password hash to the route or frontend.
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
 }
