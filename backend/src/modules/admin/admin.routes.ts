@@ -23,8 +23,8 @@ const listUsersQuerySchema = z.object({
 
 adminRouter.patch(
   "/users/:userId/role",
-  csrfProtection,
   requireAuth,
+  csrfProtection,
   requireRole("SUPERADMIN"),
   async (req, res, next) => {
     try {

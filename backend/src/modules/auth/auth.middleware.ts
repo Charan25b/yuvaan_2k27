@@ -47,11 +47,6 @@ if (!userId) {
   },
 });
 
-if (
-  !user ||
-  !user.emailVerifiedAt ||
-  req.session.sessionVersion !== user.sessionVersion
-) {
   if (
   !user ||
   !user.emailVerifiedAt ||
@@ -80,7 +75,6 @@ if (
   });
 
   return;
-}
     }
 
     req.authUser = user;

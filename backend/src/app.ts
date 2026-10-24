@@ -79,4 +79,42 @@ app.get("/api/v1/health", async (_req, res) => {
   }
 });
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      code: "NOT_FOUND",
+      message: "The requested resource was not found.",
+    },
+  });
+});
+
+app.use(
+  (
+    error: unknown,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    console.error(
+      "Unhandled request error:",
+      error instanceof Error ? error.message : "Unknown error",
+    );
+
+    if (res.headersSent) {
+      return;
+    }
+
+    res.status(500).json({
+      success: false,
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred.",
+      },
+    });
+  },
+);
+
+
+
 export default app;
