@@ -1,26 +1,63 @@
 import "dotenv/config";
 
 import app from "./app.js";
+import { prisma } from "./lib/prisma.js";
+import { redis } from "./lib/redis.js";
 
 const PORT = Number(process.env.PORT ?? 8080);
 
-const server = app.listen(PORT, () => {
-  console.log(`Yuvaan API listening on port ${PORT}`);
-});
+let shuttingDown = false;
 
-function shutdown(signal: string): void {
-  console.log(`${signal} received. Shutting down gracefully...`);
+async function startServer(): Promise<void> {
+  try {
+    await prisma.$connect();
+    console.info("PostgreSQL connection ready.");
 
-  server.close((error) => {
-    if (error) {
-      console.error("Error while closing server:", error);
-      process.exitCode = 1;
-      return;
+    await redis.connect();
+    console.info("Redis connection ready.");
+
+    const server = app.listen(PORT, () => {
+      console.info(`Yuvaan API listening on port ${PORT}`);
+    });
+
+    async function shutdown(signal: string): Promise<void> {
+      if (shuttingDown) return;
+      shuttingDown = true;
+
+      console.info(`${signal} received. Shutting down gracefully...`);
+
+      server.close(async (error) => {
+        try {
+          if (error) {
+            console.error("Error closing HTTP server:", error);
+            process.exitCode = 1;
+          }
+
+          if (redis.isOpen) {
+            await redis.quit();
+          }
+
+          await prisma.$disconnect();
+        } catch (shutdownError) {
+          console.error("Error during shutdown:", shutdownError);
+          process.exitCode = 1;
+        }
+      });
     }
 
-    process.exitCode = 0;
-  });
+    process.once("SIGINT", () => void shutdown("SIGINT"));
+    process.once("SIGTERM", () => void shutdown("SIGTERM"));
+  } catch (error) {
+    console.error("Failed to start Yuvaan API:", error);
+
+    if (redis.isOpen) {
+      await redis.quit().catch(() => undefined);
+    }
+
+    await prisma.$disconnect().catch(() => undefined);
+
+    process.exitCode = 1;
+  }
 }
 
-process.on("SIGINT", () => shutdown("SIGINT"));
-process.on("SIGTERM", () => shutdown("SIGTERM"));
+void startServer();
