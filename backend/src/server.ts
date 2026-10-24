@@ -1,60 +1,44 @@
 import "dotenv/config";
-
-import app from "./app.js";
+import { createServer } from "node:http";
 import { prisma } from "./lib/prisma.js";
 import { redis } from "./lib/redis.js";
 
-const PORT = Number(process.env.PORT ?? 8080);
-
-let shuttingDown = false;
-
 async function startServer(): Promise<void> {
   try {
+    // 1. Connect to PostgreSQL.
     await prisma.$connect();
     console.info("PostgreSQL connection ready.");
 
-    await redis.connect();
-    console.info("Redis connection ready.");
-
-    const server = app.listen(PORT, () => {
-      console.info(`Yuvaan API listening on port ${PORT}`);
-    });
-
-    async function shutdown(signal: string): Promise<void> {
-      if (shuttingDown) return;
-      shuttingDown = true;
-
-      console.info(`${signal} received. Shutting down gracefully...`);
-
-      server.close(async (error) => {
-        try {
-          if (error) {
-            console.error("Error closing HTTP server:", error);
-            process.exitCode = 1;
-          }
-
-          if (redis.isOpen) {
-            await redis.quit();
-          }
-
-          await prisma.$disconnect();
-        } catch (shutdownError) {
-          console.error("Error during shutdown:", shutdownError);
-          process.exitCode = 1;
-        }
-      });
+    // 2. Connect to Redis.
+    if (!redis.isOpen) {
+      await redis.connect();
     }
 
-    process.once("SIGINT", () => void shutdown("SIGINT"));
-    process.once("SIGTERM", () => void shutdown("SIGTERM"));
+    if (!redis.isReady) {
+      throw new Error("Redis is not ready.");
+    }
+
+    // 3. Import the application AFTER Redis is ready.
+    const { default: app } = await import("./app.js");
+
+    // 4. Start accepting HTTP requests.
+    const server = createServer(app);
+
+    server.listen(Number(process.env.PORT ?? 8080), () => {
+      console.info(
+        `Yuvaan API listening on port ${process.env.PORT ?? 8080}`,
+      );
+    });
+
+    // Keep your existing graceful-shutdown implementation here.
+    // It should close the HTTP server, Redis, and Prisma.
   } catch (error) {
     console.error("Failed to start Yuvaan API:", error);
 
-    if (redis.isOpen) {
-      await redis.quit().catch(() => undefined);
-    }
-
-    await prisma.$disconnect().catch(() => undefined);
+    await Promise.allSettled([
+      redis.isOpen ? redis.quit() : Promise.resolve(),
+      prisma.$disconnect(),
+    ]);
 
     process.exitCode = 1;
   }

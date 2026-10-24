@@ -6,6 +6,7 @@ import { prisma } from "./lib/prisma.js";
 import { sessionMiddleware } from "./config/session.js";
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { adminRouter } from "./modules/admin/admin.routes.js";
+import { eventsRouter } from "./modules/events/events.routes.js";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use(sessionMiddleware);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/events", eventsRouter);
 
 app.get("/api/v1/health", async (_req, res) => {
   try {
