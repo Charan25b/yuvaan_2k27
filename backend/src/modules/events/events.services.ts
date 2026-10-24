@@ -28,6 +28,9 @@ export async function listEvents(query: ListEventsQuery) {
 
   const where: Prisma.EventWhereInput = {
     status: "PUBLISHED",
+    category : {
+      isActive : true,
+    },
 
     ...(categoryId ? { categoryId } : {}),
 
