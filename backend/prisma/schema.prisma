@@ -436,3 +436,40 @@ model Sponsor {
   @@index([tier])
   @@map("sponsors")
 }
+
+model Team {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+  logoUrl     String?
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  members TeamMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@map("teams")
+}
+
+model TeamMember {
+  id          String  @id @default(cuid())
+  teamId      String
+  name        String
+  designation String
+  bio         String?
+  photoUrl    String?
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([teamId, isActive, sortOrder])
+  @@map("team_members")
+}
