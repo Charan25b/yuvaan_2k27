@@ -72,6 +72,7 @@ export async function submitGameScore(input: SubmitGameScoreInput) {
       await tx.gameSession.updateMany({
         where: {
           id: session.id,
+          userId: input.userId,
           status: "IN_PROGRESS",
         },
         data: {
@@ -110,7 +111,8 @@ export async function submitGameScore(input: SubmitGameScoreInput) {
       );
     }
 
-    // Challenge sessions must not receive solo-game points.
+    // Challenge sessions are scored when the challenge is resolved.
+    // They must not receive solo-game points.
     if (session.challengeId) {
       return {
         expired: false as const,
@@ -187,7 +189,9 @@ export async function submitGameScore(input: SubmitGameScoreInput) {
         individual: 0,
         faction: 0,
       },
-      challengePending: !resolution.resolved,
+      challengePending:
+        !resolution.resolved &&
+        resolution.reason === "WAITING_FOR_BOTH_PLAYERS",
       challengeResult: resolution.resolved ? resolution.result : null,
     };
   }

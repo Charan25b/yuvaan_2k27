@@ -12,6 +12,7 @@ import { eventRegistrationsRouter } from "./modules/event-registrations/event-re
 import { eventSchedulesRouter } from "./modules/event-schedules/event-schedules.routes.js";
 import { factionsRouter } from "./modules/factions/factions.routes.js";
 import { gamesRouter } from "./modules/games/games.routes.js";
+import { leaderboardRouter } from "./modules/leaderboard/leaderboard.routes.js";
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use("/api/v1", eventRegistrationsRouter);
 app.use("/api/v1", eventSchedulesRouter);
 app.use("/api/v1/factions", factionsRouter);
 app.use("/api/v1/games", gamesRouter);
+app.use("/api/v1/leaderboard", leaderboardRouter);
 
 
 app.get("/api/v1/health", async (_req, res) => {

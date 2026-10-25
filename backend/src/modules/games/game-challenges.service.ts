@@ -2,6 +2,9 @@ import { prisma } from "../../lib/prisma.js";
 import { GameServiceError } from "./games.service.js";
 
 const DEFAULT_CHALLENGE_TTL_MINUTES = 10;
+const DAILY_PLAY_LIMIT = 5;
+const DEFAULT_SESSION_TTL_SECONDS = 15 * 60;
+const EVENT_TIME_ZONE = process.env.EVENT_TIME_ZONE ?? "Asia/Kolkata";
 
 interface CreateChallengeInput {
   challengerId: string;
@@ -74,6 +77,7 @@ export async function createGameChallenge(input: CreateChallengeInput) {
         },
         select: { factionId: true },
       }),
+
       tx.factionMembership.findFirst({
         where: {
           userId: opponentQR.userId,
@@ -101,7 +105,7 @@ export async function createGameChallenge(input: CreateChallengeInput) {
       );
     }
 
-    const challenge = await tx.gameChallenge.create({
+    return tx.gameChallenge.create({
       data: {
         gameId: game.id,
         challengerId: input.challengerId,
@@ -122,8 +126,6 @@ export async function createGameChallenge(input: CreateChallengeInput) {
         },
       },
     });
-
-    return challenge;
   });
 }
 
@@ -225,15 +227,6 @@ export async function respondToGameChallenge(
   });
 }
 
-const DAILY_PLAY_LIMIT = 5;
-const DEFAULT_SESSION_TTL_SECONDS = 15 * 60;
-const EVENT_TIME_ZONE = process.env.EVENT_TIME_ZONE ?? "Asia/Kolkata";
-
-interface StartChallengeSessionInput {
-  challengeId: string;
-  userId: string;
-}
-
 function getPlayDate(date: Date): string {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: EVENT_TIME_ZONE,
@@ -262,6 +255,11 @@ function getSessionExpiry(now: Date): Date {
   return new Date(now.getTime() + ttl * 1000);
 }
 
+interface StartChallengeSessionInput {
+  challengeId: string;
+  userId: string;
+}
+
 export async function startChallengeGameSession(
   input: StartChallengeSessionInput,
 ) {
@@ -279,16 +277,14 @@ export async function startChallengeGameSession(
       where: {
         id: input.challengeId,
         status: "ACCEPTED",
-        OR: [
-          { challengerId: input.userId },
-          { opponentId: input.userId },
-        ],
+        challengerId: input.userId,
       },
       select: {
         id: true,
         gameId: true,
         challengerId: true,
         opponentId: true,
+        expiresAt: true,
         game: {
           select: {
             status: true,
@@ -299,7 +295,31 @@ export async function startChallengeGameSession(
       },
     });
 
-    if (!challenge) {
+    const participantChallenge =
+      challenge ??
+      (await tx.gameChallenge.findFirst({
+        where: {
+          id: input.challengeId,
+          status: "ACCEPTED",
+          opponentId: input.userId,
+        },
+        select: {
+          id: true,
+          gameId: true,
+          challengerId: true,
+          opponentId: true,
+          expiresAt: true,
+          game: {
+            select: {
+              status: true,
+              slug: true,
+              name: true,
+            },
+          },
+        },
+      }));
+
+    if (!participantChallenge) {
       throw new GameServiceError(
         "CHALLENGE_UNAVAILABLE",
         "This accepted challenge could not be found.",
@@ -307,7 +327,7 @@ export async function startChallengeGameSession(
       );
     }
 
-    if (challenge.game.status !== "ACTIVE") {
+    if (participantChallenge.game.status !== "ACTIVE") {
       throw new GameServiceError(
         "GAME_UNAVAILABLE",
         "This game is unavailable.",
@@ -315,11 +335,29 @@ export async function startChallengeGameSession(
       );
     }
 
+    if (participantChallenge.expiresAt <= now) {
+      await tx.gameChallenge.updateMany({
+        where: {
+          id: participantChallenge.id,
+          status: "ACCEPTED",
+        },
+        data: {
+          status: "EXPIRED",
+        },
+      });
+
+      throw new GameServiceError(
+        "CHALLENGE_EXPIRED",
+        "This challenge has expired.",
+        410,
+      );
+    }
+
     // Each participant can have only one session for this challenge.
     const existingSession = await tx.gameSession.findUnique({
       where: {
         challengeId_userId: {
-          challengeId: challenge.id,
+          challengeId: participantChallenge.id,
           userId: input.userId,
         },
       },
@@ -358,8 +396,8 @@ export async function startChallengeGameSession(
     const session = await tx.gameSession.create({
       data: {
         userId: input.userId,
-        gameId: challenge.gameId,
-        challengeId: challenge.id,
+        gameId: participantChallenge.gameId,
+        challengeId: participantChallenge.id,
         playDate,
         startedAt: now,
         expiresAt,
@@ -413,12 +451,21 @@ export async function resolveGameChallenge(challengeId: string) {
     }
 
     if (challenge.status !== "ACCEPTED") {
+      if (challenge.status === "COMPLETED") {
+        return {
+          resolved: false as const,
+          reason: "ALREADY_RESOLVED" as const,
+        };
+      }
+
       throw new GameServiceError(
         "CHALLENGE_NOT_ACTIVE",
         "This challenge is not awaiting resolution.",
         409,
       );
     }
+
+    const now = new Date();
 
     const sessions = await tx.gameSession.findMany({
       where: {
@@ -431,6 +478,7 @@ export async function resolveGameChallenge(challengeId: string) {
         userId: true,
         score: true,
         status: true,
+        expiresAt: true,
       },
     });
 
@@ -442,6 +490,41 @@ export async function resolveGameChallenge(challengeId: string) {
       (session) => session.userId === challenge.opponentId,
     );
 
+    const expiredSession = sessions.some(
+      (session) =>
+        session.status === "EXPIRED" ||
+        (session.status === "IN_PROGRESS" && session.expiresAt <= now),
+    );
+
+    if (expiredSession) {
+      await tx.gameSession.updateMany({
+        where: {
+          challengeId: challenge.id,
+          status: "IN_PROGRESS",
+          expiresAt: { lte: now },
+        },
+        data: {
+          status: "EXPIRED",
+        },
+      });
+
+      await tx.gameChallenge.updateMany({
+        where: {
+          id: challenge.id,
+          status: "ACCEPTED",
+          result: null,
+        },
+        data: {
+          status: "EXPIRED",
+        },
+      });
+
+      return {
+        resolved: false as const,
+        reason: "SESSION_EXPIRED" as const,
+      };
+    }
+
     if (
       !challengerSession ||
       !opponentSession ||
@@ -451,9 +534,9 @@ export async function resolveGameChallenge(challengeId: string) {
       opponentSession.score === null
     ) {
       return {
-        resolved: false,
-        reason: "WAITING_FOR_BOTH_PLAYERS",
-      } as const;
+        resolved: false as const,
+        reason: "WAITING_FOR_BOTH_PLAYERS" as const,
+      };
     }
 
     let result: "CHALLENGER_WON" | "OPPONENT_WON" | "DRAW";
@@ -470,8 +553,8 @@ export async function resolveGameChallenge(challengeId: string) {
       winnerId = null;
     }
 
-    // Claim resolution atomically so concurrent requests cannot
-    // award points for the same challenge twice.
+    // Atomically claim resolution so concurrent requests cannot award
+    // points for the same challenge twice.
     const claimed = await tx.gameChallenge.updateMany({
       where: {
         id: challenge.id,
@@ -481,16 +564,19 @@ export async function resolveGameChallenge(challengeId: string) {
       data: {
         status: "COMPLETED",
         result,
-        completedAt: new Date(),
+        completedAt: now,
       },
     });
 
     if (claimed.count !== 1) {
       return {
-        resolved: false,
-        reason: "ALREADY_RESOLVED",
-      } as const;
+        resolved: false as const,
+        reason: "ALREADY_RESOLVED" as const,
+      };
     }
+
+    let individualPointsAwarded = 0;
+    let factionPointsAwarded = 0;
 
     if (winnerId) {
       const membership = await tx.factionMembership.findFirst({
@@ -515,6 +601,8 @@ export async function resolveGameChallenge(challengeId: string) {
           sourceId: challenge.id,
           idempotencyKey: `game-challenge:${challenge.id}:individual`,
         });
+
+        individualPointsAwarded = challenge.game.individualPoints;
       }
 
       if (challenge.game.factionPoints > 0 && membership) {
@@ -527,6 +615,8 @@ export async function resolveGameChallenge(challengeId: string) {
           sourceId: challenge.id,
           idempotencyKey: `game-challenge:${challenge.id}:faction`,
         });
+
+        factionPointsAwarded = challenge.game.factionPoints;
       }
 
       if (awards.length > 0) {
@@ -538,21 +628,18 @@ export async function resolveGameChallenge(challengeId: string) {
     }
 
     return {
-      resolved: true,
+      resolved: true as const,
       result,
       winnerId,
       scores: {
         challenger: challengerSession.score,
         opponent: opponentSession.score,
       },
-      pointsAwarded:
-        winnerId === null
-          ? { individual: 0, faction: 0 }
-          : {
-              individual: challenge.game.individualPoints,
-              faction: challenge.game.factionPoints,
-            },
-    } as const;
+      pointsAwarded: {
+        individual: individualPointsAwarded,
+        faction: factionPointsAwarded,
+      },
+    };
   });
 }
 
@@ -560,6 +647,30 @@ export async function getGameChallenge(
   challengeId: string,
   userId: string,
 ) {
+  // Reconcile any expired sessions before returning the challenge state.
+  const access = await prisma.gameChallenge.findFirst({
+    where: {
+      id: challengeId,
+      OR: [{ challengerId: userId }, { opponentId: userId }],
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+
+  if (!access) {
+    throw new GameServiceError(
+      "CHALLENGE_NOT_FOUND",
+      "Challenge not found.",
+      404,
+    );
+  }
+
+  if (access.status === "ACCEPTED") {
+    await resolveGameChallenge(access.id);
+  }
+
   const challenge = await prisma.gameChallenge.findFirst({
     where: {
       id: challengeId,
