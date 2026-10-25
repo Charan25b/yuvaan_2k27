@@ -491,3 +491,22 @@ model GalleryImage {
   @@index([category])
   @@map("gallery_images")
 }
+
+model Merchandise {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  description    String?
+  imageUrl       String?
+  price          Decimal? @db.Decimal(10, 2)
+  orderFormUrl   String?
+  availability   String   @default("AVAILABLE")
+  sortOrder      Int      @default(0)
+  isPublished    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isPublished, sortOrder])
+  @@index([availability])
+  @@map("merchandise")
+}
