@@ -20,6 +20,46 @@ enum EventStatus {
   COMPLETED
 }
 
+enum PointLedgerType {
+  INDIVIDUAL
+  FACTION
+}
+
+enum PointTransactionType {
+  AWARD
+  ADJUSTMENT
+  REVERSAL
+}
+
+enum GameStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+
+enum GameSessionStatus {
+  IN_PROGRESS
+  SUBMITTED
+  VALIDATED
+  REJECTED
+  EXPIRED
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACCEPTED
+  COMPLETED
+  DECLINED
+  EXPIRED
+  CANCELLED
+}
+
+enum ChallengeResult {
+  CHALLENGER_WON
+  OPPONENT_WON
+  DRAW
+}
+
 model User {
   id              String    @id @default(cuid())
   name            String
@@ -28,6 +68,7 @@ model User {
   emailVerifiedAt DateTime?
   role            UserRole  @default(USER)
   sessionVersion  Int       @default(0)
+  playerQR        PlayerQR?
 
   accounts                Account[]
   emailVerificationTokens EmailVerificationToken[]
@@ -35,9 +76,13 @@ model User {
   emailOtpChallenges      EmailOtpChallenge[]
   eventRegistrations      EventRegistration[]
   factionMemberships      FactionMembership[]
+  pointTransactions       PointTransaction[]
+  challengesCreated       GameChallenge[]          @relation("ChallengeChallenger")
+  challengesReceived      GameChallenge[]          @relation("ChallengeOpponent")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  gameSessions GameSession[]
 
   @@index([role])
   @@map("users")
@@ -195,7 +240,8 @@ model Faction {
   emblemUrl   String?
   isActive    Boolean @default(true)
 
-  memberships FactionMembership[]
+  memberships       FactionMembership[]
+  pointTransactions PointTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -217,4 +263,157 @@ model FactionMembership {
   @@index([userId, isActive])
   @@index([factionId, isActive])
   @@map("faction_memberships")
+}
+
+model PointTransaction {
+  id              String               @id @default(cuid())
+  ledgerType      PointLedgerType
+  transactionType PointTransactionType
+
+  // Exactly one recipient should be populated:
+  userId    String?
+  factionId String?
+
+  // Positive or negative, depending on the transaction.
+  amount Int
+
+  // Identifies the activity that generated the points.
+  sourceType String
+  sourceId   String?
+
+  // Unique key for idempotent point awards.
+  idempotencyKey String @unique
+
+  // Optional reference to the transaction being reversed.
+  reversesId String?
+  reverses   PointTransaction?  @relation("PointReversals", fields: [reversesId], references: [id], onDelete: Restrict)
+  reversedBy PointTransaction[] @relation("PointReversals")
+
+  // Optional explanation for adjustments or reversals.
+  reason String?
+
+  createdAt DateTime @default(now())
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  faction Faction? @relation(fields: [factionId], references: [id], onDelete: Restrict)
+
+  @@index([ledgerType, createdAt])
+  @@index([userId, createdAt])
+  @@index([factionId, createdAt])
+  @@index([sourceType, sourceId])
+  @@map("point_transactions")
+}
+
+model Game {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  status      GameStatus @default(DRAFT)
+
+  // Base scoring configuration.
+  individualPoints Int @default(0)
+  factionPoints    Int @default(0)
+
+  // Allows a game to be disabled without deleting its history.
+  coverImageUrl String?
+
+  sessions   GameSession[]
+  challenges GameChallenge[]
+  accessQrs  GameAccessQR[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, name])
+  @@map("games")
+}
+
+model PlayerQR {
+  id       String  @id @default(cuid())
+  userId   String  @unique
+  publicId String  @unique @default(cuid())
+  isActive Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("player_qrs")
+}
+
+model GameAccessQR {
+  id        String    @id @default(cuid())
+  publicId  String    @unique @default(cuid())
+  gameId    String
+  isActive  Boolean   @default(true)
+  expiresAt DateTime?
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  sessions  GameSession[]
+
+  @@index([gameId, isActive])
+  @@map("game_access_qrs")
+}
+
+model GameSession {
+  id     String            @id @default(cuid())
+  userId String
+  gameId String
+  status GameSessionStatus @default(IN_PROGRESS)
+
+  challengeId String?
+  accessQrId  String?
+  playDate    String
+
+  startedAt       DateTime  @default(now())
+  submittedAt     DateTime?
+  validatedAt     DateTime?
+  expiresAt       DateTime
+  score           Int?
+  rejectionReason String?
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  game      Game           @relation(fields: [gameId], references: [id], onDelete: Restrict)
+  challenge GameChallenge? @relation(fields: [challengeId], references: [id], onDelete: Restrict)
+  accessQR  GameAccessQR?  @relation(fields: [accessQrId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([challengeId, userId])
+  @@index([userId, startedAt])
+  @@index([userId, playDate])
+  @@index([gameId, status])
+  @@index([challengeId])
+  @@map("game_sessions")
+}
+
+model GameChallenge {
+  id           String @id @default(cuid())
+  gameId       String
+  challengerId String
+  opponentId   String
+
+  status ChallengeStatus  @default(PENDING)
+  result ChallengeResult?
+
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  completedAt DateTime?
+  expiresAt   DateTime
+
+  game       Game          @relation(fields: [gameId], references: [id], onDelete: Restrict)
+  challenger User          @relation("ChallengeChallenger", fields: [challengerId], references: [id], onDelete: Restrict)
+  opponent   User          @relation("ChallengeOpponent", fields: [opponentId], references: [id], onDelete: Restrict)
+  sessions   GameSession[]
+
+  @@index([challengerId, status, createdAt])
+  @@index([opponentId, status, createdAt])
+  @@index([gameId, status])
+  @@map("game_challenges")
 }
