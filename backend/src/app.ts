@@ -18,6 +18,7 @@ import { sponsorsRouter } from "./modules/sponsors/sponsors.routes.js";
 import { teamsRouter } from "./modules/teams/teams.routes.js";
 import { galleryRouter } from "./modules/gallery/gallery.routes.js";
 import { merchandiseRouter } from "./modules/merchandise/merchandise.routes.js";
+import { announcementsRouter } from "./modules/announcements/announcements.routes.js";
 
 const app = express();
 
@@ -78,6 +79,7 @@ app.use("/api/v1/sponsors", sponsorsRouter);
 app.use("/api/v1/teams", teamsRouter);
 app.use("/api/v1/gallery", galleryRouter);
 app.use("/api/v1/merchandise", merchandiseRouter);
+app.use("/api/v1/announcements", announcementsRouter);
 
 
 app.get("/api/v1/health", async (_req, res) => {
