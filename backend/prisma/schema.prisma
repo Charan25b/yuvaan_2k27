@@ -417,3 +417,22 @@ model GameChallenge {
   @@index([gameId, status])
   @@map("game_challenges")
 }
+
+model Sponsor {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+  logoUrl     String?
+  websiteUrl  String?
+  tier        String
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+  @@index([tier])
+  @@map("sponsors")
+}
