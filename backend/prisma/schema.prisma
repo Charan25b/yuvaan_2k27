@@ -34,6 +34,7 @@ model User {
   passwordResetTokens     PasswordResetToken[]
   emailOtpChallenges      EmailOtpChallenge[]
   eventRegistrations      EventRegistration[]
+  factionMemberships      FactionMembership[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -183,4 +184,37 @@ model EventSchedule {
 
   @@index([eventId, startTime])
   @@map("event_schedules")
+}
+
+model Faction {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  color       String  @default("#063b32")
+  emblemUrl   String?
+  isActive    Boolean @default(true)
+
+  memberships FactionMembership[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("factions")
+}
+
+model FactionMembership {
+  id        String    @id @default(cuid())
+  userId    String
+  factionId String
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+  isActive  Boolean   @default(true)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  faction Faction @relation(fields: [factionId], references: [id], onDelete: Restrict)
+
+  @@index([userId, isActive])
+  @@index([factionId, isActive])
+  @@map("faction_memberships")
 }
