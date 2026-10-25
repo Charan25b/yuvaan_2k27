@@ -4,6 +4,7 @@ import helmet from "helmet";
 import { pinoHttp } from "pino-http";
 import { prisma } from "./lib/prisma.js";
 import { sessionMiddleware } from "./config/session.js";
+
 import { authRouter } from "./modules/auth/auth.routes.js";
 import { adminRouter } from "./modules/admin/admin.routes.js";
 import { eventsRouter } from "./modules/events/events.routes.js";
@@ -15,6 +16,7 @@ import { gamesRouter } from "./modules/games/games.routes.js";
 import { leaderboardRouter } from "./modules/leaderboard/leaderboard.routes.js";
 import { sponsorsRouter } from "./modules/sponsors/sponsors.routes.js";
 import { teamsRouter } from "./modules/teams/teams.routes.js";
+import { galleryRouter } from "./modules/gallery/gallery.routes.js";
 
 const app = express();
 
@@ -73,6 +75,7 @@ app.use("/api/v1/games", gamesRouter);
 app.use("/api/v1/leaderboard", leaderboardRouter);
 app.use("/api/v1/sponsors", sponsorsRouter);
 app.use("/api/v1/teams", teamsRouter);
+app.use("/api/v1/gallery", galleryRouter);
 
 
 app.get("/api/v1/health", async (_req, res) => {

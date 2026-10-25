@@ -473,3 +473,21 @@ model TeamMember {
   @@index([teamId, isActive, sortOrder])
   @@map("team_members")
 }
+
+model GalleryImage {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  altText     String
+  category    String?
+  eventYear   Int
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isPublished, eventYear, sortOrder])
+  @@index([category])
+  @@map("gallery_images")
+}
