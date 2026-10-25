@@ -49,11 +49,3 @@ factionsRouter.patch(
   requireRole("ADMIN", "SUPERADMIN"),
   updateFactionStatusController,
 );
-
-factionsRouter.post(
-  "/assign",
-  requireAuth,
-  csrfProtection,
-  requireRole("ADMIN", "SUPERADMIN"),
-  assignFactionController,
-);

@@ -10,6 +10,68 @@ import type { LoginInput } from "./auth.schemas.js";
 import { sendPasswordResetEmail } from "../../lib/email.js";
 import type { ForgotPasswordInput } from "./auth.schemas.js"
 import type { ResetPasswordInput } from "./auth.schemas.js";
+import type { Prisma } from "../../generated/client.js";
+
+async function assignFactionIfAvailable(
+  tx: Prisma.TransactionClient,
+  userId: string,
+): Promise<void> {
+  // Only one faction-assignment decision can run at a time.
+  // This lock is shared across application instances using PostgreSQL.
+  await tx.$queryRaw`
+    SELECT pg_advisory_xact_lock(735219841)
+  `;
+
+  // Membership is permanent. Never assign someone again if they
+  // already have a membership record, even if it is inactive.
+  const existingMembership = await tx.factionMembership.findFirst({
+    where: { userId },
+    select: { id: true },
+  });
+
+  if (existingMembership) return;
+
+  // Only active factions are eligible for new assignments.
+  const factions = await tx.faction.findMany({
+    where: { isActive: true },
+    select: { id: true },
+    orderBy: { id: "asc" },
+  });
+
+  // No active factions? Keep the user verified but unassigned.
+  // A later login can retry the assignment.
+  if (factions.length === 0) return;
+
+  // Count active memberships belonging to verified users.
+  const counts = await Promise.all(
+    factions.map(async (faction) => ({
+      factionId: faction.id,
+      count: await tx.factionMembership.count({
+        where: {
+          factionId: faction.id,
+          isActive: true,
+          user: {
+            emailVerifiedAt: { not: null },
+          },
+        },
+      }),
+    })),
+  );
+
+  const lowestCount = Math.min(...counts.map((item) => item.count));
+const candidates = counts.filter((item) => item.count === lowestCount);
+
+if (candidates.length === 0) return;
+
+const selected = candidates[Math.floor(Math.random() * candidates.length)];
+
+if (!selected) return;
+
+await tx.factionMembership.create({
+  data: { userId, factionId: selected.factionId },
+});
+
+}
 
 export async function registerUser(input: RegisterInput) {
   const passwordHash = await argon2.hash(input.password, {
@@ -106,11 +168,15 @@ export async function verifyUserEmail(input: VerifyEmailInput) {
     }
 
     await tx.user.update({
-      where: { id: token.userId },
-      data: { emailVerifiedAt: new Date() },
-    });
+  where: { id: token.userId },
+  data: { emailVerifiedAt: new Date() },
+});
 
-    return { verified: true };
+// Assign a faction in the same transaction as verification.
+// If there are no active factions, verification still succeeds.
+await assignFactionIfAvailable(tx, token.userId);
+
+return { verified: true };
   });
 }
 
@@ -213,6 +279,18 @@ export async function authenticateUser(input: LoginInput) {
   if (!passwordMatches) {
     throw new Error("INVALID_CREDENTIALS");
   }
+
+  // Repair an unassigned verified account when a faction is available.
+await prisma.$transaction(async (tx) => {
+  const currentUser = await tx.user.findUnique({
+    where: { id: user.id },
+    select: { emailVerifiedAt: true },
+  });
+
+  if (currentUser?.emailVerifiedAt) {
+    await assignFactionIfAvailable(tx, user.id);
+  }
+});
 
   // Never return the password hash to the route or frontend.
   return {
