@@ -43,7 +43,8 @@ function handleError(
     const status =
       serviceError.code === "EVENT_NOT_FOUND"
         ? 404
-        : serviceError.code === "EVENT_SLUG_CONFLICT"
+        : serviceError.code === "EVENT_SLUG_CONFLICT" ||
+            serviceError.code === "INVALID_STATUS_TRANSITION"
           ? 409
           : 400;
 

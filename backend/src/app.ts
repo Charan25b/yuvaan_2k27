@@ -9,6 +9,7 @@ import { adminRouter } from "./modules/admin/admin.routes.js";
 import { eventsRouter } from "./modules/events/events.routes.js";
 import { eventCategoriesRouter } from "./modules/event-categories/event-categories.routes.js";
 import { eventRegistrationsRouter } from "./modules/event-registrations/event-registrations.routes.js";
+import { eventSchedulesRouter } from "./modules/event-schedules/event-schedules.routes.js";
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/events", eventsRouter);
 app.use("/api/v1/event-categories", eventCategoriesRouter);
 app.use("/api/v1", eventRegistrationsRouter);
+app.use("/api/v1", eventSchedulesRouter);
 
 app.get("/api/v1/health", async (_req, res) => {
   try {

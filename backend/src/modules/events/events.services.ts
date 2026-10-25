@@ -80,6 +80,7 @@ export async function getEventBySlug(slug: string) {
     where: {
       slug,
       status: "PUBLISHED",
+      category: { isActive: true },
     },
     include: {
       category: {
@@ -282,6 +283,20 @@ export async function updateEventStatus(
     throw new EventServiceError(
       "EVENT_NOT_FOUND",
       "The requested event was not found.",
+    );
+  }
+
+  const allowedTransitions: Record<typeof event.status, readonly string[]> = {
+    DRAFT: ["PUBLISHED", "CANCELLED"],
+    PUBLISHED: ["CANCELLED", "COMPLETED"],
+    CANCELLED: [],
+    COMPLETED: [],
+  };
+
+  if (event.status !== status && !allowedTransitions[event.status].includes(status)) {
+    throw new EventServiceError(
+      "INVALID_STATUS_TRANSITION",
+      `An event cannot transition from ${event.status} to ${status}.`,
     );
   }
 
