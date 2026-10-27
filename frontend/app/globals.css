@@ -1,26 +1,189 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Yuvaan 2027 Core Brand Tokens */
+  --color-ember: #8F1D1D;
+  --color-ember-dark: #6E1212;
+  --color-ember-hover: #771717;
+  --color-orange: #E14B24;
+  --color-orange-hover: #C53B18;
+  --color-yellow: #F2AE30;
+  --color-yellow-hover: #D9961F;
+  --color-cream: #FFF1D6;
+  --color-cream-canvas: #FAF6EF;
+  --color-surface-white: #FFFFFF;
+  --color-text-dark: #1C1917;
+  --color-text-muted: #6B6560;
+  --color-border-subtle: #E8E0D5;
+  --color-border-dark: #1C1917;
+
+  /* Expressive Comic Con Palette Accents */
+  --color-cyan: #0284C7;
+  --color-indigo: #4F46E5;
+  --color-emerald: #059669;
+  --color-violet: #7C3AED;
+  --color-gold: #D97706;
+
+  /* Harmonious Light Section Tints */
+  --tint-gold: #FFFBEB;
+  --tint-peach: #FFF7ED;
+  --tint-blush: #FFF1F2;
+  --tint-cyan: #F0F9FF;
+  --tint-mint: #F0FDF4;
+  --tint-violet: #F5F3FF;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-ember: var(--color-ember);
+  --color-ember-dark: var(--color-ember-dark);
+  --color-ember-hover: var(--color-ember-hover);
+  --color-orange: var(--color-orange);
+  --color-orange-hover: var(--color-orange-hover);
+  --color-yellow: var(--color-yellow);
+  --color-yellow-hover: var(--color-yellow-hover);
+  --color-cream: var(--color-cream);
+  --color-cream-canvas: var(--color-cream-canvas);
+  --color-surface: var(--color-surface-white);
+  --color-ink: var(--color-text-dark);
+  --color-ink-muted: var(--color-text-muted);
+  --color-border-subtle: var(--color-border-subtle);
+  --color-border-dark: var(--color-border-dark);
+  --color-cyan: var(--color-cyan);
+  --color-indigo: var(--color-indigo);
+  --color-emerald: var(--color-emerald);
+  --color-violet: var(--color-violet);
+  --color-gold: var(--color-gold);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-tint-gold: var(--tint-gold);
+  --color-tint-peach: var(--tint-peach);
+  --color-tint-blush: var(--tint-blush);
+  --color-tint-cyan: var(--tint-cyan);
+  --color-tint-mint: var(--tint-mint);
+  --color-tint-violet: var(--tint-violet);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream-canvas);
+  color: var(--color-text-dark);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Comic Panel Borders & Drop Shadows */
+.comic-border {
+  border: 2px solid var(--color-border-dark);
+}
+
+.comic-border-thick {
+  border: 2.5px solid var(--color-border-dark);
+}
+
+.comic-shadow-sm {
+  box-shadow: 2px 2px 0px var(--color-border-dark);
+}
+
+.comic-shadow {
+  box-shadow: 3.5px 3.5px 0px var(--color-border-dark);
+}
+
+.comic-shadow-lg {
+  box-shadow: 6px 6px 0px var(--color-border-dark);
+}
+
+.comic-shadow-color-ember {
+  box-shadow: 4px 4px 0px var(--color-ember);
+}
+
+.comic-shadow-color-orange {
+  box-shadow: 4px 4px 0px var(--color-orange);
+}
+
+.comic-shadow-color-yellow {
+  box-shadow: 4px 4px 0px var(--color-yellow);
+}
+
+.comic-shadow-color-cyan {
+  box-shadow: 4px 4px 0px var(--color-cyan);
+}
+
+.comic-hover {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.comic-hover:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0px var(--color-border-dark);
+}
+
+.comic-hover-sm:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0px var(--color-border-dark);
+}
+
+/* Comic diagonal caution / tape strip */
+.comic-tape-amber {
+  background: repeating-linear-gradient(
+    -45deg,
+    #F2AE30,
+    #F2AE30 10px,
+    #E59E18 10px,
+    #E59E18 20px
+  );
+}
+
+.comic-tape-orange {
+  background: repeating-linear-gradient(
+    -45deg,
+    #E14B24,
+    #E14B24 10px,
+    #C53B18 10px,
+    #C53B18 20px
+  );
+}
+
+/* Halftone and Comic Paper Textures */
+.comic-dots-subtle {
+  background-image: radial-gradient(circle, rgba(28, 25, 23, 0.08) 1.2px, transparent 1.2px);
+  background-size: 16px 16px;
+}
+
+.comic-dots-ember {
+  background-image: radial-gradient(circle, rgba(143, 29, 29, 0.12) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+.comic-dots-cyan {
+  background-image: radial-gradient(circle, rgba(2, 132, 199, 0.12) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+.comic-dots-yellow {
+  background-image: radial-gradient(circle, rgba(242, 174, 48, 0.18) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+.comic-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(28, 25, 23, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(28, 25, 23, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Custom Speech Bubble Notch */
+.speech-bubble-bottom {
+  position: relative;
+}
+.speech-bubble-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 28px;
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: var(--color-border-dark) transparent;
+  display: block;
+  width: 0;
 }
