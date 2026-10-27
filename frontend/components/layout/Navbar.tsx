@@ -44,7 +44,7 @@ export function Navbar() {
           <div className="flex h-16 sm:h-20 items-center justify-between gap-4">
             {/* Brand Identity */}
             <Link
-              href="/"
+              href="/home"
               onClick={closeMobileMenu}
               className="flex items-center gap-3 select-none group"
             >
@@ -97,7 +97,7 @@ export function Navbar() {
                 className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-[#FEF3C7] border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[var(--color-yellow)] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none transition-all cursor-pointer"
               >
                 <span className="h-2 w-2 rounded-full bg-[var(--color-orange)] animate-pulse" />
-                <span>✦ Game Site Entry</span>
+                <span>âœ¦ Game Site Entry</span>
               </button>
             </div>
 
@@ -230,7 +230,7 @@ export function Navbar() {
                 </div>
 
                 <div className="p-2.5 rounded-lg bg-[var(--color-cream-canvas)] border border-[var(--color-border-subtle)] text-[11px] font-bold text-[var(--color-ember)]">
-                  ✦ Destination unconfigured — access portal activates during on-campus festival registration.
+                  âœ¦ Destination unconfigured â€” access portal activates during on-campus festival registration.
                 </div>
               </div>
 

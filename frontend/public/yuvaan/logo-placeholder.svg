@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400">
+  <defs>
+    <!-- Radiant gold-to-ember metallic gradient -->
+    <linearGradient id="goldEmberGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF5"/>
+      <stop offset="18%" stop-color="#FEEFAD"/>
+      <stop offset="45%" stop-color="#F59E0B"/>
+      <stop offset="78%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+
+    <!-- Warm horizon glow gradient for subtitle and accents -->
+    <linearGradient id="warmAccentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="50%" stop-color="#FCD34D"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+
+    <!-- Soft outer golden glow filter -->
+    <filter id="goldenAura" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Deep drop shadow for maximum contrast -->
+    <filter id="cinematicShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.95"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#F59E0B" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#cinematicShadow)">
+    <!-- Top Eyebrow -->
+    <g transform="translate(600, 72)">
+      <line x1="-280" y1="-5" x2="-140" y2="-5" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+      <circle cx="-130" cy="-5" r="3.5" fill="#FCD34D"/>
+      <text text-anchor="middle" font-family="'Cinzel', 'Cinzel Decorative', 'Trajan Pro', 'Georgia', serif" font-weight="800" font-size="19" fill="#FDE68A" letter-spacing="9" opacity="0.95">IIIT GUWAHATI</text>
+      <circle cx="130" cy="-5" r="3.5" fill="#FCD34D"/>
+      <line x1="140" y1="-5" x2="280" y2="-5" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+    </g>
+
+    <!-- Main Title: YUVAAN -->
+    <!-- Layer 1: Ambient outer warm glow -->
+    <text x="600" y="240" text-anchor="middle" font-family="'Montserrat', 'Cinzel', 'Impact', 'Segoe UI Black', system-ui, sans-serif" font-weight="900" font-size="172" fill="#F59E0B" opacity="0.6" filter="url(#goldenAura)" letter-spacing="18">YUVAAN</text>
+
+    <!-- Layer 2: Deep high-contrast dark outline -->
+    <text x="600" y="240" text-anchor="middle" font-family="'Montserrat', 'Cinzel', 'Impact', 'Segoe UI Black', system-ui, sans-serif" font-weight="900" font-size="172" fill="none" stroke="#05070E" stroke-width="18" stroke-linejoin="round" letter-spacing="18">YUVAAN</text>
+
+    <!-- Layer 3: Secondary rich ember stroke -->
+    <text x="600" y="240" text-anchor="middle" font-family="'Montserrat', 'Cinzel', 'Impact', 'Segoe UI Black', system-ui, sans-serif" font-weight="900" font-size="172" fill="none" stroke="#781D1D" stroke-width="8" stroke-linejoin="round" letter-spacing="18">YUVAAN</text>
+
+    <!-- Layer 4: Primary metallic gold & amber fill -->
+    <text x="600" y="240" text-anchor="middle" font-family="'Montserrat', 'Cinzel', 'Impact', 'Segoe UI Black', system-ui, sans-serif" font-weight="900" font-size="172" fill="url(#goldEmberGrad)" letter-spacing="18">YUVAAN</text>
+
+    <!-- Sub-badge: 2027 with Comic Con / Fantasy aesthetic -->
+    <g transform="translate(600, 310)">
+      <!-- Badge backing -->
+      <rect x="-115" y="-22" width="230" height="42" rx="10" fill="#090D1A" stroke="#F59E0B" stroke-width="2.5" filter="url(#goldenAura)"/>
+      <rect x="-110" y="-18" width="220" height="34" rx="7" fill="none" stroke="#D97706" stroke-width="1.2" opacity="0.7"/>
+      <text text-anchor="middle" y="7" font-family="'Montserrat', system-ui, sans-serif" font-weight="900" font-size="28" fill="#FFFDF5" letter-spacing="8">2027</text>
+    </g>
+
+    <!-- Bottom Subtitle -->
+    <g transform="translate(600, 368)">
+      <text text-anchor="middle" font-family="'Montserrat', system-ui, sans-serif" font-weight="700" font-size="14.5" fill="#FAF6EF" letter-spacing="8" opacity="0.88">ANNUAL CULTURAL &amp; TECHNICAL FESTIVAL</text>
+    </g>
+  </g>
+</svg>

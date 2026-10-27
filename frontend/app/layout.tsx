@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Yuvaan 2027 | IIIT Guwahati",
@@ -16,10 +14,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col paper-grid">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="min-h-full bg-[#0B0E14] text-[var(--color-text-dark)]">
+        {children}
       </body>
     </html>
   );
