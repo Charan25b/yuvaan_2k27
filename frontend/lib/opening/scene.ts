@@ -1,7 +1,8 @@
 // scene.ts — WebGL renderer lifecycle, resize, loop, tiers, disposal.
-// Implements the full 3D cinematic opening using Three.js.
+// Implements the full 3D cinematic opening ("Yuvaan: The Golden Multiverse") using Three.js.
 
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { OpeningConfig, QualityTier, QualityTierName } from "./opening.config";
 import { validateOpeningConfig } from "./opening.config";
 import {
@@ -16,6 +17,8 @@ import {
 import {
   skyVertexShader,
   skyFragmentShader,
+  emblemMetallicVertexShader,
+  emblemMetallicFragmentShader,
   logoVertexShader,
   logoFragmentShader,
   embersVertexShader,
@@ -79,7 +82,6 @@ function createNoiseTexture(size: number = 256): THREE.DataTexture {
   const perm = new Uint8Array(512);
   const p = new Uint8Array(256);
   for (let i = 0; i < 256; i++) p[i] = i;
-  // Deterministic seed so noise is consistent across runs
   let seed = 1337;
   const nextRand = () => {
     seed = (seed * 16807) % 2147483647;
@@ -277,7 +279,6 @@ function createBoltGeometry(
     );
     allSegments.push(...primaryBranch);
 
-    // Secondary sub-fork on main branches for natural fractal silhouette
     if (primaryBranch.length >= 4) {
       const subIdx = Math.floor(primaryBranch.length * 0.5);
       const subOrigin = primaryBranch[subIdx].p1.clone();
@@ -317,7 +318,6 @@ function createBoltGeometry(
     perp1.normalize();
     const perp2 = new THREE.Vector3().crossVectors(dir, perp1).normalize();
 
-    // Overlap segment ends slightly to eliminate joint gaps at sharp bends
     const extStart = seg.p1.clone().addScaledVector(dir, -0.025);
     const extEnd = seg.p2.clone().addScaledVector(dir, 0.025);
 
@@ -326,7 +326,6 @@ function createBoltGeometry(
     const wEnd = baseWidth * (1.0 - seg.tEnd * 0.28);
     const isB = seg.isBranch ? 1.0 : 0.0;
 
-    // Crossed ribbon 1 (camera-facing plane)
     const p1a = extStart.clone().addScaledVector(perp1, -wStart);
     const p1b = extStart.clone().addScaledVector(perp1, wStart);
     const p2a = extEnd.clone().addScaledVector(perp1, -wEnd);
@@ -343,7 +342,6 @@ function createBoltGeometry(
     indices.push(vertIdx, vertIdx + 1, vertIdx + 2, vertIdx + 1, vertIdx + 3, vertIdx + 2);
     vertIdx += 4;
 
-    // Crossed ribbon 2 (orthogonal plane for 3D volume)
     const q1a = extStart.clone().addScaledVector(perp2, -wStart);
     const q1b = extStart.clone().addScaledVector(perp2, wStart);
     const q2a = extEnd.clone().addScaledVector(perp2, -wEnd);
@@ -412,20 +410,13 @@ function createLightningSystem(config: OpeningConfig, startTimeMs: number): Ligh
   glowMesh.renderOrder = 4;
   glowMesh.visible = false;
 
-  // Strike zones calibrated strictly inside camera frustum (desktop & scaled for mobile)
   const strikeZones = [
-    // Zone 0: Left Midground Storm Pillar
-    { start: new THREE.Vector3(-2.5, 2.1, -6.2), end: new THREE.Vector3(-1.5, -1.3, -5.8) },
-    // Zone 1: Right Midground Storm Anvil
-    { start: new THREE.Vector3(2.5, 2.2, -6.4), end: new THREE.Vector3(1.4, -1.2, -5.9) },
-    // Zone 2: Upper-Left Cloud Chasm
-    { start: new THREE.Vector3(-1.6, 2.4, -7.2), end: new THREE.Vector3(-0.6, -0.8, -6.6) },
-    // Zone 3: Upper-Right Cloud Chasm
-    { start: new THREE.Vector3(1.7, 2.3, -7.4), end: new THREE.Vector3(0.7, -0.9, -6.8) },
-    // Zone 4: Deep Left Horizon Turret
-    { start: new THREE.Vector3(-3.0, 1.9, -8.2), end: new THREE.Vector3(-1.9, -1.6, -7.6) },
-    // Zone 5: Deep Right Horizon Turret
-    { start: new THREE.Vector3(3.0, 1.9, -8.2), end: new THREE.Vector3(1.9, -1.5, -7.6) },
+    { start: new THREE.Vector3(-2.8, 2.2, -6.2), end: new THREE.Vector3(-1.8, -1.2, -5.8) },
+    { start: new THREE.Vector3(2.8, 2.2, -6.4), end: new THREE.Vector3(1.8, -1.2, -5.9) },
+    { start: new THREE.Vector3(-2.0, 2.4, -7.2), end: new THREE.Vector3(-1.2, -0.8, -6.6) },
+    { start: new THREE.Vector3(2.0, 2.3, -7.4), end: new THREE.Vector3(1.2, -0.9, -6.8) },
+    { start: new THREE.Vector3(-3.2, 1.9, -8.2), end: new THREE.Vector3(-2.1, -1.6, -7.6) },
+    { start: new THREE.Vector3(3.2, 1.9, -8.2), end: new THREE.Vector3(2.1, -1.5, -7.6) },
   ];
 
   let currentZone = 0;
@@ -442,21 +433,31 @@ function createLightningSystem(config: OpeningConfig, startTimeMs: number): Ligh
     const zone = strikeZones[currentZone];
     currentZone = (currentZone + 1 + Math.floor(Math.random() * 2)) % strikeZones.length;
 
-    // On narrow portrait viewports, pull X inward so the entire bolt stays on screen
-    const xScale = isMobile ? 0.52 : 1.0;
+    let startX = zone.start.x;
+    let startY = zone.start.y;
+    let endX = zone.end.x;
+    let endY = zone.end.y;
+
+    if (isMobile) {
+      startX = Math.sign(zone.start.x) * Math.max(0.85, Math.abs(zone.start.x) * 0.58);
+      startY = zone.start.y + 0.35;
+      endX = Math.sign(zone.end.x) * Math.max(0.70, Math.abs(zone.end.x) * 0.62);
+      endY = Math.max(0.15, zone.end.y + 0.95);
+    }
+
     const sJitter = new THREE.Vector3(
-      (Math.random() - 0.5) * 0.45 * xScale,
+      (Math.random() - 0.5) * (isMobile ? 0.25 : 0.45),
       (Math.random() - 0.5) * 0.3,
       (Math.random() - 0.5) * 0.4,
     );
     const eJitter = new THREE.Vector3(
-      (Math.random() - 0.5) * 0.55 * xScale,
+      (Math.random() - 0.5) * (isMobile ? 0.30 : 0.55),
       (Math.random() - 0.5) * 0.35,
       (Math.random() - 0.5) * 0.4,
     );
 
-    activeStart.set(zone.start.x * xScale, zone.start.y, zone.start.z).add(sJitter);
-    activeEnd.set(zone.end.x * xScale, zone.end.y, zone.end.z).add(eJitter);
+    activeStart.set(startX, startY, zone.start.z).add(sJitter);
+    activeEnd.set(endX, endY, zone.end.z).add(eJitter);
 
     const numBranches = 4 + Math.floor(Math.random() * 2);
     const newGeo = createBoltGeometry(activeStart, activeEnd, isMobile ? 0.48 : 0.68, numBranches);
@@ -495,11 +496,9 @@ function createLightningSystem(config: OpeningConfig, startTimeMs: number): Ligh
       let growth = 1.0;
 
       if (elapsedStrike >= 0 && elapsedStrike < strikeDuration) {
-        // Leader downward propagation during first 45ms
         growth = smoothstep(0, 45, elapsedStrike);
 
         if (reducedMotion) {
-          // Gentle single pulse for reduced-motion accessibility
           const env = Math.sin((elapsedStrike / strikeDuration) * Math.PI);
           intensity = env * config.lightning.peak * 0.55;
         } else if (elapsedStrike < 40) {
@@ -507,7 +506,6 @@ function createLightningSystem(config: OpeningConfig, startTimeMs: number): Ligh
         } else if (elapsedStrike < 85) {
           intensity = 1.0 - 0.78 * smoothstep(40, 85, elapsedStrike);
         } else if (elapsedStrike < 140) {
-          // Secondary restrike flicker
           intensity =
             0.22 +
             0.78 *
@@ -538,7 +536,7 @@ function createLightningSystem(config: OpeningConfig, startTimeMs: number): Ligh
         growth,
         startPos: activeStart,
         endPos: activeEnd,
-        flash: intensity * 0.08,
+        flash: intensity * 0.14,
       };
     },
     triggerStrike(isMobile: boolean = false) {
@@ -557,7 +555,7 @@ function createLightningSystem(config: OpeningConfig, startTimeMs: number): Ligh
   };
 }
 
-// ─── Procedural Cumulus Puff Texture Generator ────────────────────────
+// ─── Procedural Volumetric 3D Normal & Density Cloud Map Generator ─────
 
 function createCumulusPuffTexture(type = 0): THREE.CanvasTexture {
   const size = 512;
@@ -570,88 +568,87 @@ function createCumulusPuffTexture(type = 0): THREE.CanvasTexture {
   ctx.clearRect(0, 0, size, size);
 
   const perm = new Uint8Array(512);
-  const p = [
-    151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,
-    8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,
-    35,11,32,57,177,33,88,237,149,56,87,174,20,125,136,171,168,68,175,74,165,71,
-    134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,
-    55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,
-    18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,
-    250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,
-    189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,
-    172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,
-    228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,
-    107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,
-    138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180,
-  ];
-  for (let i = 0; i < 256; i++) perm[i] = perm[i + 256] = p[i];
+  const p = new Uint8Array(256);
+  for (let i = 0; i < 256; i++) p[i] = i;
+  let s = 4567 + type * 8901;
+  const rnd = () => {
+    s = (s * 16807) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+  for (let i = 255; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    const t = p[i];
+    p[i] = p[j];
+    p[j] = t;
+  }
+  for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
 
-  function grad(hash: number, x: number, y: number): number {
+  function fade(t: number) {
+    return t * t * t * (t * (t * 6 - 15) + 10);
+  }
+  function grad(hash: number, x: number, y: number) {
     const h = hash & 7;
-    const u = h < 4 ? x : y;
-    const v = h < 4 ? y : x;
+    const u = h < 4 ? x : y,
+      v = h < 4 ? y : x;
     return ((h & 1) ? -u : u) + ((h & 2) ? -2.0 * v : 2.0 * v);
   }
-
-  function perlin(x: number, y: number): number {
-    const X = Math.floor(x) & 255;
-    const Y = Math.floor(y) & 255;
-    const xf = x - Math.floor(x);
-    const yf = y - Math.floor(y);
-    const u = xf * xf * (3 - 2 * xf);
-    const v = yf * yf * (3 - 2 * yf);
+  function perlin(x: number, y: number) {
+    const X = Math.floor(x) & 255,
+      Y = Math.floor(y) & 255;
+    const xf = x - Math.floor(x),
+      yf = y - Math.floor(y);
+    const u = fade(xf),
+      v = fade(yf);
     const g00 = grad(perm[perm[X] + Y], xf, yf);
     const g10 = grad(perm[perm[X + 1] + Y], xf - 1, yf);
-    const g01 = grad(perm[perm[X] + Y + 1], xf, yf - 1); // Fixed X index
+    const g01 = grad(perm[perm[X] + Y + 1], xf, yf - 1);
     const g11 = grad(perm[perm[X + 1] + Y + 1], xf - 1, yf - 1);
-    const x1 = g00 + u * (g10 - g00);
-    const x2 = g01 + u * (g11 - g01);
-    return x1 + v * (x2 - x1);
+    return (1 - v) * ((1 - u) * g00 + u * g10) + v * ((1 - u) * g01 + u * g11);
   }
-
-  function fbm(x: number, y: number): number {
-    let v = 0, a = 0.52, f = 1.0;
-    for (let i = 0; i < 5; i++) {
+  function fbm(x: number, y: number, oct = 4) {
+    let v = 0,
+      a = 0.5,
+      f = 1.0;
+    for (let i = 0; i < oct; i++) {
       v += a * perlin(x * f, y * f);
-      f *= 2.08;
-      a *= 0.48;
+      f *= 2.05;
+      a *= 0.5;
     }
     return v;
   }
 
-  // Distinct multi-lobe silhouettes (prevents uniform circular blobs)
   const lobes =
     type === 0
       ? [
-          // Towering Cumulonimbus Anvil
-          { x: 256, y: 265, r: 128, w: 0.95 },
-          { x: 175, y: 230, r: 102, w: 0.90 },
-          { x: 335, y: 225, r: 108, w: 0.92 },
-          { x: 225, y: 155, r: 94, w: 0.98 },
-          { x: 292, y: 150, r: 98, w: 1.00 },
-          { x: 140, y: 290, r: 88, w: 0.80 },
-          { x: 372, y: 285, r: 92, w: 0.82 },
-          { x: 205, y: 335, r: 96, w: 0.72 },
-          { x: 310, y: 340, r: 96, w: 0.74 },
+          { x: 256, y: 250, r: 175, z: 1.0 },
+          { x: 165, y: 210, r: 140, z: 0.94 },
+          { x: 345, y: 205, r: 145, z: 0.95 },
+          { x: 235, y: 135, r: 125, z: 0.98 },
+          { x: 295, y: 130, r: 130, z: 1.0 },
+          { x: 115, y: 280, r: 118, z: 0.86 },
+          { x: 395, y: 275, r: 122, z: 0.88 },
+          { x: 195, y: 345, r: 125, z: 0.78 },
+          { x: 320, y: 350, r: 128, z: 0.8 },
+          { x: 260, y: 78, r: 98, z: 0.92 },
         ]
       : type === 1
       ? [
-          // Wide Layered Storm Bank
-          { x: 256, y: 265, r: 122, w: 0.94 },
-          { x: 155, y: 255, r: 108, w: 0.90 },
-          { x: 358, y: 250, r: 112, w: 0.91 },
-          { x: 208, y: 190, r: 92, w: 0.96 },
-          { x: 305, y: 185, r: 95, w: 0.96 },
-          { x: 110, y: 295, r: 78, w: 0.78 },
-          { x: 402, y: 290, r: 82, w: 0.80 },
+          { x: 256, y: 255, r: 170, z: 0.98 },
+          { x: 130, y: 240, r: 150, z: 0.92 },
+          { x: 385, y: 235, r: 155, z: 0.94 },
+          { x: 195, y: 165, r: 130, z: 0.98 },
+          { x: 330, y: 160, r: 135, z: 0.96 },
+          { x: 60, y: 280, r: 110, z: 0.82 },
+          { x: 450, y: 275, r: 115, z: 0.84 },
+          { x: 256, y: 340, r: 135, z: 0.78 },
         ]
       : [
-          // Irregular Framing Cloud Cluster
-          { x: 240, y: 250, r: 115, w: 0.90 },
-          { x: 320, y: 220, r: 98, w: 0.94 },
-          { x: 170, y: 215, r: 92, w: 0.88 },
-          { x: 275, y: 310, r: 95, w: 0.76 },
-          { x: 195, y: 305, r: 88, w: 0.75 },
+          { x: 245, y: 240, r: 160, z: 0.96 },
+          { x: 345, y: 195, r: 135, z: 0.98 },
+          { x: 145, y: 200, r: 130, z: 0.92 },
+          { x: 295, y: 325, r: 135, z: 0.82 },
+          { x: 170, y: 315, r: 125, z: 0.8 },
+          { x: 405, y: 280, r: 110, z: 0.85 },
         ];
 
   const imgData = ctx.createImageData(size, size);
@@ -659,74 +656,66 @@ function createCumulusPuffTexture(type = 0): THREE.CanvasTexture {
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const warpX = fbm(x / 48, y / 48) * 32;
-      const warpY = fbm(x / 48 + 4.3, y / 48 + 2.1) * 32;
-      const px = x + warpX;
-      const py = y + warpY;
+      const wx = fbm(x / 68, y / 68, 3) * 35;
+      const wy = fbm(x / 68 + 4.3, y / 68 + 2.6, 3) * 35;
+      const px = x + wx;
+      const py = y + wy;
 
-      let bestLobe = 0;
-      let secondLobe = 0;
-      let bestTopness = 0;
+      let maxH = 0;
+      let weightedNx = 0;
+      let weightedNy = 0;
+      let weightedNz = 0;
+      let totalW = 0;
 
       for (const l of lobes) {
-        const d = Math.hypot(px - l.x, py - l.y);
-        if (d < l.r) {
-          const factor = 1.0 - d / l.r;
-          const val = factor * factor * (3.0 - 2.0 * factor) * l.w;
-          const lobeTop = clamp((l.y - py) / l.r * 0.5 + 0.5, 0, 1);
-          if (val > bestLobe) {
-            secondLobe = bestLobe;
-            bestLobe = val;
-            bestTopness = lobeTop;
-          } else if (val > secondLobe) {
-            secondLobe = val;
-          }
+        const dx = px - l.x;
+        const dy = py - l.y;
+        const d2 = dx * dx + dy * dy;
+        const r2 = l.r * l.r;
+
+        if (d2 < r2) {
+          const radFactor = (r2 - d2) / r2;
+          const h = Math.sqrt(radFactor) * l.z;
+          const w = Math.pow(radFactor, 0.75);
+
+          const nx = dx / l.r;
+          const ny = -(dy / l.r);
+          const nz = h * 1.35;
+
+          weightedNx += nx * w;
+          weightedNy += ny * w;
+          weightedNz += nz * w;
+          totalW += w;
+
+          if (h > maxH) maxH = h;
         }
       }
 
-      if (bestLobe <= 0.005) continue;
+      if (totalW > 0.0001 && maxH > 0.001) {
+        const micro = fbm(x / 24, y / 24, 4);
+        const erodedH = maxH * (0.82 + 0.36 * micro);
+        const density = Math.min(1.0, Math.pow(erodedH, 0.65) * 1.38);
 
-      // Smooth union without saturating/clamping the entire interior to 1.0
-      const combinedLobe = Math.min(1.0, bestLobe + secondLobe * 0.24);
-      const billowNoise = (fbm(x / 26, y / 26) + 0.5);
-      const eroded = combinedLobe - (1.0 - combinedLobe) * (1.0 - billowNoise) * 0.48;
-      const density = smoothstep(0.12, 0.82, eroded);
+        if (density > 0.008) {
+          const invLen = 1.0 / Math.hypot(weightedNx, weightedNy, weightedNz);
+          let nx = weightedNx * invLen;
+          let ny = weightedNy * invLen;
+          let nz = weightedNz * invLen;
 
-      if (density > 0.015) {
-        const idx = (y * size + x) * 4;
-        const normY = (size - y) / size;
+          const rip = (micro - 0.5) * 0.28;
+          nx = nx + rip;
+          ny = ny + rip;
+          const renorm = 1.0 / Math.hypot(nx, ny, nz);
+          nx *= renorm;
+          ny *= renorm;
+          nz *= renorm;
 
-        // Rim & turret lighting: silver-blue crests on top of each lobe, dark indigo cores
-        const rimFactor = clamp(
-          bestTopness * 0.65 + normY * 0.35 + (1.0 - density) * 0.35 + (billowNoise - 0.5) * 0.3,
-          0,
-          1,
-        );
-        const shadowDepth = smoothstep(0.25, 0.85, density) * (1.0 - normY * 0.55);
-
-        // Dark indigo-violet base (18, 22, 44) -> Slate mid (54, 68, 104) -> Silver-blue crest (208, 228, 255)
-        const r = clamp(
-          20 + 42 * (1 - shadowDepth) + 148 * Math.pow(rimFactor, 2.1),
-          14,
-          248,
-        );
-        const g = clamp(
-          24 + 52 * (1 - shadowDepth) + 158 * Math.pow(rimFactor, 2.0),
-          18,
-          250,
-        );
-        const b = clamp(
-          46 + 72 * (1 - shadowDepth) + 136 * Math.pow(rimFactor, 1.85),
-          38,
-          255,
-        );
-
-        const alpha = Math.min(248, Math.floor(Math.pow(density, 0.78) * 245));
-
-        data[idx] = Math.floor(r);
-        data[idx + 1] = Math.floor(g);
-        data[idx + 2] = Math.floor(b);
-        data[idx + 3] = alpha;
+          const idx = (y * size + x) * 4;
+          data[idx] = Math.floor((nx * 0.5 + 0.5) * 255);
+          data[idx + 1] = Math.floor((ny * 0.5 + 0.5) * 255);
+          data[idx + 2] = Math.floor((nz * 0.5 + 0.5) * 255);
+          data[idx + 3] = Math.floor(density * 255);
+        }
       }
     }
   }
@@ -773,17 +762,24 @@ function createVolumetricCloudFormations(
   noiseTex: THREE.DataTexture,
   tier: QualityTier,
 ): VolumetricCloudSystem {
+  void tier;
   const group = new THREE.Group();
   const formations: VolumetricCloudFormation[] = [];
+  const geometries: THREE.BufferGeometry[] = [];
 
   const tex0 = createCumulusPuffTexture(0);
   const tex1 = createCumulusPuffTexture(1);
   const tex2 = createCumulusPuffTexture(2);
 
+  // Tuned to match the warm golden-hour storm clouds in image_2ef521.jpg
   const lightningCol = hexToVec3(config.palette.lightning);
-  const shadowCol = new THREE.Vector3(0.08, 0.09, 0.21); // Deep midnight violet-indigo
-  const cloudRim = new THREE.Vector3(0.76, 0.88, 1.0);   // Silver-blue rim highlight
-  const horizonCol = hexToVec3(config.palette.gold);     // Restrained horizon amber
+  const shadowCol    = new THREE.Vector3(0.08, 0.09, 0.15); // Soft storm charcoal-indigo
+  const keyLightCol  = new THREE.Vector3(0.56, 0.60, 0.70); // Soft cool dusk silver on upper tops
+  const backLightCol = new THREE.Vector3(0.85, 0.56, 0.34); // Soft golden-hour rim
+  const sunsetCol    = new THREE.Vector3(0.76, 0.48, 0.30); // Warm golden-hour amber-peach
+  const copperCol    = new THREE.Vector3(0.58, 0.32, 0.21); // Dusty rose-copper underbelly
+  const ambientCol   = new THREE.Vector3(0.24, 0.25, 0.33); // Smoky slate body
+  const horizonHaze  = new THREE.Vector3(0.56, 0.36, 0.26); // Warm golden-copper horizon haze
 
   function createMaterial(
     tex: THREE.Texture,
@@ -801,10 +797,15 @@ function createVolumetricCloudFormations(
       uniforms: {
         uTexture: { value: tex },
         uNoise: { value: noiseTex },
-        uColor: { value: new THREE.Vector3(0.92, 0.95, 1.0) },
+        uKeyLightDir: { value: new THREE.Vector3(-0.45, 0.75, 0.55).normalize() },
+        uKeyLightColor: { value: keyLightCol },
+        uBackLightDir: { value: new THREE.Vector3(0.35, -0.35, 0.85).normalize() },
+        uBackLightColor: { value: backLightCol },
+        uSunsetColor: { value: sunsetCol },
+        uCopperColor: { value: copperCol },
         uShadowColor: { value: shadowCol },
-        uRimColor: { value: cloudRim },
-        uHorizonColor: { value: horizonCol },
+        uAmbientColor: { value: ambientCol },
+        uHorizonHazeColor: { value: horizonHaze },
         uLightningStart: { value: new THREE.Vector3(-2.5, 2.0, -6.2) },
         uLightningEnd: { value: new THREE.Vector3(-1.5, -1.2, -5.8) },
         uLightningIntensity: { value: 0.0 },
@@ -814,24 +815,22 @@ function createVolumetricCloudFormations(
         uLayerType: { value: layerType },
         uTime: { value: 0.0 },
         uDriftSpeed: { value: driftSpeed },
-        uCorridorRadius: { value: 1.05 },
+        uCorridorRadius: { value: 1.95 },
       },
     });
   }
 
-  // Layer 0: Distant backdrop clouds (Z = -9.5 to -15.5)
   const bgMat0 = createMaterial(tex0, 0.0, [0.8, 2.4], 0.008);
   const bgMat1 = createMaterial(tex1, 0.0, [0.8, 2.4], 0.008);
 
-  // Layer 1: Midground storm columns & canopies (Z = -5.3 to -8.2)
   const midMat0 = createMaterial(tex0, 1.0, [0.5, 1.8], 0.014);
   const midMat1 = createMaterial(tex1, 1.0, [0.5, 1.8], 0.014);
+  const midMat2 = createMaterial(tex2, 1.0, [0.5, 1.8], 0.014);
 
-  // Layer 2: Foreground framing clouds in front of logo (Z = -1.8 to -3.8; logo is at Z = -5.0)
   const fgMat0 = createMaterial(tex2, 2.0, [0.35, 1.35], 0.022);
   const fgMat1 = createMaterial(tex0, 2.0, [0.35, 1.35], 0.022);
 
-  const materials = [bgMat0, bgMat1, midMat0, midMat1, fgMat0, fgMat1];
+  const materials = [bgMat0, bgMat1, midMat0, midMat1, midMat2, fgMat0, fgMat1];
 
   const leftGroup = new THREE.Group();
   const rightGroup = new THREE.Group();
@@ -849,95 +848,66 @@ function createVolumetricCloudFormations(
   group.add(fgLeftGroup);
   group.add(fgRightGroup);
 
-  // Deterministic pseudo-random helper so cloud layout is consistent and structured
-  let cSeed = 42027;
-  const rand = () => {
-    cSeed = (cSeed * 48271) % 2147483647;
-    return (cSeed - 1) / 2147483646;
-  };
-
-  function addCluster(
+  function addFormation(
     parent: THREE.Group,
-    centerX: number,
-    centerY: number,
-    centerZ: number,
+    mat: THREE.ShaderMaterial,
     w: number,
     h: number,
-    zSpread: number,
-    count: number,
-    scaleMin: number,
-    scaleMax: number,
+    x: number,
+    y: number,
+    z: number,
+    rotZ: number,
     layer: "distant" | "midground" | "foreground",
   ) {
-    // Keep at least 75% of cloud formations even on low tier so silhouettes never vanish
-    const scaleFactor = tier.slabs <= 4 ? 0.75 : tier.slabs <= 6 ? 0.85 : 1.0;
-    const actualCount = Math.max(4, Math.round(count * scaleFactor));
-
-    for (let i = 0; i < actualCount; i++) {
-      const s = scaleMin + rand() * (scaleMax - scaleMin);
-      const aspectStretch = 1.08 + rand() * 0.28;
-      const geo = new THREE.PlaneGeometry(s * aspectStretch, s);
-
-      let useMat: THREE.ShaderMaterial;
-      let order = 1;
-      if (layer === "distant") {
-        useMat = i % 2 === 0 ? bgMat0 : bgMat1;
-        order = 0;
-      } else if (layer === "midground") {
-        useMat = i % 2 === 0 ? midMat0 : midMat1;
-        order = 1;
-      } else {
-        useMat = i % 2 === 0 ? fgMat0 : fgMat1;
-        order = 3; // Renders in front of logoMesh (renderOrder = 2)
-      }
-
-      const mesh = new THREE.Mesh(geo, useMat);
-      const t = actualCount > 1 ? i / (actualCount - 1) - 0.5 : 0;
-      const ox = t * w * 0.65 + (rand() - 0.5) * w * 0.45;
-      const oy = (rand() - 0.5) * h;
-      const oz = (rand() - 0.5) * zSpread;
-
-      mesh.position.set(centerX + ox, centerY + oy, centerZ + oz);
-      mesh.rotation.z = (rand() - 0.5) * 0.28;
-      mesh.renderOrder = order;
-      parent.add(mesh);
-      formations.push({ mesh, material: useMat, layer });
-    }
+    const geo = new THREE.PlaneGeometry(w, h);
+    geometries.push(geo);
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, y, z);
+    mesh.rotation.z = rotZ;
+    mesh.renderOrder = layer === "distant" ? 0 : layer === "midground" ? 1 : 3;
+    parent.add(mesh);
+    formations.push({ mesh, material: mat, layer });
   }
 
-  // ── LAYER 1: Distant Storm Wall & Horizon Clouds (Z = -10.0 to -15.5) ──
-  // Visible frustum at Z = -12 is X in [-8.8, +8.8], Y in [-4.9, +4.9]
-  addCluster(bgGroup, -3.8, -1.8, -11.5, 6.5, 3.2, 2.5, 10, 4.8, 6.8, "distant");
-  addCluster(bgGroup,  3.8, -1.8, -11.8, 6.5, 3.2, 2.5, 10, 4.8, 6.8, "distant");
-  addCluster(bgGroup, -4.2,  2.2, -13.0, 7.0, 2.8, 2.5,  8, 5.2, 7.2, "distant");
-  addCluster(bgGroup,  4.2,  2.2, -13.2, 7.0, 2.8, 2.5,  8, 5.2, 7.2, "distant");
-  addCluster(bgGroup,  0.0, -2.8, -14.5, 9.0, 2.4, 2.0,  8, 5.5, 7.5, "distant");
+  // ── LAYER 1: Distant Golden-Hour Cloud Sea (Z = -10.5 to -16.5) ──
+  // Surrounds the YUVAAN 2027 welcome card (when camera stops at Z = -8.0) with
+  // soft rolling golden-hour clouds exactly like image_2ef521.jpg!
+  addFormation(bgGroup, bgMat1, 11.5, 8.8, -3.8, -1.4, -11.2,  0.03, "distant");
+  addFormation(bgGroup, bgMat1, 11.5, 8.8,  3.8, -1.4, -11.5, -0.03, "distant");
+  addFormation(bgGroup, bgMat0, 12.0, 9.2,  0.0, -1.8, -12.4,  0.00, "distant");
+  addFormation(bgGroup, bgMat0, 11.0, 8.5, -3.5,  1.6, -12.8,  0.05, "distant");
+  addFormation(bgGroup, bgMat0, 11.0, 8.5,  3.5,  1.6, -13.1, -0.05, "distant");
+  addFormation(bgGroup, bgMat1, 13.0, 9.5,  0.0,  0.4, -14.2,  0.02, "distant");
+  addFormation(bgGroup, bgMat0, 11.5, 9.0, -4.8, -0.8, -15.0, -0.04, "distant");
+  addFormation(bgGroup, bgMat0, 11.5, 9.0,  4.8, -0.8, -15.4,  0.04, "distant");
 
-  // ── LAYER 2: Midground Towering Storm Banks (Z = -5.4 to -8.2) ──
-  // Visible frustum at Z = -6.5 is X in [-4.79, +4.79], Y in [-2.69, +2.69]
-  // Placed inside frustum so sculpted cloud edges frame the logo at scroll = 0
-  addCluster(leftGroup,  -3.5,  0.2, -6.0, 1.8, 3.8, 1.4, 12, 2.8, 4.2, "midground");
-  addCluster(leftGroup,  -4.4, -0.3, -7.6, 2.2, 4.6, 1.6, 10, 3.4, 5.0, "midground");
+  // ── LAYER 2: Midground Storm Chasm (Framing the Emblem at Z = -5.8 to -8.2) ──
+  addFormation(leftGroup, midMat0, 7.5, 8.8, -4.3,  0.5, -7.0,  0.08, "midground");
+  addFormation(leftGroup, midMat2, 6.8, 7.8, -3.6, -0.5, -6.0, -0.04, "midground");
+  addFormation(leftGroup, midMat0, 7.2, 8.5, -5.2, -1.0, -7.8,  0.10, "midground");
+  addFormation(leftGroup, midMat1, 6.0, 7.0, -3.9,  1.6, -6.8, -0.06, "midground");
 
-  addCluster(rightGroup,  3.5,  0.2, -6.0, 1.8, 3.8, 1.4, 12, 2.8, 4.2, "midground");
-  addCluster(rightGroup,  4.4, -0.3, -7.6, 2.2, 4.6, 1.6, 10, 3.4, 5.0, "midground");
+  addFormation(rightGroup, midMat0, 7.6, 9.0,  4.3,  0.5, -7.2, -0.08, "midground");
+  addFormation(rightGroup, midMat2, 7.0, 8.0,  3.6, -0.5, -6.2,  0.04, "midground");
+  addFormation(rightGroup, midMat0, 7.4, 8.6,  5.2, -1.0, -8.0, -0.10, "midground");
+  addFormation(rightGroup, midMat1, 6.2, 7.2,  3.9,  1.6, -6.9,  0.06, "midground");
 
-  // Overhanging upper storm canopy & rolling lower cloud deck
-  addCluster(topGroup,    0.0,  2.35, -6.2, 6.8, 1.1, 1.4, 12, 2.6, 3.9, "midground");
-  addCluster(topGroup,    0.0,  3.10, -7.8, 8.2, 1.3, 1.6, 10, 3.2, 4.6, "midground");
+  addFormation(topGroup, midMat1, 9.8, 6.5,  0.0,  3.1, -7.4,  0.02, "midground");
+  addFormation(topGroup, midMat1, 8.5, 5.8, -2.6,  2.7, -6.5, -0.04, "midground");
+  addFormation(topGroup, midMat1, 8.5, 5.8,  2.6,  2.7, -6.7,  0.04, "midground");
 
-  addCluster(bottomGroup, 0.0, -2.25, -5.9, 6.8, 1.1, 1.4, 14, 2.6, 3.9, "midground");
-  addCluster(bottomGroup, 0.0, -3.05, -7.6, 8.4, 1.4, 1.6, 10, 3.2, 4.6, "midground");
+  addFormation(bottomGroup, midMat1, 10.0, 6.8,  0.0, -2.4, -6.6,  0.0, "midground");
+  addFormation(bottomGroup, midMat2,  8.2, 5.5, -2.9, -1.9, -5.8,  0.05, "midground");
+  addFormation(bottomGroup, midMat2,  8.2, 5.5,  2.9, -1.9, -5.9, -0.05, "midground");
 
-  // ── LAYER 3: Foreground Framing Clouds (Z = -1.9 to -3.8 — strictly IN FRONT of logo at Z = -5.0) ──
-  // Visible frustum at Z = -2.8 is X in [-2.06, +2.06], Y in [-1.16, +1.16]
-  addCluster(fgLeftGroup,  -1.65,  0.82, -2.3, 0.85, 0.65, 0.7, 5, 1.45, 2.15, "foreground");
-  addCluster(fgLeftGroup,  -1.75, -0.78, -3.1, 0.95, 0.70, 0.8, 5, 1.60, 2.35, "foreground");
-  addCluster(fgLeftGroup,  -1.25, -0.95, -3.7, 1.10, 0.55, 0.5, 4, 1.50, 2.10, "foreground");
+  // ── LAYER 3: Foreground Framing Masses (Z = -2.2 to -3.8, framing outer corners) ──
+  addFormation(fgLeftGroup, fgMat0, 4.2, 4.5, -3.1,  1.3, -2.7,  0.12, "foreground");
+  addFormation(fgLeftGroup, fgMat1, 4.4, 4.8, -3.2, -1.2, -3.2, -0.10, "foreground");
+  addFormation(fgLeftGroup, fgMat0, 3.8, 4.2, -2.6, -1.5, -3.6,  0.08, "foreground");
 
-  addCluster(fgRightGroup,  1.65,  0.82, -2.4, 0.85, 0.65, 0.7, 5, 1.45, 2.15, "foreground");
-  addCluster(fgRightGroup,  1.75, -0.78, -3.2, 0.95, 0.70, 0.8, 5, 1.60, 2.35, "foreground");
-  addCluster(fgRightGroup,  1.25,  0.95, -3.7, 1.10, 0.55, 0.5, 4, 1.50, 2.10, "foreground");
+  addFormation(fgRightGroup, fgMat0, 4.2, 4.5,  3.1,  1.3, -2.8, -0.12, "foreground");
+  addFormation(fgRightGroup, fgMat1, 4.4, 4.8,  3.2, -1.2, -3.3,  0.10, "foreground");
+  addFormation(fgRightGroup, fgMat0, 3.8, 4.2,  2.6, -1.5, -3.7, -0.08, "foreground");
 
   let mobileMode = false;
 
@@ -964,9 +934,9 @@ function createVolumetricCloudFormations(
         mat.uniforms.uExitProgress.value = exitProgress;
       }
 
-      const midInwardX = mobileMode ? 1.25 : 0.0;
-      const fgInwardX = mobileMode ? 0.58 : 0.0;
-      const midInwardY = mobileMode ? 0.35 : 0.0;
+      const midInwardX = mobileMode ? 1.15 : 0.0;
+      const fgInwardX = mobileMode ? 0.48 : 0.0;
+      const midInwardY = mobileMode ? 0.30 : 0.0;
 
       leftGroup.position.x = midInwardX - exitProgress * 10.0;
       rightGroup.position.x = -midInwardX + exitProgress * 10.0;
@@ -976,13 +946,13 @@ function createVolumetricCloudFormations(
       bottomGroup.position.y = midInwardY - exitProgress * 8.0;
     },
     setTier(_tierName: QualityTierName) {
-      // Keep distant, midground, and foreground cloud layers visible across all tiers
+      void _tierName;
       bgGroup.visible = true;
     },
     setMobileLayout(isMobile: boolean) {
       mobileMode = isMobile;
       for (const mat of [fgMat0, fgMat1]) {
-        mat.uniforms.uCorridorRadius.value = isMobile ? 0.72 : 1.05;
+        mat.uniforms.uCorridorRadius.value = isMobile ? 1.35 : 1.95;
       }
     },
     dispose() {
@@ -992,58 +962,169 @@ function createVolumetricCloudFormations(
       for (const m of materials) {
         m.dispose();
       }
+      for (const g of geometries) {
+        g.dispose();
+      }
     },
   };
 }
 
-// ─── Logo plane ────────────────────────────────────────────────────────
+// ─── Solid 3D Blender (.glb) Emblem Loader + Soft Shining Metal ────────
 
-async function createLogoPlane(
+interface EmblemHandle {
+  group: THREE.Group;
+  aspect: number;
+  isGlb: boolean;
+  update: (elapsedS: number, flash: number, cameraDepth: number) => void;
+  dispose: () => void;
+}
+
+async function createEmblemObject(
   config: OpeningConfig,
   noiseTex: THREE.DataTexture,
-): Promise<THREE.Mesh> {
-  const loader = new THREE.TextureLoader();
-  const logoTex = await new Promise<THREE.Texture>((resolve, reject) => {
-    loader.load(
-      config.logo.src,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        resolve(tex);
+): Promise<EmblemHandle> {
+  const rootGroup = new THREE.Group();
+  rootGroup.position.set(0, config.logo.yOffset, toWorldZ(config.world.depths.logo));
+  rootGroup.renderOrder = 2;
+
+  const glbUrl = config.logo.src.endsWith(".glb") ? config.logo.src : "/yuvaan/emblem.glb";
+  const gltfLoader = new GLTFLoader();
+
+  try {
+    const gltf = await new Promise<{ scene: THREE.Group }>((resolve, reject) => {
+      gltfLoader.load(glbUrl, resolve, undefined, reject);
+    });
+
+    const model = gltf.scene;
+
+    // Auto-orient if exported with Z-up from Blender
+    const initialBox = new THREE.Box3().setFromObject(model);
+    const initialSize = new THREE.Vector3();
+    initialBox.getSize(initialSize);
+    if (initialSize.z > initialSize.y * 2.0) {
+      model.rotation.x = Math.PI * 0.5;
+      model.updateMatrixWorld(true);
+    }
+
+    // Center & normalize 3D mesh to a 1x1 unit frame
+    const box = new THREE.Box3().setFromObject(model);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    const maxW = Math.max(size.x, 0.001);
+    const maxH = Math.max(size.y, 0.001);
+    const aspect = maxW / maxH;
+
+    const pivot = new THREE.Group();
+    model.position.sub(center);
+    pivot.scale.set(1 / maxW, 1 / maxH, 0.28 / Math.max(maxW, maxH));
+    pivot.add(model);
+    rootGroup.add(pivot);
+
+    // Soft, Shining Satin-Polished Gunmetal & Golden-Hour Copper Shader
+    const gunmetalMat = new THREE.ShaderMaterial({
+      vertexShader: emblemMetallicVertexShader,
+      fragmentShader: emblemMetallicFragmentShader,
+      transparent: false,
+      depthWrite: true,
+      depthTest: true,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uNoise: { value: noiseTex },
+        uTime: { value: 0.0 },
+        uFlash: { value: 0.0 },
+        uGoldColor: { value: hexToVec3(config.palette.gold) },
+        uEmberColor: { value: hexToVec3(config.palette.ember) },
       },
-      undefined,
-      reject,
-    );
-  });
+    });
 
-  const img = logoTex.image as { width?: number; height?: number } | null | undefined;
-  const imgAspect =
-    img && img.width && img.height ? img.width / img.height : 3;
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (child.geometry) {
+          child.geometry.computeVertexNormals();
+        }
+        child.material = gunmetalMat;
+        child.renderOrder = 2;
+      }
+    });
 
-  const geo = new THREE.PlaneGeometry(1, 1);
-  const mat = new THREE.ShaderMaterial({
-    vertexShader: logoVertexShader,
-    fragmentShader: logoFragmentShader(3.0),
-    transparent: true,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-    uniforms: {
-      uLogoTex: { value: logoTex },
-      uNoise: { value: noiseTex },
-      uDissolve: { value: 0 },
-      uEdgeWidth: { value: config.logo.dissolve.edgeWidth },
-      uFlash: { value: 0 },
-      uGlowStrength: { value: config.logo.glow.strength },
-      uGoldColor: { value: hexToVec3(config.palette.gold) },
-      uEmberColor: { value: hexToVec3(config.palette.ember) },
-    },
-  });
+    return {
+      group: rootGroup,
+      aspect,
+      isGlb: true,
+      update(elapsedS: number, flash: number, _cameraDepth: number) {
+        gunmetalMat.uniforms.uTime.value = elapsedS;
+        gunmetalMat.uniforms.uFlash.value = flash;
+      },
+      dispose() {
+        gunmetalMat.dispose();
+        model.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.geometry?.dispose();
+          }
+        });
+      },
+    };
+  } catch {
+    const fallbackUrl = config.logo.src.endsWith(".glb") ? "/yuvaan/iiitg-emblem.png" : config.logo.src;
+    const texLoader = new THREE.TextureLoader();
+    const logoTex = await new Promise<THREE.Texture>((resolve, reject) => {
+      texLoader.load(
+        fallbackUrl,
+        (tex) => {
+          tex.colorSpace = THREE.SRGBColorSpace;
+          resolve(tex);
+        },
+        undefined,
+        reject,
+      );
+    });
 
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.position.set(0, config.logo.yOffset, toWorldZ(config.world.depths.logo));
-  mesh.renderOrder = 2;
-  mesh.userData.logoAspect = imgAspect;
-  mesh.userData.logoTex = logoTex;
-  return mesh;
+    const img = logoTex.image as { width?: number; height?: number } | null | undefined;
+    const imgAspect = img && img.width && img.height ? img.width / img.height : 1.0;
+
+    const geo = new THREE.PlaneGeometry(1, 1);
+    const mat = new THREE.ShaderMaterial({
+      vertexShader: logoVertexShader,
+      fragmentShader: logoFragmentShader(3.0),
+      transparent: true,
+      depthWrite: true,
+      depthTest: true,
+      side: THREE.DoubleSide,
+      uniforms: {
+        uLogoTex: { value: logoTex },
+        uNoise: { value: noiseTex },
+        uDissolve: { value: 0 },
+        uEdgeWidth: { value: config.logo.dissolve.edgeWidth },
+        uFlash: { value: 0 },
+        uGlowStrength: { value: config.logo.glow.strength },
+        uGoldColor: { value: hexToVec3(config.palette.gold) },
+        uEmberColor: { value: hexToVec3(config.palette.ember) },
+        uTime: { value: 0 },
+      },
+    });
+
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.renderOrder = 2;
+    rootGroup.add(mesh);
+
+    return {
+      group: rootGroup,
+      aspect: imgAspect,
+      isGlb: false,
+      update(elapsedS: number, flash: number, _cameraDepth: number) {
+        mat.uniforms.uTime.value = elapsedS;
+        mat.uniforms.uFlash.value = flash;
+      },
+      dispose() {
+        geo.dispose();
+        mat.dispose();
+        logoTex.dispose();
+      },
+    };
+  }
 }
 
 // ─── Mist wisps ────────────────────────────────────────────────────────
@@ -1074,7 +1155,7 @@ function createMistWisps(
         uDissolve: { value: 0 },
         uTime: { value: 0 },
         uDrift: { value: config.mist.drift * (0.5 + Math.random()) },
-        uCloudColor: { value: hexToVec3(config.palette.cloud) },
+        uCloudColor: { value: new THREE.Vector3(0.45, 0.30, 0.20) },
       },
     });
     const mesh = new THREE.Mesh(geo, mat);
@@ -1083,13 +1164,13 @@ function createMistWisps(
       (Math.random() - 0.5) * vH * 0.25,
       toWorldZ(depth),
     );
-    mesh.renderOrder = 2;
+    mesh.renderOrder = 1;
     group.add(mesh);
   }
   return group;
 }
 
-// ─── Embers (dissolution particles) ────────────────────────────────────
+// ─── Embers (Ambient Multiverse Sparks) ────────────────────────────────
 
 function createEmbers(
   config: OpeningConfig,
@@ -1129,9 +1210,10 @@ function createEmbers(
     fragmentShader: embersFragmentShader,
     transparent: true,
     depthWrite: false,
+    blending: THREE.AdditiveBlending,
     uniforms: {
       uNoise: { value: noiseTex },
-      uDissolve: { value: 0 },
+      uDissolve: { value: 0.5 },
       uTime: { value: 0 },
       uDrift: { value: config.embers.drift },
       uTurbulence: { value: config.embers.turbulence },
@@ -1145,10 +1227,10 @@ function createEmbers(
   return new THREE.Points(geo, mat);
 }
 
-// ─── Backdrop (horizon glow) ───────────────────────────────────────────
+// ─── Backdrop (Soft Golden-Hour Horizon — Never Blows Out to White) ───
 
-function createBackdrop(config: OpeningConfig): THREE.Mesh {
-  const depth = config.world.depths.welcomeBackdrop;
+function createBackdrop(config: OpeningConfig, noiseTex: THREE.DataTexture): THREE.Mesh {
+  const depth = 17.5; // Placed behind all distant clouds so it never washes out the welcome card
   const vH = visibleHeight(depth + 2, 70);
   const vW = vH * 2.2;
   const geo = new THREE.PlaneGeometry(vW, vH);
@@ -1157,8 +1239,10 @@ function createBackdrop(config: OpeningConfig): THREE.Mesh {
     fragmentShader: backdropFragmentShader,
     transparent: true,
     depthWrite: false,
+    blending: THREE.NormalBlending,
     side: THREE.DoubleSide,
     uniforms: {
+      uNoise: { value: noiseTex },
       uGoldColor: { value: hexToVec3(config.palette.gold) },
       uEmberColor: { value: hexToVec3(config.palette.ember) },
       uIntensity: { value: config.backdrop.intensity },
@@ -1166,6 +1250,7 @@ function createBackdrop(config: OpeningConfig): THREE.Mesh {
       uCenterY: { value: config.backdrop.centerY },
       uRadius: { value: config.backdrop.radius },
       uExitProgress: { value: 0.0 },
+      uTime: { value: 0.0 },
     },
   });
 
@@ -1188,6 +1273,8 @@ function createSkyDome(config: OpeningConfig): THREE.Mesh {
       uSkyTop: { value: hexToVec3(config.palette.skyTop) },
       uSkyMid: { value: hexToVec3(config.palette.skyMid) },
       uSkyLow: { value: hexToVec3(config.palette.skyLow) },
+      uGoldColor: { value: hexToVec3(config.palette.gold) },
+      uEmberColor: { value: hexToVec3(config.palette.ember) },
       uFlash: { value: 0 },
       uFlashColor: { value: hexToVec3(config.palette.lightning) },
       uLightningPos: { value: new THREE.Vector3(0, 0, -6) },
@@ -1220,7 +1307,7 @@ export async function createOpeningScene(
   try {
     renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: false,
+      antialias: true,
       alpha: false,
       powerPreference: "high-performance",
       stencil: false,
@@ -1233,13 +1320,13 @@ export async function createOpeningScene(
   }
   renderer.setPixelRatio(Math.min(tier.dpr, window.devicePixelRatio));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setClearColor(new THREE.Color(config.palette.skyLow), 1);
+  renderer.setClearColor(new THREE.Color(config.palette.skyTop), 1);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
     config.camera.vfov.landscape,
     canvas.clientWidth / Math.max(canvas.clientHeight, 1),
-    config.camera.near,
+    0.05,
     config.camera.far,
   );
 
@@ -1247,6 +1334,9 @@ export async function createOpeningScene(
 
   const skyDome = createSkyDome(config);
   scene.add(skyDome);
+
+  const backdrop = createBackdrop(config, noiseTex);
+  scene.add(backdrop);
 
   const cloudFormations = createVolumetricCloudFormations(config, noiseTex, tier);
   scene.add(cloudFormations.group);
@@ -1259,14 +1349,11 @@ export async function createOpeningScene(
   const mist = createMistWisps(config, noiseTex, tier);
   scene.add(mist);
 
-  const backdrop = createBackdrop(config);
-  scene.add(backdrop);
-
   const embers = createEmbers(config, noiseTex, tier);
   scene.add(embers);
 
-  const logoMesh = await createLogoPlane(config, noiseTex);
-  scene.add(logoMesh);
+  const emblem = await createEmblemObject(config, noiseTex);
+  scene.add(emblem.group);
 
   let progress = 0;
   let disposed = false;
@@ -1358,7 +1445,6 @@ export async function createOpeningScene(
       handleResize();
     }
 
-    // Damped camera sway under reduced motion
     const activeSway = reducedMotion
       ? {
           position: config.camera.sway.position * 0.2,
@@ -1411,36 +1497,41 @@ export async function createOpeningScene(
       endPos: lightningInfo.endPos,
     };
 
-    // ── Logo dissolve ──
     const cameraDepth = depthAt(progress, config.camera.keyframes);
-    let dissolveValue = 0;
-    if (cameraDepth <= 3.5) {
-      dissolveValue = 0;
-    } else if (cameraDepth >= 4.9) {
-      dissolveValue = 1;
-    } else {
-      dissolveValue = smoothstep(3.5, 4.9, cameraDepth);
-    }
+    const portalReveal = smoothstep(2.0, 6.8, cameraDepth);
 
-    // ── Logo sizing ──
-    const logoAspect = (logoMesh.userData.logoAspect as number) || 3;
+    // ── Emblem Sizing & Subtle 3D Floating Motion ──
     const dims = fitLogo(
       aspect,
       pose.vfov,
-      logoAspect,
+      emblem.aspect,
       config.camera.keyframes[0][1],
       config.world.depths.logo,
       config.logo.widthFraction,
       config.logo.maxHeightFraction,
       config.logo.fitAspectRange,
     );
-    logoMesh.scale.set(dims.width, dims.height, 1);
+    emblem.group.scale.set(dims.width, dims.height, (dims.width + dims.height) * 0.5);
 
-    // ── Backdrop fade ──
+    if (!reducedMotion) {
+      const floatY = Math.sin(elapsedS * 1.1) * 0.045 + Math.sin(elapsedS * 0.53) * 0.02;
+      const tiltZ = Math.sin(elapsedS * 0.75) * 0.018;
+      const tiltX = Math.cos(elapsedS * 0.88) * 0.015;
+      const tiltY = Math.sin(elapsedS * 0.45) * 0.035;
+      emblem.group.position.y = config.logo.yOffset + floatY;
+      emblem.group.rotation.set(tiltX, tiltY, tiltZ);
+    } else {
+      emblem.group.position.y = config.logo.yOffset;
+      emblem.group.rotation.set(0, 0, 0);
+    }
+
+    emblem.update(elapsedS, lightningInfo.flash, cameraDepth);
+
+    // ── Backdrop (Golden-Hour Horizon) ──
     const [bdFadeStart, bdFadeEnd] = config.timing.backdropFadeDepth;
     const backdropFade = smoothstep(bdFadeStart, bdFadeEnd, cameraDepth);
 
-    // ── Update uniforms ──
+    // ── Update Uniforms ──
     const skyMat = skyDome.material as THREE.ShaderMaterial;
     skyMat.uniforms.uFlash.value = lightningInfo.flash;
     skyMat.uniforms.uLightningIntensity.value = lightningInfo.intensity;
@@ -1448,22 +1539,19 @@ export async function createOpeningScene(
 
     cloudFormations.update(nowMs, elapsedS, lightningInfo, exitProgress, reducedMotion);
 
-    const logoMat = logoMesh.material as THREE.ShaderMaterial;
-    logoMat.uniforms.uDissolve.value = dissolveValue;
-    logoMat.uniforms.uFlash.value = lightningInfo.flash;
-
     const embersMat = embers.material as THREE.ShaderMaterial;
-    embersMat.uniforms.uDissolve.value = dissolveValue;
-    embersMat.uniforms.uTime.value = elapsedS;
+    embersMat.uniforms.uDissolve.value = 0.45 + portalReveal * 0.55;
+    embersMat.uniforms.uTime.value = reducedMotion ? elapsedS * 0.25 : elapsedS;
 
     for (const child of mist.children) {
       const mat = (child as THREE.Mesh).material as THREE.ShaderMaterial;
       mat.uniforms.uTime.value = reducedMotion ? elapsedS * 0.25 : elapsedS;
-      mat.uniforms.uDissolve.value = dissolveValue;
+      mat.uniforms.uDissolve.value = portalReveal;
     }
 
     const bdMat = backdrop.material as THREE.ShaderMaterial;
     bdMat.uniforms.uFade.value = backdropFade;
+    bdMat.uniforms.uTime.value = reducedMotion ? elapsedS * 0.25 : elapsedS;
 
     renderer.render(scene, camera);
 
@@ -1528,7 +1616,7 @@ export async function createOpeningScene(
           total: cloudFormations.formations.length,
         },
         cameraZ: camera.position.z,
-        logoZ: logoMesh.position.z,
+        logoZ: emblem.group.position.z,
         foregroundZRange: [minFgZ, maxFgZ],
         lightning: {
           visible: lightningSystem.boltMesh.visible,
@@ -1555,6 +1643,7 @@ export async function createOpeningScene(
 
       lightningSystem.dispose();
       cloudFormations.dispose();
+      emblem.dispose();
 
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {

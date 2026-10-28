@@ -149,15 +149,11 @@ export interface OpeningConfig {
     ink: string;
     lightning: string;
   };
-quality: {
-    tiers: {
-      high: { dpr: 2, slabs: 8, puffs: 90, mist: 10, embers: 400, logoRasterMax: 4096 },
-      medium: { dpr: 1.5, slabs: 7, puffs: 68, mist: 7, embers: 220, logoRasterMax: 2048 },
-      low: { dpr: 1.25, slabs: 6, puffs: 52, mist: 5, embers: 120, logoRasterMax: 2048 },
-    },
-    initial: { mediumBelowWidth: 768, lowAtOrBelowCores: 4, lowAtOrBelowMemoryGb: 4 },
-    stepDown: { afterMs: 1500, frameMsAbove: 24, sustainMs: 1000, maxSteps: 2 },
-  },
+  quality: {
+    tiers: Record<QualityTierName, QualityTier>;
+    initial: { mediumBelowWidth: number; lowAtOrBelowCores: number; lowAtOrBelowMemoryGb: number };
+    stepDown: { afterMs: number; frameMsAbove: number; sustainMs: number; maxSteps: number };
+  };
 }
 
 // ─── Configuration Object ────────────────────────────────────────────
@@ -216,16 +212,16 @@ export const openingConfig: OpeningConfig = {
     loadTimeoutMs: 10000,
   },
   logo: {
-    src: "/yuvaan/logo-placeholder.svg",
+    src: "/yuvaan/iiitg-emblem.png",
     srcPortrait: undefined,
     portraitBelowAspect: 0.8,
-    alt: "Yuvaan 2027",
+    alt: "IIIT Guwahati Emblem",
     yOffset: 0,
-    widthFraction: { desktop: 0.82, mobile: 0.94 },
-    maxHeightFraction: { desktop: 0.58, mobile: 0.45 },
+    widthFraction: { desktop: 0.50, mobile: 0.72 },
+    maxHeightFraction: { desktop: 0.52, mobile: 0.44 },
     fitAspectRange: [0.6, 1.2],
     dissolve: { startDistance: 1.5, endDistance: 0.1, edgeWidth: 0.1 },
-    glow: { strength: 1.2 },
+    glow: { strength: 0.0 },
   },
   clouds: {
     slabDepths: [1.2, 2.8, 3.9, 6.2, 8.4, 10.8, 13.5, 17],

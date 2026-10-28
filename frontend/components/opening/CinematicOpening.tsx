@@ -426,7 +426,7 @@ export function CinematicOpening() {
             <img
               src={config.logo.src}
               alt={config.logo.alt}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[85%] sm:max-w-[65%] opacity-95 drop-shadow-[0_10px_40px_rgba(0,0,0,0.9)]"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[54vmin] max-w-[420px] max-h-[54vh] object-contain opacity-95 drop-shadow-[0_10px_40px_rgba(0,0,0,0.9)]"
             />
           </div>
 
