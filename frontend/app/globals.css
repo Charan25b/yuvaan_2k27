@@ -564,7 +564,7 @@ small,
   z-index: 2;
   left: -1%;
   width: 102%;
-  height: 18px;
+  height: 27px;
   background: #fff;
   pointer-events: none;
 }
@@ -664,7 +664,7 @@ small,
   z-index: 2;
   left: -1%;
   width: 102%;
-  height: 16px;
+  height: 24px;
   background: #fff;
 }
 
@@ -969,7 +969,7 @@ a[class*="bg-[#121110]"]:hover {
 }
 
 /* Home section system: keep the hero and footer outside these rules. */
-.comic-home .home-section-heading { flex: 1 1 auto; max-width: none; }
+.comic-home .home-section-heading { flex: 1 1 75%; width: 100%; max-width: none; min-width: 0; }
 .comic-home .home-section-rule { border-color: rgba(255,255,255,.48); }
 .comic-home [data-home-section="events"] .home-section-rule,
 .comic-home [data-home-section="quest"] .home-section-rule,
@@ -996,11 +996,12 @@ a[class*="bg-[#121110]"]:hover {
 .comic-home [data-home-section] .home-section-heading > h2,
 .comic-home [data-home-section] .home-section-title {
   font-size: clamp(42px, 5.5vw, 76px);
-  line-height: 1.02;
-  letter-spacing: .01em;
-  font-weight: 800;
+  line-height: .88;
+  letter-spacing: -.035em;
+  font-family: var(--font-anton), var(--font-display);
+  font-weight: 900;
   text-transform: uppercase;
-  -webkit-text-stroke: 1px #121110;
+  -webkit-text-stroke: 2px #121110;
   paint-order: stroke fill;
 }
 .comic-home [data-home-section="intro"] .home-section-title,
@@ -1008,6 +1009,10 @@ a[class*="bg-[#121110]"]:hover {
 .comic-home [data-home-section="sponsors"] .home-section-heading > h2 {
   color: #f04b2b;
   -webkit-text-stroke-color: #fff;
+}
+.comic-home [data-home-section="intro"] .home-section-title {
+  width: 100%;
+  max-width: none;
 }
 .comic-home [data-home-section="events"] .home-section-heading > h2,
 .comic-home [data-home-section="quest"] .home-section-heading > h2,
@@ -1048,10 +1053,12 @@ a[class*="bg-[#121110]"]:hover {
   box-shadow: 7px 7px 0 #121110;
 }
 .comic-home [data-home-section="intro"] .about-number-box {
-  transition: transform .18s ease;
+  transition: none;
 }
-.comic-home [data-home-section="intro"] .about-number-box:hover { transform: rotate(-5deg) scale(1.06); }
-.comic-home [data-home-section="intro"] .comic-card:nth-child(even) .about-number-box:hover { transform: rotate(5deg) scale(1.06); }
+.comic-home [data-home-section="intro"] .about-number-box:hover { transform: none; }
+.comic-home [data-home-section="intro"] .grid > div:hover { transform: none !important; }
+.comic-home [data-home-section="intro"] .comic-card:nth-child(odd):hover { transform: rotate(-1.5deg) !important; }
+.comic-home [data-home-section="intro"] .comic-card:nth-child(even):hover { transform: rotate(1.5deg) !important; }
 .comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] p { color: #121110; }
 .comic-home [data-home-section="intro"] .comic-card h3,
 .comic-home [data-home-section="intro"] .comic-card p,
@@ -1104,6 +1111,34 @@ a[class*="bg-[#121110]"]:hover {
   .comic-home [data-home-section] .comic-card,
   .comic-home [data-home-section] .quest-feature-card,
   .comic-home [data-home-section] .about-number-box { transition: none; }
+}
+
+/* Repeating jagged white dividers, matching the hero-to-About separator. */
+.comic-home [data-home-section]:not([data-home-section="intro"]):not([data-home-section="quest"])::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  left: -1%;
+  bottom: -1px;
+  width: 102%;
+  height: 27px;
+  background: #fff;
+  clip-path: polygon(0 25%,8% 54%,15% 30%,22% 58%,30% 31%,38% 62%,46% 34%,54% 60%,62% 30%,70% 58%,78% 32%,86% 60%,94% 34%,100% 56%,100% 100%,0 100%);
+  pointer-events: none;
+}
+.comic-home [data-home-section]::before,
+.comic-home [data-home-section]::after { filter: drop-shadow(0 3px 0 #121110); }
+.comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] {
+  background: #fff;
+  border-color: #121110;
+  box-shadow: 5px 5px 0 #f04b2b;
+}
+
+@media (min-width: 900px) {
+  .comic-home .home-section-heading { flex-basis: 75%; }
+}
+@media (min-width: 768px) {
+  .comic-home [data-home-section="intro"] .home-section-title { max-width: min(80vw, 1200px); }
 }
 
 
