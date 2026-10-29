@@ -99,19 +99,11 @@ export function SchedulePreviewSection() {
                   <div className="grid grid-cols-2 gap-2.5 text-xs">
                     {/* Box 1: Scheduled Slot Label -> Black text, non-interactive */}
                     <div className="comic-small-box tilt-box-1 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
-                      Scheduled Slot
-                    </div>
-                    {/* Box 2: Time Value -> Black text, non-interactive */}
-                    <div className="comic-small-box tilt-box-2 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[11px] text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
-                      {d.item?.time}
+                      Scheduled Slot<br/>{d.item?.time}
                     </div>
                     {/* Box 3: Stage Location Label -> Black text, non-interactive */}
                     <div className="comic-small-box tilt-box-3 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
-                      Stage Location
-                    </div>
-                    {/* Box 4: Venue Value -> Black text, non-interactive */}
-                    <div className="comic-small-box tilt-box-4 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[11px] text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center truncate select-none cursor-default pointer-events-none">
-                      {d.item?.venue}
+                      Stage Location<br/>{d.item?.venue}
                     </div>
                   </div>
                 </div>

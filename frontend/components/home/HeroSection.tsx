@@ -71,7 +71,7 @@ export function HeroSection() {
         <div className="hero-copy">
           <div className="hero-kicker"><span /> IIIT GUWAHATI · FEBRUARY 19–21, 2027 <span /></div>
           <p className="hero-issue">THE NEXT BIG THING STARTS HERE</p>
-          <h1 id="hero-title" className="hero-title-comic font-anton font-black mt-3 sm:mt-4">
+          <h1 id="hero-title" className="hero-title-comic">
             <span className="hero-title-row hero-title-row--top">
               <span className="hero-word">ENTER</span>
               <span className="hero-word">THE</span>

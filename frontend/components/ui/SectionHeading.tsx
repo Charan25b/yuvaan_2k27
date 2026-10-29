@@ -24,12 +24,12 @@ export function SectionHeading({
 
   return (
     <div
-      className={`flex flex-col gap-2.5 w-full ${
-        isCenter ? "items-center text-center mx-auto" : ""
+      className={`flex flex-col gap-2 ${
+        isCenter ? "items-center text-center mx-auto max-w-3xl" : "max-w-2xl"
       } ${className}`}
     >
       {badge && (
-        <div className="flex items-center gap-2 mb-1.5">
+        <div className="flex items-center gap-2">
           <Badge variant={badgeVariant} comicStamp>
             ✦ {badge}
           </Badge>
@@ -40,11 +40,11 @@ export function SectionHeading({
           )}
         </div>
       )}
-      <h2 className={`comic-heading font-anton font-black tracking-tight uppercase max-w-[820px] mt-2.5 sm:mt-3 ${isCenter ? "mx-auto" : ""}`}>
+      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[var(--color-text-dark)] leading-[1.15]">
         {title}
       </h2>
       {description && (
-        <p className={`text-sm sm:text-base font-medium leading-relaxed mt-1 max-w-2xl ${isCenter ? "mx-auto" : ""}`}>
+        <p className="text-sm sm:text-base text-[var(--color-text-muted)] font-medium leading-relaxed mt-1">
           {description}
         </p>
       )}

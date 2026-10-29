@@ -11,14 +11,14 @@ export function AboutSection() {
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-50" />
 
       <Container className="relative z-10">
-        {/* Heading goes halfway right to the screen, bold and prominent */}
-        <div className="mb-8 sm:mb-12 flex flex-col gap-2.5">
-          <div className="flex items-center gap-2 mb-1.5">
+        {/* Section Heading */}
+        <div className="mb-8 sm:mb-12 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
             <Badge variant="section-dark" comicStamp>
               ✦ About Yuvaan
             </Badge>
           </div>
-          <h2 className="comic-heading font-anton font-black tracking-tight uppercase text-[var(--poster-orange)] max-w-full lg:max-w-[55vw] mt-2.5 sm:mt-3">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight uppercase text-[var(--poster-orange)] leading-[1.15] max-w-2xl">
             A Celebration of Student Ingenuity &amp; Artistry
           </h2>
         </div>
