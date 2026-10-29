@@ -49,12 +49,13 @@ export function SchedulePreviewSection() {
     <section data-home-section="schedule" className="py-14 sm:py-20 relative">
       <Container>
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-black/25 pb-6">
+          <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 pb-6">
             <SectionHeading
               badge="Festival Timeline"
               badgeVariant="section-dark"
               title="Three Days of Uninterrupted Action"
               description="A quick glance at key milestones across the 3-day schedule. View the full timeline for comprehensive venue alignments and hourly programs."
+              className="home-section-heading"
             />
             <Button href="/schedule" variant="gold" size="md" className="shrink-0">
               Full Schedule Itinerary &rarr;
@@ -98,11 +99,11 @@ export function SchedulePreviewSection() {
                 <div className="p-6 pt-0 mt-auto">
                   <div className="grid grid-cols-2 gap-2.5 text-xs">
                     {/* Box 1: Scheduled Slot Label -> Black text, non-interactive */}
-                    <div className="comic-small-box tilt-box-1 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
+                    <div className="schedule-meta-box p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
                       Scheduled Slot<br/>{d.item?.time}
                     </div>
                     {/* Box 3: Stage Location Label -> Black text, non-interactive */}
-                    <div className="comic-small-box tilt-box-3 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
+                    <div className="schedule-meta-box p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
                       Stage Location<br/>{d.item?.venue}
                     </div>
                   </div>

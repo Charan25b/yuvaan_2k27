@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export function GameSiteSection() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -11,62 +12,31 @@ export function GameSiteSection() {
   return (
     <section data-home-section="quest" className="py-14 sm:py-20 relative">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Main Left White Card */}
-          <div className="lg:col-span-7 bg-white rounded-2xl border-2 border-[var(--color-border-dark)] comic-shadow-lg p-8 sm:p-12 lg:p-14 flex flex-col justify-between gap-8">
-            <div className="flex flex-col gap-6 text-left">
-              {/* Taglines: strictly static */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                <Badge variant="blush" className="text-xs">
-                  SEPARATE INTERACTIVE APP
-                </Badge>
-                <Badge variant="gold" className="text-xs">
-                  FACTION POINTS LEDGER
-                </Badge>
-              </div>
-
-              {/* Headline with clean comfortable margins and clear hierarchy */}
-              <div className="space-y-2">
-                <h2 className="comic-heading font-anton font-normal text-4xl sm:text-6xl lg:text-7xl text-[#121110] tracking-tight uppercase leading-[0.78]">
-                  The Campus <br />
-                  <span className="text-[var(--color-ember)]">
-                    Quest Arena
-                  </span>
-                </h2>
-                <div className="w-24 h-2 bg-[var(--color-yellow)] rounded-full border border-[var(--color-border-dark)]" />
-              </div>
-
-              <p className="text-sm sm:text-base text-[var(--color-text-dark)] font-medium leading-relaxed max-w-lg">
-                A dedicated interactive web experience where festival attendees scan
-                physical QR checkpoints hidden across landmarks at IIIT Guwahati, compete
-                in lightning 1v1 browser mini-games, and bank points for their assigned faction.
-              </p>
-            </div>
-
-            {/* Bottom Actions: Red dot turns green on hover */}
-            <div className="pt-4 border-t-2 border-[var(--color-border-subtle)] flex flex-col sm:flex-row sm:items-center gap-4">
-              <button
-                type="button"
-                onClick={() => setModalOpen(true)}
-                className="group inline-flex items-center gap-3 px-6 py-3.5 text-sm font-black uppercase tracking-wider rounded-xl bg-[#F2AE30] hover:bg-[#f04b2b] text-[#121110] hover:text-white border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:shadow-[6px_6px_0px_#121110] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer select-none"
-              >
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 group-hover:bg-green-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600 group-hover:bg-[#22c55e] transition-colors shadow-[0_0_8px_#ef4444] group-hover:shadow-[0_0_8px_#22c55e]" />
-                </span>
-                <span>✦ Game Site Entry &rarr;</span>
-              </button>
-              <div className="flex flex-col text-xs text-[var(--color-text-muted)]">
-                <span className="font-black text-[var(--color-text-dark)]">Separate Application Architecture</span>
-                <span>Activates during festival with student credentials</span>
-              </div>
-            </div>
+        <div className="flex flex-col gap-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-black/25 pb-6">
+            <SectionHeading
+              badge="Quest Arena · Interactive Game Site"
+              badgeVariant="highlight"
+              title="The Campus Quest Arena"
+              description="Scan campus checkpoints, challenge other attendees in quick mini-games, and earn points for your faction."
+              className="home-section-heading"
+            />
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="group inline-flex shrink-0 items-center gap-2 px-5 py-3 text-sm font-black uppercase tracking-wide rounded-lg bg-[#F2AE30] text-[#121110] border-2 border-[#121110] shadow-[4px_4px_0px_#121110] transition-all cursor-pointer select-none"
+            >
+              <span className="relative flex h-3 w-3" aria-hidden="true">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600" />
+              </span>
+              <span>✦ Game Site Entry &rarr;</span>
+            </button>
           </div>
 
-          {/* 4 Feature Mini-Cards: All small white boxes have default tilt. No hover tilt animations or color jumps. */}
-          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Card 01 */}
-            <div className="p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
+            <div className="quest-feature-card p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="tilt-box-1 h-9 w-9 rounded-lg bg-white border-2 border-[#121110] flex items-center justify-center font-black text-sm text-[var(--color-ember)] shadow-[2.5px_2.5px_0px_#121110] select-none">
@@ -87,7 +57,7 @@ export function GameSiteSection() {
             </div>
 
             {/* Card 02 */}
-            <div className="p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
+            <div className="quest-feature-card p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="tilt-box-3 h-9 w-9 rounded-lg bg-white border-2 border-[#121110] flex items-center justify-center font-black text-sm text-[var(--color-orange)] shadow-[2.5px_2.5px_0px_#121110] select-none">
@@ -108,7 +78,7 @@ export function GameSiteSection() {
             </div>
 
             {/* Card 03 */}
-            <div className="p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
+            <div className="quest-feature-card p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="tilt-box-5 h-9 w-9 rounded-lg bg-white border-2 border-[#121110] flex items-center justify-center font-black text-sm text-[var(--color-cyan)] shadow-[2.5px_2.5px_0px_#121110] select-none">
@@ -129,7 +99,7 @@ export function GameSiteSection() {
             </div>
 
             {/* Card 04 */}
-            <div className="p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
+            <div className="quest-feature-card p-5 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="tilt-box-2 h-9 w-9 rounded-lg bg-white border-2 border-[#121110] flex items-center justify-center font-black text-sm text-[var(--color-violet)] shadow-[2.5px_2.5px_0px_#121110] select-none">

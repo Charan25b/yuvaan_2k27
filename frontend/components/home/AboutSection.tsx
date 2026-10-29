@@ -18,7 +18,7 @@ export function AboutSection() {
               ✦ About Yuvaan
             </Badge>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight uppercase text-[var(--poster-orange)] leading-[1.15] max-w-2xl">
+          <h2 className="home-section-title text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight uppercase text-[var(--poster-orange)] leading-[1.15] w-full max-w-none">
             A Celebration of Student Ingenuity &amp; Artistry
           </h2>
         </div>
@@ -69,7 +69,7 @@ export function AboutSection() {
             >
               <CardHeader>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="tilt-box-1 h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-ember)] text-base shadow-[3px_3px_0px_#121110] select-none">
+                  <div className="about-number-box h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-ember)] text-base shadow-[3px_3px_0px_#121110] select-none">
                     01
                   </div>
                   <Badge variant="blush" className="text-[10px]">
@@ -95,7 +95,7 @@ export function AboutSection() {
             >
               <CardHeader>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="tilt-box-2 h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-cyan)] text-base shadow-[3px_3px_0px_#121110] select-none">
+                  <div className="about-number-box h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-cyan)] text-base shadow-[3px_3px_0px_#121110] select-none">
                     02
                   </div>
                   <Badge variant="cyan" className="text-[10px]">
@@ -121,7 +121,7 @@ export function AboutSection() {
             >
               <CardHeader>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="tilt-box-3 h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-violet)] text-base shadow-[3px_3px_0px_#121110] select-none">
+                  <div className="about-number-box h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-violet)] text-base shadow-[3px_3px_0px_#121110] select-none">
                     03
                   </div>
                   <Badge variant="violet" className="text-[10px]">
@@ -147,7 +147,7 @@ export function AboutSection() {
             >
               <CardHeader>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="tilt-box-4 h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-gold)] text-base shadow-[3px_3px_0px_#121110] select-none">
+                  <div className="about-number-box h-10 w-10 rounded-xl bg-white border-2 border-[#121110] flex items-center justify-center font-black text-[var(--color-gold)] text-base shadow-[3px_3px_0px_#121110] select-none">
                     04
                   </div>
                   <Badge variant="gold" className="text-[10px]">

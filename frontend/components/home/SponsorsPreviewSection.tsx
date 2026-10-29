@@ -13,12 +13,13 @@ export function SponsorsPreviewSection() {
     <section data-home-section="sponsors" className="py-14 sm:py-20 relative overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
+          <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
               badge="Festival Partners"
-              badgeVariant="section-dark"
+              badgeVariant="section-light"
               title="Backed By Visionary Industry Partners"
               description="Yuvaan 2027 is supported by forward-thinking organizations empowering collegiate engineering, design, arts, and student innovation."
+              className="home-section-heading"
             />
             <Button href="/sponsors" variant="gold" size="md" className="shrink-0">
               View All Partners &rarr;
@@ -45,7 +46,7 @@ export function SponsorsPreviewSection() {
                       {sp.tier}
                     </Badge>
 
-                    {/* Logo Box: has default tilt and tilt animation on hover. The logo text inside has NO independent animation */}
+                    {/* Keep partner logo frames straight for legibility. */}
                     <div className={`comic-small-box ${boxTilts[idx % boxTilts.length]} h-24 w-full rounded-xl bg-white border-2 border-[#121110] shadow-[3.5px_3.5px_0px_#121110] flex flex-col items-center justify-center p-3 mb-4 select-none`}>
                       <span className="text-[9px] font-black text-[var(--color-text-muted)] uppercase tracking-widest pointer-events-none transition-none transform-none">
                         Partner Logo

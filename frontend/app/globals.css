@@ -968,6 +968,145 @@ a[class*="bg-[#121110]"]:hover {
   box-shadow: 6px 6px 0px #121110 !important;
 }
 
+/* Home section system: keep the hero and footer outside these rules. */
+.comic-home .home-section-heading { flex: 1 1 auto; max-width: none; }
+.comic-home .home-section-rule { border-color: rgba(255,255,255,.48); }
+.comic-home [data-home-section="events"] .home-section-rule,
+.comic-home [data-home-section="quest"] .home-section-rule,
+.comic-home [data-home-section="factions"] .home-section-rule,
+.comic-home [data-home-section="gallery"] .home-section-rule { border-color: rgba(18,17,16,.45); }
+.comic-home [data-home-section="intro"] { color: #fff; background-color: #111110; }
+.comic-home [data-home-section="events"],
+.comic-home [data-home-section="quest"],
+.comic-home [data-home-section="gallery"] {
+  color: #fff;
+  background-color: #f04b2b;
+  background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+.comic-home [data-home-section="schedule"],
+.comic-home [data-home-section="sponsors"] {
+  color: #fff;
+  background-color: #111110;
+  background-image: radial-gradient(rgba(255,255,255,.11) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.comic-home [data-home-section="factions"] { color: #121110; background-color: #fff; }
+
+.comic-home [data-home-section] .home-section-heading > h2,
+.comic-home [data-home-section] .home-section-title {
+  font-size: clamp(42px, 5.5vw, 76px);
+  line-height: 1.02;
+  letter-spacing: .01em;
+  font-weight: 800;
+  text-transform: uppercase;
+  -webkit-text-stroke: 1px #121110;
+  paint-order: stroke fill;
+}
+.comic-home [data-home-section="intro"] .home-section-title,
+.comic-home [data-home-section="schedule"] .home-section-heading > h2,
+.comic-home [data-home-section="sponsors"] .home-section-heading > h2 {
+  color: #f04b2b;
+  -webkit-text-stroke-color: #fff;
+}
+.comic-home [data-home-section="events"] .home-section-heading > h2,
+.comic-home [data-home-section="quest"] .home-section-heading > h2,
+.comic-home [data-home-section="gallery"] .home-section-heading > h2 { color: #f2ae30; }
+.comic-home [data-home-section="factions"] .home-section-heading > h2 {
+  color: #121110;
+  -webkit-text-stroke-color: #121110;
+}
+.comic-home [data-home-section="intro"] .home-section-heading > p,
+.comic-home [data-home-section="events"] .home-section-heading > p,
+.comic-home [data-home-section="schedule"] .home-section-heading > p,
+.comic-home [data-home-section="quest"] .home-section-heading > p,
+.comic-home [data-home-section="sponsors"] .home-section-heading > p,
+.comic-home [data-home-section="gallery"] .home-section-heading > p { color: #fff; }
+.comic-home [data-home-section="factions"] .home-section-heading > p { color: #4b4540; }
+
+/* Standard taglines and card edges across the home sections. */
+.comic-home [data-home-section] .comic-tagline {
+  border: 2px solid #121110;
+  border-radius: 5px;
+  padding: 4px 10px;
+  box-shadow: 2px 2px 0 #121110 !important;
+  letter-spacing: .08em;
+}
+.comic-home [data-home-section="quest"] .home-section-heading .comic-tagline,
+.comic-home [data-home-section="sponsors"] .home-section-heading .comic-tagline { color: #121110 !important; }
+.comic-home [data-home-section] .comic-card,
+.comic-home [data-home-section] .quest-feature-card {
+  border: 2px solid #121110;
+  border-radius: 4px;
+  box-shadow: 5px 5px 0 #121110;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.comic-home [data-home-section] .comic-card { background-color: #fff; }
+.comic-home [data-home-section] .comic-card:hover,
+.comic-home [data-home-section] .quest-feature-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 7px 7px 0 #121110;
+}
+.comic-home [data-home-section="intro"] .about-number-box {
+  transition: transform .18s ease;
+}
+.comic-home [data-home-section="intro"] .about-number-box:hover { transform: rotate(-5deg) scale(1.06); }
+.comic-home [data-home-section="intro"] .comic-card:nth-child(even) .about-number-box:hover { transform: rotate(5deg) scale(1.06); }
+.comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] p { color: #121110; }
+.comic-home [data-home-section="intro"] .comic-card h3,
+.comic-home [data-home-section="intro"] .comic-card p,
+.comic-home [data-home-section="intro"] .comic-card span { color: #121110; }
+
+/* Competition cards keep their staggered poster feel; other cards stay square. */
+.comic-home [data-home-section="events"] .comic-card:nth-child(2) { transform: rotate(-1deg); }
+.comic-home [data-home-section="events"] .comic-card:nth-child(3) { transform: rotate(1deg); }
+.comic-home [data-home-section="events"] .comic-card:nth-child(2):hover { transform: translateY(-4px) rotate(-1deg) !important; }
+.comic-home [data-home-section="events"] .comic-card:nth-child(3):hover { transform: translateY(-4px) rotate(1deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 1) { transform: rotate(-1.2deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 2) { transform: rotate(.8deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 3) { transform: rotate(-.6deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n) { transform: rotate(1.2deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 1):hover { transform: translateY(-4px) rotate(-1.2deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 2):hover { transform: translateY(-4px) rotate(.8deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 3):hover { transform: translateY(-4px) rotate(-.6deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n):hover { transform: translateY(-4px) rotate(1.2deg) !important; }
+.comic-home [data-home-section="sponsors"] .comic-small-box { transform: none !important; }
+.comic-home [data-home-section="schedule"] .schedule-meta-box { transform: none !important; }
+
+/* All home call-to-action buttons use the same black lower-right shadow and palette swaps. */
+.comic-home [data-home-section] a[class*="shadow"],
+.comic-home [data-home-section] button[class*="shadow"] { box-shadow: 4px 4px 0 #121110 !important; }
+.comic-home [data-home-section] :is(a, button)[class*="bg-[#f04b2b]"]:hover,
+.comic-home [data-home-section] :is(a, button)[class*="bg-[var(--color-ember)]"]:hover,
+.comic-home [data-home-section] :is(a, button)[class*="bg-[var(--color-orange)]"]:hover {
+  background-color: #f2ae30 !important; color: #121110 !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+.comic-home [data-home-section] :is(a, button)[class*="bg-[#F2AE30]"]:hover,
+.comic-home [data-home-section] :is(a, button)[class*="bg-[var(--color-yellow)]"]:hover {
+  background-color: #f04b2b !important; color: #fff !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+.comic-home [data-home-section] :is(a, button)[class*="bg-white"]:hover {
+  background-color: #121110 !important; color: #fff !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+.comic-home [data-home-section] :is(a, button)[class*="bg-[#121110]"]:hover {
+  background-color: #fff !important; color: #121110 !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comic-home [data-home-section] .comic-card,
+  .comic-home [data-home-section] .quest-feature-card,
+  .comic-home [data-home-section] .about-number-box { transition: none; }
+}
+
+
 /* Reveal takes more time (1.35s) */
 @keyframes comicReveal {
   from {
