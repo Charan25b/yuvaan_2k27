@@ -9,7 +9,8 @@ export type ButtonVariant =
   | "ghost"
   | "cyan"
   | "gold"
-  | "white";
+  | "white"
+  | "black";
 
 export type ButtonSize = "sm" | "md" | "lg";
 
@@ -23,22 +24,28 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
+  // Red button -> inverts to Yellow on hover with cool pop shadow
   primary:
-    "bg-[var(--color-ember)] text-white border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[var(--color-ember-hover)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+    "bg-[#f04b2b] text-white border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#F2AE30] hover:text-[#121110] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
   accent:
-    "bg-[var(--color-orange)] text-white border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[var(--color-orange-hover)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-  secondary:
-    "bg-[var(--color-yellow)] text-[var(--color-text-dark)] border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[var(--color-yellow-hover)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-  outline:
-    "bg-[var(--color-surface)] text-[var(--color-text-dark)] border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[var(--color-cream)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
-  ghost:
-    "bg-transparent text-[var(--color-text-dark)] hover:bg-[var(--color-cream)] border-2 border-transparent",
-  cyan:
-    "bg-[var(--color-cyan)] text-white border-2 border-[var(--color-border-dark)] comic-shadow hover:brightness-105 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+    "bg-[var(--color-orange)] text-white border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#F2AE30] hover:text-[#121110] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
+  // Yellow button -> inverts to Red on hover with cool pop shadow (like VIEW ALL 6+ EVENTS)
   gold:
-    "bg-[#F59E0B] text-[var(--color-text-dark)] border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[#D97706] hover:text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+    "bg-[#F2AE30] text-[#121110] border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#f04b2b] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
+  secondary:
+    "bg-[#F2AE30] text-[#121110] border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#f04b2b] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
+  // White button -> inverts to Black on hover
+  outline:
+    "bg-white text-[#121110] border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#121110] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
   white:
-    "bg-white text-[var(--color-text-dark)] border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-neutral-50 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+    "bg-white text-[#121110] border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#121110] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
+  // Black button -> inverts to White on hover
+  black:
+    "bg-[#121110] text-white border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-white hover:text-[#121110] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
+  cyan:
+    "bg-[#0284c7] text-white border-2 border-[#121110] shadow-[4px_4px_0px_#121110] hover:bg-[#F2AE30] hover:text-[#121110] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#121110] active:translate-x-1 active:translate-y-1 active:shadow-[2px_2px_0px_#121110]",
+  ghost:
+    "bg-transparent text-[#121110] hover:bg-[#121110] hover:text-white border-2 border-transparent",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -56,7 +63,7 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const combinedClasses = `inline-flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer select-none font-sans ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
+  const combinedClasses = `inline-flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer select-none font-sans font-black ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
 
   if (href) {
     if (isExternal) {

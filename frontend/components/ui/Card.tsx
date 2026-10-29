@@ -28,15 +28,15 @@ export function Card({
   };
 
   const variantStyles = {
-    comic: "border-2 border-[var(--color-border-dark)] comic-shadow rounded-2xl",
-    elevated: "border-2 border-[var(--color-border-dark)] comic-shadow-lg rounded-2xl",
+    comic: "comic-card border-2 border-[var(--color-border-dark)] comic-shadow rounded-2xl",
+    elevated: "comic-card border-2 border-[var(--color-border-dark)] comic-shadow-lg rounded-2xl",
     subtle: "border border-[var(--color-border-subtle)] shadow-sm rounded-2xl",
     flat: "border border-[var(--color-border-subtle)] rounded-2xl",
   };
 
   return (
     <div
-      className={`relative overflow-hidden transition-all duration-200 ${bgStyles[bgTint]} ${variantStyles[variant]} ${className}`}
+      className={`comic-card relative overflow-hidden transition-all duration-200 ${bgStyles[bgTint]} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {accentStrip && (
@@ -66,7 +66,7 @@ export function CardTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={`text-lg sm:text-xl font-black tracking-tight text-[var(--color-text-dark)] leading-snug ${className}`}
+      className={`text-xl font-black text-[var(--color-text-dark)] tracking-tight ${className}`}
       {...props}
     >
       {children}
@@ -81,7 +81,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={`mt-1.5 text-xs sm:text-sm text-[var(--color-text-muted)] font-medium leading-relaxed ${className}`}
+      className={`text-xs sm:text-sm text-[var(--color-text-muted)] font-medium leading-relaxed ${className}`}
       {...props}
     >
       {children}
@@ -108,7 +108,7 @@ export function CardFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`flex items-center p-5 sm:p-6 pt-0 border-t border-[var(--color-border-subtle)] mt-4 ${className}`}
+      className={`p-5 sm:p-6 pt-0 flex items-center justify-between border-t border-[var(--color-border-subtle)] mt-auto ${className}`}
       {...props}
     >
       {children}

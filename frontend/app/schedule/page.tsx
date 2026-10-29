@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Badge } from "@/components/ui/Badge";
@@ -60,8 +61,17 @@ const categoryBadgeStyles: Record<
   Workshops: "emerald",
 };
 
-export default function SchedulePage() {
-  const [activeDay, setActiveDay] = useState<1 | 2 | 3>(1);
+function ScheduleContent() {
+  const searchParams = useSearchParams();
+  const dayParam = searchParams.get("day");
+  const initialDay = dayParam === "2" ? 2 : dayParam === "3" ? 3 : 1;
+  const [activeDay, setActiveDay] = useState<1 | 2 | 3>(initialDay);
+
+  useEffect(() => {
+    if (dayParam === "1" || dayParam === "2" || dayParam === "3") {
+      setActiveDay(Number(dayParam) as 1 | 2 | 3);
+    }
+  }, [dayParam]);
 
   const dayEvents = SCHEDULE_DATA.filter((item) => item.day === activeDay);
   const currentTheme = dayTheme[activeDay];
@@ -87,6 +97,7 @@ export default function SchedulePage() {
                 return (
                   <button
                     key={day}
+                    id={`day-${day}`}
                     type="button"
                     onClick={() => setActiveDay(day)}
                     className={`px-6 py-3 rounded-xl text-sm font-black transition-all cursor-pointer select-none flex items-center gap-2 ${
@@ -167,5 +178,13 @@ export default function SchedulePage() {
         </div>
       </Container>
     </div>
+  );
+}
+
+export default function SchedulePage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center font-black">Loading festival schedule...</div>}>
+      <ScheduleContent />
+    </Suspense>
   );
 }

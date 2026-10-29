@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
@@ -14,38 +15,44 @@ export function SchedulePreviewSection() {
   const days = [
     {
       dayNumber: "Day 1",
+      dayId: 1,
       subtitle: "Inauguration & Cyphers",
       item: day1Highlight,
       bgTint: "blush" as const,
       accentStrip: "ember" as const,
-      badgeVariant: "primary" as const,
+      taglineVariant: "blush" as const,
+      dayTilt: "tilt-box-1",
     },
     {
       dayNumber: "Day 2",
+      dayId: 2,
       subtitle: "Hackathons & Battle of Bands",
       item: day2Highlight,
       bgTint: "gold" as const,
       accentStrip: "gold" as const,
-      badgeVariant: "gold" as const,
+      taglineVariant: "gold" as const,
+      dayTilt: "tilt-box-2",
     },
     {
       dayNumber: "Day 3",
+      dayId: 3,
       subtitle: "RoboCombat & Star Night",
       item: day3Highlight,
       bgTint: "cyan" as const,
       accentStrip: "cyan" as const,
-      badgeVariant: "cyan" as const,
+      taglineVariant: "cyan" as const,
+      dayTilt: "tilt-box-3",
     },
   ];
 
   return (
-    <section data-home-section="schedule" className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative">
+    <section data-home-section="schedule" className="py-14 sm:py-20 relative">
       <Container>
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-black/25 pb-6">
             <SectionHeading
               badge="Festival Timeline"
-              badgeVariant="gold"
+              badgeVariant="section-dark"
               title="Three Days of Uninterrupted Action"
               description="A quick glance at key milestones across the 3-day schedule. View the full timeline for comprehensive venue alignments and hourly programs."
             />
@@ -61,35 +68,51 @@ export function SchedulePreviewSection() {
                 variant="comic"
                 bgTint={d.bgTint}
                 accentStrip={d.accentStrip}
-                className="flex flex-col justify-between comic-shadow-hover"
+                className="flex flex-col justify-between"
               >
                 <CardHeader>
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge variant={d.badgeVariant} comicStamp className="text-xs">
+                  <div className="flex items-center justify-between mb-3 gap-2">
+                    {/* Clickable Day badge that routes to that specific day on /schedule */}
+                    <Link
+                      href={`/schedule?day=${d.dayId}#day-${d.dayId}`}
+                      className={`comic-small-box ${d.dayTilt} inline-flex items-center px-3 py-1 rounded-md bg-white border-2 border-[#121110] font-black text-xs text-[#121110] shadow-[2.5px_2.5px_0px_#121110] select-none cursor-pointer hover:bg-[#F2AE30] hover:text-[#121110] hover:shadow-[3.5px_3.5px_0px_#121110] transition-all`}
+                      title={`View ${d.dayNumber} Full Schedule`}
+                    >
                       {d.dayNumber}
-                    </Badge>
-                    <span className="text-xs font-black text-[var(--color-text-dark)] uppercase tracking-wide">
+                    </Link>
+
+                    {/* Tagline: strictly static without hover animation */}
+                    <Badge variant={d.taglineVariant} className="text-[10px]">
                       {d.subtitle}
-                    </span>
+                    </Badge>
                   </div>
-                  <CardTitle className="text-xl leading-snug">
+                  <CardTitle className="text-xl leading-snug text-[#121110]">
                     {d.item?.title}
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm mt-2 text-[var(--color-text-dark)] font-medium">
+                  <CardDescription className="text-xs sm:text-sm mt-2 text-[#121110] font-bold leading-relaxed">
                     {d.item?.description}
                   </CardDescription>
                 </CardHeader>
 
+                {/* 4 distinct non-interactive mini-boxes: SOLID BLACK TEXT FOR CLARITY, NO POINTER ON HOVER */}
                 <div className="p-6 pt-0 mt-auto">
-                  <div className="rounded-xl bg-white/95 p-3.5 border border-[var(--color-border-dark)] text-xs font-bold text-[var(--color-text-muted)] space-y-1.5 comic-shadow-sm">
-                    <p className="flex justify-between items-center">
-                      <span className="text-[var(--color-text-dark)]">Scheduled Slot:</span>
-                      <span className="font-black text-[var(--color-text-dark)]">{d.item?.time}</span>
-                    </p>
-                    <p className="flex justify-between items-center">
-                      <span className="text-[var(--color-text-dark)]">Stage Location:</span>
-                      <span className="font-extrabold text-[var(--color-ember)]">{d.item?.venue}</span>
-                    </p>
+                  <div className="grid grid-cols-2 gap-2.5 text-xs">
+                    {/* Box 1: Scheduled Slot Label -> Black text, non-interactive */}
+                    <div className="comic-small-box tilt-box-1 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
+                      Scheduled Slot
+                    </div>
+                    {/* Box 2: Time Value -> Black text, non-interactive */}
+                    <div className="comic-small-box tilt-box-2 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[11px] text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
+                      {d.item?.time}
+                    </div>
+                    {/* Box 3: Stage Location Label -> Black text, non-interactive */}
+                    <div className="comic-small-box tilt-box-3 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[10px] uppercase text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center select-none cursor-default pointer-events-none">
+                      Stage Location
+                    </div>
+                    {/* Box 4: Venue Value -> Black text, non-interactive */}
+                    <div className="comic-small-box tilt-box-4 p-2 rounded-lg bg-white border-2 border-[#121110] font-black text-[11px] text-[#121110] shadow-[2.5px_2.5px_0px_#121110] text-center truncate select-none cursor-default pointer-events-none">
+                      {d.item?.venue}
+                    </div>
                   </div>
                 </div>
               </Card>

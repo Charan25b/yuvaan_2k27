@@ -36,10 +36,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#121110]/95 backdrop-blur-md border-b-2 border-[#f3b32e] transition-colors">
-        {/* Subtle top comic energy bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-[var(--color-ember)] via-[var(--color-orange)] to-[var(--color-yellow)]" />
-
+      <header className="sticky top-0 z-40 bg-[#121110] border-b-2 border-[#121110] transition-colors">
         <Container>
           <div className="flex h-16 sm:h-20 items-center justify-between gap-4">
             {/* Brand Identity */}
@@ -49,7 +46,7 @@ export function Navbar() {
               className="flex items-center gap-3 select-none group"
             >
               <div className="relative">
-                <span className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[var(--color-ember)] text-white font-black text-xl border-2 border-[var(--color-border-dark)] comic-shadow group-hover:bg-[var(--color-orange)] group-hover:rotate-[-3deg] transition-all">
+                <span className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[var(--color-ember)] text-white font-black text-xl border-2 border-[var(--color-border-dark)] comic-shadow group-hover:bg-[#F2AE30] group-hover:text-[#121110] group-hover:rotate-[-3deg] transition-all">
                   Y
                 </span>
                 <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-[var(--color-yellow)] border border-[var(--color-border-dark)]" />
@@ -89,15 +86,18 @@ export function Navbar() {
               })}
             </nav>
 
-            {/* Game Site Action Button */}
+            {/* Game Site Action Button: red dot turns green on hover */}
             <div className="hidden lg:flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => setGameModalOpen(true)}
-                className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-[#FEF3C7] border-2 border-[var(--color-border-dark)] comic-shadow hover:bg-[var(--color-yellow)] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none transition-all cursor-pointer"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#F2AE30] hover:bg-[#f04b2b] text-[#121110] hover:text-white border-2 border-[#121110] shadow-[2px_2px_0_#121110] hover:shadow-[3px_3px_0_#121110] transition-all"
               >
-                <span className="h-2 w-2 rounded-full bg-[var(--color-orange)] animate-pulse" />
-                <span>✦ Game Site Entry</span>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 group-hover:bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600 group-hover:bg-[#22c55e] transition-colors shadow-[0_0_6px_#ef4444] group-hover:shadow-[0_0_6px_#22c55e]" />
+                </span>
+                <span>Game Site Entry</span>
               </button>
             </div>
 
@@ -106,9 +106,9 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => setGameModalOpen(true)}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#FEF3C7] border-2 border-[var(--color-border-dark)] comic-shadow-sm text-[var(--color-text-dark)]"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#FEF3C7] border-2 border-[#121110] text-[#121110]"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-orange)] animate-pulse" />
+                <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse group-hover:bg-[#22c55e] transition-colors" />
                 Game Site
               </button>
               <button
@@ -138,7 +138,7 @@ export function Navbar() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-b-2 border-[#f3b32e] bg-[#121110] px-4 py-5 shadow-lg animate-in fade-in duration-150">
+          <div className="lg:hidden border-b-2 border-[#121110] bg-[#121110] px-4 py-5 shadow-lg animate-in fade-in duration-150">
             <Container>
               <nav className="flex flex-col gap-1.5">
                 {navItems.map((item) => {
@@ -166,10 +166,13 @@ export function Navbar() {
                       closeMobileMenu();
                       setGameModalOpen(true);
                     }}
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl bg-[#FEF3C7] border-2 border-[var(--color-border-dark)] comic-shadow text-[var(--color-text-dark)]"
+                    className="group w-full inline-flex items-center justify-center gap-2.5 px-4 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl bg-[#F2AE30] hover:bg-[#f04b2b] text-[#121110] hover:text-white border-2 border-[#121110] shadow-[3px_3px_0px_#121110] hover:shadow-[5px_5px_0px_#121110] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
                   >
-                    <span className="h-2 w-2 rounded-full bg-[var(--color-orange)] animate-pulse" />
-                    Yuvaan Game Site (Launch Info)
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 group-hover:bg-green-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-600 group-hover:bg-[#22c55e] transition-colors shadow-[0_0_8px_#ef4444] group-hover:shadow-[0_0_8px_#22c55e]" />
+                    </span>
+                    <span>✦ Game Site Entry</span>
                   </button>
                 </div>
               </nav>
@@ -178,7 +181,7 @@ export function Navbar() {
         )}
       </header>
 
-      {/* Game Site Info Modal (Accessible Action) */}
+      {/* Game Site Info Modal */}
       {gameModalOpen && (
         <div
           role="dialog"
@@ -190,13 +193,12 @@ export function Navbar() {
             className="w-full max-w-md rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border-dark)] comic-shadow-lg p-0 overflow-hidden text-left"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Top Comic Caution Tape Header */}
             <div className="comic-tape-amber h-3 w-full border-b-2 border-[var(--color-border-dark)]" />
 
             <div className="p-6">
               <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border-subtle)]">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-wider bg-[var(--color-cream)] text-[var(--color-ember)] border border-[var(--color-border-dark)] comic-shadow-sm">
-                  <span className="h-2 w-2 rounded-full bg-[var(--color-orange)] animate-pulse" />
+                  <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
                   Separate Experience
                 </span>
                 <button
@@ -238,7 +240,7 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setGameModalOpen(false)}
-                  className="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-[var(--color-yellow)] border-2 border-[var(--color-border-dark)] comic-shadow text-[var(--color-text-dark)] hover:bg-[var(--color-orange)] hover:text-white transition-all cursor-pointer"
+                  className="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-[#F2AE30] border-2 border-[#121110] shadow-[3.5px_3.5px_0px_#121110] text-[#121110] hover:bg-[#f04b2b] hover:text-white transition-all cursor-pointer"
                 >
                   Understood
                 </button>
