@@ -1,143 +1,108 @@
 import React from "react";
+import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import { ArtworkPlaceholder } from "@/components/ui/ArtworkPlaceholder";
+
+type SceneProps = { variant: "stage" | "orbit" | "arena"; label: string };
+
+function ComicScene({ variant, label }: SceneProps) {
+  return (
+    <div className={`hero-comic-scene hero-comic-scene--${variant}`} aria-hidden="true">
+      <div className="hero-scene-caption">{label}</div>
+      {variant === "stage" && (
+        <svg viewBox="0 0 520 360" role="presentation">
+          <path d="M0 264 112 224l83 38 113-68 212 70v96H0Z" fill="#f5a623" />
+          <path d="m0 296 126-45 115 52 120-64 159 52v69H0Z" fill="#e84a26" />
+          <path d="M124 230 220 62l96 168Z" fill="#f9d75c" stroke="#171717" strokeWidth="10" />
+          <path d="M161 230 220 123l59 107Z" fill="#ed4b24" />
+          <path d="M83 191h-35m401 0h-35M92 148H25m470 0h-67M118 108 72 62m376 46 46-46" stroke="#171717" strokeWidth="12" strokeLinecap="round" />
+          <path d="M162 290v-44m44 44v-59m48 59v-45m52 45v-66m48 66v-43m52 43v-58m-293 87h290" stroke="#171717" strokeWidth="12" strokeLinecap="round" />
+          <circle cx="259" cy="80" r="19" fill="#171717" />
+        </svg>
+      )}
+      {variant === "orbit" && (
+        <svg viewBox="0 0 520 360" role="presentation">
+          <circle cx="266" cy="180" r="142" fill="#f8ce4b" stroke="#171717" strokeWidth="10" />
+          <ellipse cx="266" cy="180" rx="205" ry="70" transform="rotate(-22 266 180)" fill="none" stroke="#171717" strokeWidth="12" />
+          <path d="m300 94 26 52 57 8-42 40 10 57-51-27-51 27 10-57-42-40 58-8Z" fill="#ed4b24" stroke="#171717" strokeWidth="9" strokeLinejoin="round" />
+          <circle cx="108" cy="80" r="17" fill="#ef4d28" stroke="#171717" strokeWidth="8" />
+          <circle cx="431" cy="281" r="22" fill="#35b6cf" stroke="#171717" strokeWidth="8" />
+          <path d="M72 300h117m185-237h80M51 135h69m260 124h72" stroke="#171717" strokeWidth="10" strokeLinecap="round" />
+        </svg>
+      )}
+      {variant === "arena" && (
+        <svg viewBox="0 0 520 360" role="presentation">
+          <path d="M0 280 140 168l77 68 107-145 196 142v127H0Z" fill="#35b6cf" />
+          <path d="m38 294 133-73 90 51 103-93 121 91v90H38Z" fill="#f2a523" stroke="#171717" strokeWidth="10" />
+          <path d="M0 326h520M90 274v72m342-81v81" stroke="#171717" strokeWidth="12" />
+          <path d="m244 258 30-78 30 78m-67-14h74m-62 14v53m48-53v53" stroke="#171717" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="m157 96 12 28 31 4-23 21 6 30-26-16-27 16 6-30-22-21 30-4Z" fill="#ed4b24" stroke="#171717" strokeWidth="8" strokeLinejoin="round" />
+          <path d="m376 53 8 20 22 3-16 15 4 22-18-12-19 12 4-22-16-15 22-3Z" fill="#f8ce4b" stroke="#171717" strokeWidth="7" strokeLinejoin="round" />
+        </svg>
+      )}
+      <span className="hero-scene-sfx">{variant === "stage" ? "BOOM!" : variant === "orbit" ? "WOW!" : "GO!"}</span>
+    </div>
+  );
+}
+
+const scenes: SceneProps[] = [
+  { variant: "stage", label: "01 · LIGHTS UP" },
+  { variant: "orbit", label: "02 · DREAM BIG" },
+  { variant: "arena", label: "03 · GAME ON" },
+];
+
+function ComicRail({ reverse = false }: { reverse?: boolean }) {
+  return (
+    <div className={`hero-comic-rail${reverse ? " hero-comic-rail--reverse" : ""}`}>
+      <div className="hero-comic-track">
+        {[0, 1].map((group) => (
+          <div className="hero-comic-sequence" key={group}>
+            {scenes.map((scene) => <ComicScene key={scene.variant} {...scene} />)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function HeroSection() {
   return (
-    <section className="relative pt-6 sm:pt-12 pb-14 sm:pb-20 overflow-hidden">
-      {/* Decorative background accents */}
-      <div className="absolute top-10 right-1/4 w-96 h-96 rounded-full bg-[var(--tint-gold)] blur-3xl pointer-events-none -z-10 opacity-70" />
-      <div className="absolute -top-10 left-10 w-72 h-72 rounded-full bg-[var(--tint-peach)] blur-3xl pointer-events-none -z-10 opacity-60" />
+    <section className="yuvaan-hero" aria-labelledby="hero-title">
+      <div className="hero-artwork" aria-hidden="true">
+        <ComicRail />
+        <ComicRail reverse />
+        <ComicRail />
+      </div>
+      <div className="hero-ink-wash" aria-hidden="true" />
+      <div className="hero-speed-lines" aria-hidden="true" />
 
-      <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left Column: Headline, Comic Bursts & CTAs */}
-          <div className="lg:col-span-7 flex flex-col gap-6 text-left">
-            {/* Top Comic Tag Row */}
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="primary" comicStamp className="py-1 px-3">
-                ✦ ISSUE NO. 27
-              </Badge>
-              <Badge variant="gold" className="py-1 px-3">
-                FEBRUARY 2027 · GUWAHATI
-              </Badge>
-              <Badge variant="cyan" className="py-1 px-2.5 hidden sm:inline-flex">
-                ANNUAL FESTIVAL
-              </Badge>
-            </div>
-
-            {/* Main Headline */}
-            <div className="space-y-2">
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-[var(--color-text-dark)] leading-[1.06]">
-                Step Into the Arena of{" "}
-                <span className="relative inline-block text-[var(--color-ember)] underline decoration-[var(--color-yellow)] decoration-wavy decoration-from-font">
-                  Yuvaan 2027
-                </span>
-              </h1>
-              <p className="text-sm sm:text-base font-extrabold text-[var(--color-orange)] uppercase tracking-wider">
-                IIIT Guwahati&apos;s Flagship Cultural &amp; Technical Phenomenon
-              </p>
-            </div>
-
-            {/* Description */}
-            <p className="text-base sm:text-lg text-[var(--color-text-muted)] font-medium leading-relaxed max-w-2xl">
-              Three legendary days of high-stakes hackathons, amphitheatre music headliners,
-              esports tournaments, and campus celebrations. Drawing inspiration from vibrant
-              comic arts and creative engineering.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Button href="/events" variant="primary" size="lg">
-                Explore Events &amp; Arenas &rarr;
-              </Button>
-              <Button href="/schedule" variant="gold" size="lg">
-                View Schedule
-              </Button>
-              <Button href="/merchandise" variant="outline" size="lg">
-                Official Merch
-              </Button>
-            </div>
-
-            {/* Expressive Comic Metric Stat Cards */}
-            <div className="grid grid-cols-3 gap-3.5 pt-6 mt-2 max-w-xl">
-              <div className="p-3.5 rounded-xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow-sm flex flex-col">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl sm:text-3xl font-black text-[var(--color-ember)]">
-                    25+
-                  </span>
-                  <span className="text-xs">🏆</span>
-                </div>
-                <span className="text-[11px] font-black text-[var(--color-text-dark)] uppercase tracking-wider mt-1">
-                  Events &amp; Arenas
-                </span>
-                <span className="text-[10px] text-[var(--color-text-muted)] font-medium">
-                  Tech, Culture &amp; Esports
-                </span>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow-sm flex flex-col">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl sm:text-3xl font-black text-[var(--color-orange)]">
-                    3
-                  </span>
-                  <span className="text-xs">⚡</span>
-                </div>
-                <span className="text-[11px] font-black text-[var(--color-text-dark)] uppercase tracking-wider mt-1">
-                  Festival Days
-                </span>
-                <span className="text-[10px] text-[var(--color-text-muted)] font-medium">
-                  Non-stop action
-                </span>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow-sm flex flex-col">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl sm:text-3xl font-black text-[var(--color-cyan)]">
-                    4
-                  </span>
-                  <span className="text-xs">⚔️</span>
-                </div>
-                <span className="text-[11px] font-black text-[var(--color-text-dark)] uppercase tracking-wider mt-1">
-                  Campus Factions
-                </span>
-                <span className="text-[10px] text-[var(--color-text-muted)] font-medium">
-                  Championship battle
-                </span>
-              </div>
-            </div>
+      <Container className="hero-content">
+        <div className="hero-copy">
+          <div className="hero-kicker"><span /> IIIT GUWAHATI · FEBRUARY 19–21, 2027 <span /></div>
+          <p className="hero-issue">THE NEXT BIG THING STARTS HERE <b>✦ ISSUE 27</b></p>
+          <h1 id="hero-title" className="hero-title-comic">
+            <span className="hero-title-row hero-title-row--top">
+              <span className="hero-word">ENTER</span>
+              <span className="hero-word">THE</span>
+            </span>
+            <span className="hero-title-row hero-title-row--bottom">
+              <span className="hero-word hero-word--brand">YUVAAN</span>
+              <span className="hero-word">VERSE</span><span className="hero-word hero-word--bang">!</span>
+            </span>
+          </h1>
+          <p className="hero-description">
+            Three days. One campus. A universe of music, makers, and moments you won’t find anywhere else.
+          </p>
+          <div className="hero-actions">
+            <Button href="/events" variant="primary" size="lg">Explore the festival <span aria-hidden="true">↗</span></Button>
+            <Link className="hero-text-link" href="/schedule">See what’s on <span aria-hidden="true">↓</span></Link>
           </div>
-
-          {/* Right Column: Hero Artwork Slot Framed As Comic Cover */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-md">
-              {/* Comic sticker badge */}
-              <div className="absolute -top-4 -right-3 z-20 rotate-[6deg]">
-                <Badge variant="gold" comicStamp className="py-1 px-3 text-xs shadow-md">
-                  ★ OFFICIAL COVER
-                </Badge>
-              </div>
-
-              {/* Main Artwork Container */}
-              <div className="p-2 rounded-2xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow-lg rotate-[0.5deg]">
-                <ArtworkPlaceholder
-                  label="Official Festival Key Visual"
-                  sublabel="Reserved for creative team's Comic Con cover artwork & hero graphic."
-                  aspectRatio="portrait"
-                  badge="Comic Cover Slot"
-                  className="rounded-xl border border-[var(--color-border-subtle)]"
-                />
-                <div className="p-3 text-center border-t border-[var(--color-border-subtle)] bg-[var(--color-cream-canvas)] rounded-b-xl flex items-center justify-between text-xs font-bold text-[var(--color-text-muted)]">
-                  <span>IIITG FESTIVAL PRESS</span>
-                  <span className="text-[var(--color-ember)] font-black">VOL. 27 NO. 1</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div className="hero-footnote"><span className="hero-spark">✳</span> THE ANNUAL CULTURAL &amp; TECHNICAL FESTIVAL <span>·</span> 3 DAYS OF ACTION</div>
         </div>
       </Container>
+
+      <div className="hero-scroll-cue" aria-hidden="true"><span /> SCROLL TO EXPLORE</div>
+      <div className="hero-stamp" aria-hidden="true"><span>Guwahati</span><b>’27</b></div>
     </section>
   );
 }

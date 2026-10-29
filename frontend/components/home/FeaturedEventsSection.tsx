@@ -46,7 +46,7 @@ export function FeaturedEventsSection() {
   const featured = EVENTS_DATA.slice(0, 3);
 
   return (
-    <section className="py-14 sm:py-20 relative overflow-hidden">
+    <section data-home-section="events" className="py-14 sm:py-20 relative overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">

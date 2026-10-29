@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 
 export function AboutSection() {
   return (
-    <section className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
+    <section data-home-section="intro" className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
       {/* Background halftone accent */}
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-50" />
 

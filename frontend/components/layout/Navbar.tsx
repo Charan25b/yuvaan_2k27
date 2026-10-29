@@ -36,7 +36,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[var(--color-cream-canvas)]/95 backdrop-blur-md border-b border-[var(--color-border-subtle)] transition-colors">
+      <header className="sticky top-0 z-40 bg-[#121110]/95 backdrop-blur-md border-b-2 border-[#f3b32e] transition-colors">
         {/* Subtle top comic energy bar */}
         <div className="h-1 w-full bg-gradient-to-r from-[var(--color-ember)] via-[var(--color-orange)] to-[var(--color-yellow)]" />
 
@@ -56,14 +56,14 @@ export function Navbar() {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-lg sm:text-xl tracking-tight text-[var(--color-text-dark)] leading-tight">
+                  <span className="font-black text-lg sm:text-xl tracking-tight text-[#fffaf1] leading-tight">
                     YUVAAN
                   </span>
                   <span className="px-1.5 py-0.2 rounded bg-[var(--color-yellow)] text-[var(--color-text-dark)] text-xs font-black border border-[var(--color-border-dark)] rotate-[-2deg]">
                     &apos;27
                   </span>
                 </div>
-                <span className="text-[10px] font-extrabold tracking-widest text-[var(--color-text-muted)] uppercase">
+                <span className="text-[10px] font-extrabold tracking-widest text-white/55 uppercase">
                   IIIT GUWAHATI
                 </span>
               </div>
@@ -79,8 +79,8 @@ export function Navbar() {
                     href={item.href}
                     className={`px-3 py-1.5 text-xs font-black tracking-wide rounded-lg transition-all ${
                       isActive
-                        ? "text-[var(--color-text-dark)] bg-[var(--color-cream)] border-2 border-[var(--color-border-dark)] comic-shadow-sm rotate-[-1deg]"
-                        : `text-[var(--color-text-dark)] ${item.accent} hover:bg-[var(--color-cream)]/70`
+                        ? "text-[#121110] bg-[#f3b32e] border-2 border-[#121110] shadow-[3px_3px_0_#f7f1e8] rotate-[-1deg]"
+                        : "text-white/80 hover:text-white hover:bg-white/10"
                     }`}
                   >
                     {item.label}
@@ -116,7 +116,7 @@ export function Navbar() {
                 onClick={toggleMobileMenu}
                 aria-expanded={mobileMenuOpen}
                 aria-label="Toggle navigation menu"
-                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-[var(--color-border-dark)] bg-[var(--color-surface)] text-[var(--color-text-dark)] comic-shadow-sm hover:bg-[var(--color-cream)] transition-colors cursor-pointer"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-white/50 bg-white/10 text-white hover:bg-white/20 transition-colors cursor-pointer"
               >
                 <svg
                   className="h-5 w-5"
@@ -138,7 +138,7 @@ export function Navbar() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-b-2 border-[var(--color-border-dark)] bg-[var(--color-cream-canvas)] px-4 py-5 shadow-lg animate-in fade-in duration-150">
+          <div className="lg:hidden border-b-2 border-[#f3b32e] bg-[#121110] px-4 py-5 shadow-lg animate-in fade-in duration-150">
             <Container>
               <nav className="flex flex-col gap-1.5">
                 {navItems.map((item) => {
@@ -150,8 +150,8 @@ export function Navbar() {
                       onClick={closeMobileMenu}
                       className={`px-4 py-2.5 text-sm font-black rounded-xl transition-all ${
                         isActive
-                          ? "bg-[var(--color-cream)] text-[var(--color-ember)] border-2 border-[var(--color-border-dark)] comic-shadow-sm"
-                          : "text-[var(--color-text-dark)] hover:bg-[var(--color-cream)]/70"
+                          ? "bg-[#f3b32e] text-[#121110] border-2 border-black shadow-[3px_3px_0_#f7f1e8]"
+                          : "text-white/85 hover:bg-white/10"
                       }`}
                     >
                       {item.label}

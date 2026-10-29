@@ -10,7 +10,7 @@ import { GalleryPreviewSection } from "@/components/home/GalleryPreviewSection";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col">
+    <div className="comic-home flex flex-col">
       <HeroSection />
       <AboutSection />
       <FeaturedEventsSection />

@@ -8,7 +8,7 @@ export function GameSiteSection() {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <section className="py-14 sm:py-20 relative">
+    <section data-home-section="quest" className="py-14 sm:py-20 relative">
       <Container>
         <div className="relative rounded-3xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow-lg overflow-hidden">
           {/* Comic caution/hazard tape header bar */}

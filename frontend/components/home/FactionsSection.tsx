@@ -52,7 +52,7 @@ const factionStyling: Record<
 
 export function FactionsSection() {
   return (
-    <section className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
+    <section data-home-section="factions" className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
       {/* Halftone texture */}
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-40" />
 
