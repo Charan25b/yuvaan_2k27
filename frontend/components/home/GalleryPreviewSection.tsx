@@ -8,20 +8,21 @@ import { GALLERY_DATA } from "@/lib/data/festivalData";
 
 export function GalleryPreviewSection() {
   const previewItems = GALLERY_DATA.slice(0, 3);
-  const badgeVariants = ["primary", "cyan", "gold"] as const;
+  const badgeVariants = ["blush", "cyan", "gold"] as const;
 
   return (
-    <section className="py-14 sm:py-20 bg-[var(--color-surface)] border-t-2 border-[var(--color-border-dark)] relative">
+    <section data-home-section="gallery" className="py-14 sm:py-20 bg-[var(--color-surface)] relative">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
               badge="Festival Memories"
-              badgeVariant="primary"
+              badgeVariant="highlight"
               title="Snapshots of the Yuvaan Spirit"
               description="From packed pro-night amphitheatre crowds to late-night hackathon coding sessions, experience the energy of previous festival editions."
+              className="home-section-heading"
             />
-            <Button href="/gallery" variant="secondary" size="md" className="shrink-0">
+            <Button href="/gallery" variant="gold" size="md" className="shrink-0">
               Full Photo Gallery &rarr;
             </Button>
           </div>
@@ -31,7 +32,7 @@ export function GalleryPreviewSection() {
               <Card
                 key={item.id}
                 variant="comic"
-                className="flex flex-col overflow-hidden comic-shadow-hover transition-all bg-white"
+                className="flex flex-col overflow-hidden bg-white"
               >
                 {/* Visual Polaroid Frame for Gallery Image */}
                 <div className="relative aspect-video w-full bg-[var(--color-cream-canvas)] border-b-2 border-[var(--color-border-dark)] flex flex-col items-center justify-center p-4 text-center">

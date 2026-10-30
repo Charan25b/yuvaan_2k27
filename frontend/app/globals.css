@@ -1,16 +1,22 @@
 @import "tailwindcss";
 
 :root {
+  --font-anton: var(--font-anton, "Anton", sans-serif);
+  --font-mono: var(--font-mono, "Roboto Mono", monospace);
+  --font-marker: var(--font-marker, "Permanent Marker", cursive);
+  --font-display: var(--font-anton), "Dharma Gothic Condensed Heavy", Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  --font-body: var(--font-mono), "Compressa Std", "Arial Narrow", Arial, sans-serif;
+  --font-small: var(--font-mono), Arial, Helvetica, sans-serif;
   /* Yuvaan 2027 Core Brand Tokens */
-  --color-ember: #8F1D1D;
-  --color-ember-dark: #6E1212;
-  --color-ember-hover: #771717;
-  --color-orange: #E14B24;
-  --color-orange-hover: #C53B18;
-  --color-yellow: #F2AE30;
-  --color-yellow-hover: #D9961F;
-  --color-cream: #FFF1D6;
-  --color-cream-canvas: #FAF6EF;
+  --color-ember: #F04B2B;
+  --color-ember-dark: #B8321C;
+  --color-ember-hover: #D73D20;
+  --color-orange: #F04B2B;
+  --color-orange-hover: #D73D20;
+  --color-yellow: #F4B72F;
+  --color-yellow-hover: #D99B19;
+  --color-cream: #FFF5E8;
+  --color-cream-canvas: #F8F7F4;
   --color-surface-white: #FFFFFF;
   --color-text-dark: #1C1917;
   --color-text-muted: #6B6560;
@@ -34,6 +40,10 @@
 }
 
 @theme inline {
+  --font-anton: var(--font-anton);
+  --font-mono: var(--font-mono);
+  --font-marker: var(--font-marker);
+  --font-display: var(--font-display);
   --color-ember: var(--color-ember);
   --color-ember-dark: var(--color-ember-dark);
   --color-ember-hover: var(--color-ember-hover);
@@ -65,11 +75,23 @@
 body {
   background-color: var(--color-cream-canvas);
   color: var(--color-text-dark);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body);
   min-height: 100vh;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-stretch: condensed;
+}
+
+small,
+[class~="text-xs"],
+[class*="text-[10px]"],
+[class*="text-[11px]"] {
+  font-family: var(--font-small);
 }
 
 /* Comic Panel Borders & Drop Shadows */
@@ -186,4 +208,980 @@ body {
   border-color: var(--color-border-dark) transparent;
   display: block;
   width: 0;
+}
+
+/* Full-bleed comic opener: the copy stays still while the panels travel behind it. */
+.yuvaan-hero {
+  --hero-ink: #121110;
+  position: relative;
+  isolation: isolate;
+  min-height: min(820px, calc(100svh - 80px));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  color: #fffaf1;
+  background: var(--hero-ink);
+}
+
+.hero-artwork,
+.hero-ink-wash,
+.hero-speed-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-artwork {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 12px;
+  transform: rotate(-2deg) scale(1.08);
+  opacity: .92;
+}
+
+.hero-comic-rail {
+  height: 125%;
+  overflow: hidden;
+  align-self: center;
+  border-inline: 4px solid #121110;
+  background: #121110;
+}
+
+.hero-comic-track {
+  display: flex;
+  flex-direction: column;
+  animation: hero-panel-scroll 32s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.hero-comic-sequence { display: flex; flex-direction: column; gap: 12px; }
+
+.hero-comic-rail--reverse .hero-comic-track {
+  animation-direction: reverse;
+  animation-duration: 32s; /* Exactly same duration and rate as columns 1 and 3 */
+}
+
+.hero-comic-scene {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 0.70;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #121110;
+  border: 4px solid #121110;
+  color: #121110;
+  box-shadow: 4px 4px 0 rgba(18, 17, 16, 0.4);
+}
+
+.hero-comic-scene img,
+.hero-comic-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.hero-scene-caption {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  left: 12px;
+  padding: 6px 9px;
+  background: #fffaf1;
+  border: 3px solid #121110;
+  box-shadow: 3px 3px 0 #121110;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .12em;
+}
+
+.hero-scene-sfx {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  color: #fffaf1;
+  font-size: clamp(22px, 3vw, 42px);
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -.07em;
+  -webkit-text-stroke: 2px #121110;
+  text-shadow: 4px 4px 0 #121110;
+  transform: rotate(-8deg);
+}
+
+.hero-ink-wash {
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(18, 17, 16, .78), rgba(18, 17, 16, .60) 18%, rgba(18, 17, 16, .62) 82%, rgba(18, 17, 16, .78)),
+    radial-gradient(ellipse at center, rgba(18, 17, 16, .08), rgba(18, 17, 16, .48) 82%);
+}
+
+.hero-speed-lines {
+  z-index: 2;
+  opacity: .14;
+  background: repeating-linear-gradient(165deg, transparent 0 42px, #fffaf1 43px 45px, transparent 46px 86px);
+  mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding-top: 96px;
+  padding-bottom: 112px;
+}
+
+.hero-copy {
+  max-width: 880px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.hero-kicker,
+.hero-issue,
+.hero-footnote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-kicker {
+  gap: 12px;
+  color: #ffe18b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .23em;
+  font-family: var(--font-mono), monospace;
+}
+
+.hero-kicker span {
+  width: 25px;
+  height: 2px;
+  background: #f3b32e;
+}
+
+.hero-issue {
+  gap: 10px;
+  margin: 24px 0 12px;
+  color: rgba(255, 250, 241, .75);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  font-family: var(--font-mono), monospace;
+}
+
+.hero-issue b {
+  padding: 6px 9px;
+  color: #171513;
+  background: #f3b32e;
+  border: 2px solid #171513;
+  box-shadow: 3px 3px 0 #171513;
+  transform: rotate(-3deg);
+}
+
+/* Connected comic title styles matching reference image */
+.hero-title-comic {
+  margin: 0;
+  font-family: var(--font-anton), var(--font-display);
+  font-size: clamp(68px, 12vw, 180px);
+  font-weight: 900;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+}
+
+.hero-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: clamp(0.18em, 2vw, 0.28em);
+  line-height: 0.84;
+}
+
+.hero-title-row--bottom {
+  margin-top: -0.1em;
+}
+
+.hero-word {
+  display: inline-block;
+  letter-spacing: -0.065em;
+  color: #fffaf1;
+  -webkit-text-stroke: clamp(2.5px, 0.35vw, 4.5px) #121110;
+  paint-order: stroke fill;
+  text-shadow:
+    2px 2px 0 #121110,
+    4px 4px 0 #121110,
+    6px 6px 0 #121110,
+    7px 7px 0 #f4b72f,
+    8px 8px 0 #f4b72f,
+    9px 9px 0 #f4b72f;
+}
+
+.hero-word--brand {
+  color: #f4b72f;
+}
+
+.hero-word--bang {
+  color: #f04b2b;
+  margin-left: -0.035em;
+  letter-spacing: normal;
+}
+
+.hero-copy h1:not(.hero-title-comic) {
+  margin: 0;
+  font-family: var(--font-anton), var(--font-display);
+  font-size: clamp(52px, 8.7vw, 124px);
+  font-weight: 800;
+  line-height: .86;
+  letter-spacing: -.065em;
+  text-transform: uppercase;
+  -webkit-text-stroke: clamp(2.5px, 0.35vw, 4px) #121110;
+  paint-order: stroke fill;
+  text-shadow: 2px 2px 0 #121110, 4px 4px 0 #121110, 6px 6px 0 #121110, 8px 8px 0 #f4b72f;
+}
+
+.hero-copy h1:not(.hero-title-comic) > span:first-of-type {
+  color: #f3b32e;
+}
+
+.hero-period { color: #ec5834; }
+
+.hero-description {
+  max-width: 540px;
+  margin: 30px auto 0;
+  color: rgba(255, 250, 241, .88);
+  font-size: clamp(15px, 1.7vw, 19px);
+  font-weight: 550;
+  line-height: 1.65;
+  text-wrap: balance;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 28px;
+}
+
+.hero-actions a:first-child { border: 2px solid #171513; box-shadow: 5px 5px 0 #171513; }
+
+.hero-text-link {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  color: #fffaf1;
+  font-size: 13px;
+  font-weight: 850;
+  text-decoration: underline;
+  text-decoration-color: #f3b32e;
+  text-underline-offset: 5px;
+}
+
+.hero-text-link span { color: #f3b32e; font-size: 18px; }
+
+.hero-footnote {
+  gap: 10px;
+  margin-top: 52px;
+  color: rgba(255, 250, 241, .66);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .16em;
+}
+
+.hero-spark { color: #f3b32e; font-size: 17px; }
+.hero-scroll-cue { position: absolute; z-index: 3; bottom: 24px; left: 50%; display: flex; align-items: center; gap: 10px; color: rgba(255,250,241,.65); font-size: 9px; font-weight: 900; letter-spacing: .18em; transform: translateX(-50%); }
+.hero-scroll-cue span { width: 28px; height: 1px; background: #f3b32e; }
+.hero-stamp { position: absolute; z-index: 3; right: max(24px, calc((100vw - 1280px)/2)); bottom: 28px; display: flex; align-items: center; gap: 6px; color: #171513; font-size: 9px; font-weight: 950; text-transform: uppercase; transform: rotate(-7deg); }
+.hero-stamp span, .hero-stamp b { display: grid; place-items: center; height: 38px; padding: 0 9px; background: #f3b32e; border: 2px solid #171513; box-shadow: 3px 3px 0 #171513; }
+.hero-stamp b { font-size: 15px; }
+@keyframes hero-panel-scroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+@media (max-width: 680px) {
+  .yuvaan-hero { min-height: 700px; }
+  .hero-artwork { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0 6px; transform: rotate(-2deg) scale(1.16); }
+  .hero-comic-rail { border-inline-width: 3px; }
+  .hero-comic-rail:nth-child(3) { display: none; }
+  .hero-comic-sequence { gap: 8px; }
+  .hero-comic-scene { border-width: 3px; }
+  .hero-scene-caption { top: 7px; left: 7px; padding: 4px 6px; font-size: 7px; border-width: 2px; }
+  .hero-scene-sfx { right: 7px; bottom: 6px; -webkit-text-stroke-width: 1px; text-shadow: 2px 2px 0 #121110; }
+  .hero-ink-wash { background: rgba(18,17,16,.68); }
+  .hero-content { padding-top: 70px; padding-bottom: 90px; }
+  .hero-kicker { font-size: 9px; letter-spacing: .14em; }
+  .hero-issue { flex-wrap: wrap; margin-top: 22px; font-size: 8px; }
+  .hero-copy h1 { font-size: clamp(54px, 15.5vw, 98px); line-height: .98; letter-spacing: -.025em; text-shadow: 3px 4px 0 #171513, 5px 6px 0 rgba(243, 179, 46, .95); }
+  .hero-description { max-width: 390px; margin-top: 24px; font-size: 15px; }
+  .hero-actions { gap: 18px; margin-top: 24px; }
+  .hero-footnote { flex-wrap: wrap; margin-top: 36px; font-size: 8px; letter-spacing: .1em; }
+  .hero-stamp { right: 14px; bottom: 15px; }
+  .hero-scroll-cue { left: 17px; bottom: 30px; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* .hero-comic-track continuously scrolls */
+}
+
+.comic-home {
+  /* section's own torn top edge (0-20px deep) */
+  --tear-outer: polygon(0 9px, 2% 3px, 4.5% 14px, 6% 6px, 9% 17px, 11% 2px, 13.5% 11px,
+    16% 5px, 18% 16px, 21% 8px, 23% 1px, 26% 13px, 28.5% 6px, 31% 18px, 33% 4px,
+    35% 12px, 38% 7px, 41% 19px, 43% 3px, 46% 10px, 48.5% 16px, 51% 5px, 54% 14px,
+    56% 2px, 59% 11px, 61.5% 18px, 64% 6px, 66% 13px, 69% 1px, 72% 9px, 74.5% 17px,
+    77% 4px, 79% 12px, 82% 7px, 85% 15px, 87% 3px, 90% 10px, 92.5% 18px, 95% 5px,
+    97.5% 13px, 100% 6px, 100% 100%, 0 100%);
+
+  /* white strip's lower edge (inside a 34px-tall box) */
+  --tear-inner: polygon(0 0, 100% 0, 100% 46px, 96% 52px, 91% 43px, 87% 50px, 82% 41px,
+    77% 53px, 71% 44px, 66% 49px, 60% 40px, 55% 52px, 49% 45px, 44% 54px, 38% 42px,
+    33% 49px, 27% 43px, 22% 53px, 16% 46px, 11% 51px, 5% 42px, 0 48px);
+
+  /* Alternate tear profiles keep each section break from repeating exactly. */
+  --tear-outer-b: polygon(0 5px, 2.5% 13px, 5% 4px, 8% 18px, 10% 9px, 13% 2px, 15.5% 15px,
+    19% 6px, 22% 17px, 25% 3px, 28% 12px, 31.5% 19px, 35% 8px, 38% 14px, 41% 1px,
+    44% 11px, 47% 5px, 50% 18px, 53% 9px, 56% 2px, 59% 16px, 62.5% 7px, 66% 13px,
+    69% 3px, 72% 20px, 75% 9px, 78% 15px, 81% 4px, 84% 12px, 87% 1px, 90% 17px,
+    93% 8px, 96% 14px, 98% 3px, 100% 10px, 100% 100%, 0 100%);
+  --tear-inner-b: polygon(0 0, 100% 0, 100% 48px, 97% 42px, 93% 54px, 89% 44px, 86% 51px,
+    81% 39px, 78% 55px, 74% 47px, 70% 52px, 65% 41px, 61% 54px, 57% 43px, 53% 49px,
+    49% 40px, 45% 55px, 41% 46px, 37% 52px, 32% 39px, 28% 50px, 24% 43px, 20% 55px,
+    16% 47px, 12% 51px, 8% 40px, 5% 54px, 2% 45px, 0 50px);
+
+  --tear-outer-c: polygon(0 14px, 3% 6px, 5.5% 18px, 8% 3px, 11% 12px, 14% 19px, 17% 5px,
+    20% 10px, 23% 2px, 26% 16px, 29% 7px, 32% 20px, 35% 11px, 38% 4px, 41% 15px,
+    44% 6px, 47% 18px, 50% 9px, 53% 1px, 56% 13px, 59% 20px, 62% 7px, 65% 16px,
+    68% 3px, 71% 11px, 74% 19px, 77% 5px, 80% 14px, 83% 2px, 86% 10px, 89% 18px,
+    92% 6px, 95% 15px, 98% 4px, 100% 12px, 100% 100%, 0 100%);
+  --tear-inner-c: polygon(0 0, 100% 0, 100% 44px, 98% 55px, 94% 46px, 90% 40px, 87% 52px,
+    83% 43px, 78% 55px, 74% 39px, 71% 48px, 67% 53px, 63% 41px, 59% 50px, 55% 44px,
+    51% 54px, 47% 39px, 43% 49px, 39% 55px, 35% 42px, 31% 51px, 27% 40px, 23% 54px,
+    19% 46px, 15% 52px, 11% 39px, 7% 50px, 4% 42px, 0 53px);
+}
+
+.comic-home [data-home-section="events"],
+.comic-home [data-home-section="quest"] {
+  --tear-outer: var(--tear-outer-b);
+  --tear-inner: var(--tear-inner-b);
+}
+
+.comic-home [data-home-section="schedule"],
+.comic-home [data-home-section="sponsors"] {
+  --tear-outer: var(--tear-outer-c);
+  --tear-inner: var(--tear-inner-c);
+}
+
+.comic-home [data-home-section] {
+  margin-top: -20px;
+  position: relative;
+  isolation: isolate;
+  clip-path: var(--tear-outer);
+}
+
+.comic-home [data-home-section]::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 56px;
+  z-index: 5;
+  background: #fff;
+  pointer-events: none;
+  clip-path: var(--tear-inner);
+}
+.comic-home [data-home-section]::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 34px;
+  pointer-events: none;
+  clip-path: var(--tear-inner);
+}
+.comic-home [data-home-section]::before { z-index: 5; background: #fff; }
+
+.comic-home [data-home-section="intro"] {
+  padding-top: 104px;
+  padding-bottom: 104px;
+  color: #f8f7f4;
+  background-color: #111110;
+  background-image: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,.055), transparent 55%), repeating-linear-gradient(157deg, transparent 0 8px, rgba(255,255,255,.014) 9px 11px, transparent 12px 23px);
+  border: 0;
+}
+
+.comic-home [data-home-section="intro"] > .absolute.inset-0 {
+  background-image: radial-gradient(rgba(255,255,255,.24) 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: .2;
+}
+
+.comic-home [data-home-section="intro"] h2,
+.comic-home [data-home-section="intro"] h3,
+.comic-home [data-home-section="intro"] p,
+.comic-home [data-home-section="intro"] span {
+  color: #f8f7f4;
+}
+
+.comic-home [data-home-section="intro"] h2 {
+  max-width: 520px;
+  color: var(--poster-orange);
+  font-size: clamp(42px, 5vw, 70px);
+  line-height: .94;
+  text-transform: uppercase;
+}
+
+.comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.5);
+  box-shadow: 5px 5px 0 var(--poster-orange);
+}
+
+.comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] p { color: #fff; }
+.comic-home [data-home-section="intro"] .grid > div[class*="rounded-2xl"] { background: #fff; border-radius: 2px; box-shadow: 4px 5px 0 #f04b2b; }
+.comic-home [data-home-section="intro"] .grid > div[class*="rounded-2xl"] h3,
+.comic-home [data-home-section="intro"] .grid > div[class*="rounded-2xl"] p,
+.comic-home [data-home-section="intro"] .grid > div[class*="rounded-2xl"] span { color: #111; }
+
+.comic-home [data-home-section="events"],
+.comic-home [data-home-section="schedule"],
+.comic-home [data-home-section="gallery"] {
+  background-color: #fff;
+  background-image: radial-gradient(#1111110e 1px, transparent 1px);
+  background-size: 17px 17px;
+}
+
+.comic-home [data-home-section="events"] h2,
+.comic-home [data-home-section="schedule"] h2,
+.comic-home [data-home-section="gallery"] h2,
+.comic-home [data-home-section="factions"] h2,
+.comic-home [data-home-section="sponsors"] h2 {
+  color: var(--poster-orange);
+  font-size: clamp(42px, 5.5vw, 76px);
+  line-height: 1.14;
+  text-transform: uppercase;
+}
+
+.comic-home [data-home-section="events"] .grid > div,
+.comic-home [data-home-section="schedule"] .grid > div,
+.comic-home [data-home-section="factions"] .grid > div,
+.comic-home [data-home-section="sponsors"] .grid > div,
+.comic-home [data-home-section="gallery"] .grid > div {
+  border-radius: 2px;
+  border: 2px solid #111;
+  box-shadow: 5px 6px 0 #111;
+}
+
+.comic-home [data-home-section="events"] .grid > div:nth-child(2),
+.comic-home [data-home-section="sponsors"] .grid > div:nth-child(2) { transform: rotate(-1deg); }
+.comic-home [data-home-section="events"] .grid > div:nth-child(3),
+.comic-home [data-home-section="sponsors"] .grid > div:nth-child(3) { transform: rotate(1deg); }
+.comic-home [data-home-section="events"] .grid > div { background-color: #fff; }
+.comic-home [data-home-section="events"] .grid > div h3 { font-size: 28px; line-height: .95; text-transform: uppercase; }
+.comic-home [data-home-section="events"] .grid > div .rounded-xl.bg-white\/90 { border-radius: 0; box-shadow: none; }
+
+.comic-home [data-home-section="quest"] {
+  padding-top: 88px;
+  padding-bottom: 88px;
+  background-color: var(--poster-orange);
+  background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.comic-home [data-home-section="quest"] > div > div { border: 0; border-radius: 0; box-shadow: none; background: transparent; overflow: visible; }
+.comic-home [data-home-section="quest"] > div > div > .comic-tape-amber { display: none; }
+.comic-home [data-home-section="quest"] h2 { color: #fff; font-size: clamp(44px, 7vw, 88px); line-height: .86; text-transform: uppercase; }
+.comic-home [data-home-section="quest"] p,
+.comic-home [data-home-section="quest"] span,
+.comic-home [data-home-section="quest"] h4 { color: #fff; }
+.comic-home [data-home-section="quest"] .grid > div { background: #fff; border: 2px solid #111; border-radius: 0; box-shadow: 6px 6px 0 #111; }
+.comic-home [data-home-section="quest"] .grid > div h4,
+.comic-home [data-home-section="quest"] .grid > div p,
+.comic-home [data-home-section="quest"] .grid > div span { color: #111; }
+
+.comic-home [data-home-section="factions"] { background: #fff; }
+.comic-home [data-home-section="sponsors"] { color: #fff; background: #111; }
+.comic-home [data-home-section="sponsors"] h2,
+.comic-home [data-home-section="sponsors"] p,
+.comic-home [data-home-section="sponsors"] span { color: #fff; }
+.comic-home [data-home-section="sponsors"] .grid > div { background: #f8f7f4; }
+.comic-home [data-home-section="sponsors"] .grid > div h3,
+.comic-home [data-home-section="sponsors"] .grid > div p,
+.comic-home [data-home-section="sponsors"] .grid > div span { color: #111; }
+
+.comic-home [data-home-section] .rounded-full,
+.comic-home [data-home-section] .rounded-2xl,
+.comic-home [data-home-section] .rounded-xl { border-radius: 2px; }
+
+/* Keep the page moving through a clear light / orange / dark rhythm. */
+.comic-home [data-home-section="events"],
+.comic-home [data-home-section="quest"],
+.comic-home [data-home-section="gallery"] {
+  background-color: #f04b2b;
+  background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
+.comic-home [data-home-section="events"] h2,
+.comic-home [data-home-section="events"] p,
+.comic-home [data-home-section="gallery"] h2,
+.comic-home [data-home-section="gallery"] p { color: #fff; }
+
+.comic-home [data-home-section="events"] .grid > div,
+.comic-home [data-home-section="gallery"] .grid > div { background: #fff; }
+
+.comic-home [data-home-section="events"] .grid > div p,
+.comic-home [data-home-section="gallery"] .grid > div p,
+.comic-home [data-home-section="events"] .grid > div span,
+.comic-home [data-home-section="gallery"] .grid > div span { color: #171513; }
+
+.comic-home [data-home-section="schedule"] {
+  color: #f8f7f4;
+  background-color: #111110;
+  background-image: radial-gradient(rgba(255,255,255,.11) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.comic-home [data-home-section="schedule"] h2,
+.comic-home [data-home-section="schedule"] p,
+.comic-home [data-home-section="schedule"] span { color: #f8f7f4; }
+
+.comic-home [data-home-section="schedule"] .grid > div { background: #fff; }
+.comic-home [data-home-section="schedule"] .grid > div h3,
+.comic-home [data-home-section="schedule"] .grid > div p,
+.comic-home [data-home-section="schedule"] .grid > div span { color: #171513; }
+
+.comic-home [data-home-section="factions"] { background-color: #f8f7f4; }
+.comic-home [data-home-section="sponsors"] { background-color: #111110; }
+
+.comic-home [data-home-section="events"] .grid > div,
+.comic-home [data-home-section="schedule"] .grid > div,
+.comic-home [data-home-section="quest"] .grid > div,
+.comic-home [data-home-section="factions"] .grid > div,
+.comic-home [data-home-section="sponsors"] .grid > div,
+.comic-home [data-home-section="gallery"] .grid > div {
+  transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease;
+}
+
+.comic-home [data-home-section="events"] .grid > div:hover,
+.comic-home [data-home-section="schedule"] .grid > div:hover,
+.comic-home [data-home-section="quest"] .grid > div:hover,
+.comic-home [data-home-section="factions"] .grid > div:hover,
+.comic-home [data-home-section="sponsors"] .grid > div:hover,
+.comic-home [data-home-section="gallery"] .grid > div:hover {
+  z-index: 2;
+  transform: translateY(-6px) rotate(0deg);
+  box-shadow: 9px 11px 0 #111;
+}
+
+.comic-shadow-hover { transition: transform .22s ease, box-shadow .22s ease; }
+.comic-shadow-hover:hover { transform: translateY(-5px); box-shadow: 8px 9px 0 #111; }
+
+.comic-home [data-home-section] h2 {
+  letter-spacing: .015em;
+  font-weight: 700;
+}
+
+.comic-home [data-home-section] .grid > div h3 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: .015em;
+  line-height: 1.12;
+}
+
+.comic-home [data-home-section] .grid > div {
+  transform-origin: center center;
+}
+
+.comic-home [data-home-section] .grid > div:hover {
+  transform: translateY(-6px) rotate(1.25deg);
+}
+
+.comic-home [data-home-section="events"] .grid > div:nth-child(2):hover,
+.comic-home [data-home-section="sponsors"] .grid > div:nth-child(2):hover { transform: translateY(-6px) rotate(-1.5deg); }
+
+.comic-home [data-home-section="events"] .grid > div:nth-child(3):hover,
+.comic-home [data-home-section="sponsors"] .grid > div:nth-child(3):hover { transform: translateY(-6px) rotate(2deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .comic-home [data-home-section] .grid > div,
+  .comic-shadow-hover { transition: none; }
+  .comic-home [data-home-section] .grid > div:hover,
+  .comic-home [data-home-section="events"] .grid > div:nth-child(2):hover,
+  .comic-home [data-home-section="events"] .grid > div:nth-child(3):hover,
+  .comic-home [data-home-section="sponsors"] .grid > div:nth-child(2):hover,
+  .comic-home [data-home-section="sponsors"] .grid > div:nth-child(3):hover,
+  .comic-shadow-hover:hover { transform: none; }
+}
+
+body > footer {
+  color: #fff;
+  background-color: #111110;
+  border-color: #f04b2b;
+}
+
+body > footer h4,
+body > footer p,
+body > footer span,
+body > footer a { color: #f8f7f4; }
+
+body > footer [class*="bg-white"] p,
+body > footer [class*="bg-white"] span { color: #111110; }
+
+@media (max-width: 680px) {
+  .comic-home [data-home-section="intro"] { padding-top: 76px; padding-bottom: 76px; }
+  .comic-home [data-home-section="quest"] { padding-top: 70px; padding-bottom: 70px; }
+  .comic-home [data-home-section="events"] .grid > div,
+  .comic-home [data-home-section="sponsors"] .grid > div { transform: none; }
+}
+
+/* Comic-Verse Inspired Typography & Outline Utilities */
+.font-anton { font-family: var(--font-anton), sans-serif; }
+.font-mono { font-family: var(--font-mono), monospace; }
+.font-marker { font-family: var(--font-marker), cursive; }
+
+.text-outline-cyan {
+  -webkit-text-stroke: 2px #00e5ff;
+  color: transparent;
+}
+.text-outline-white {
+  -webkit-text-stroke: 2px #f4f4f4;
+  color: transparent;
+}
+.text-outline-dark {
+  -webkit-text-stroke: 2px #121110;
+  color: transparent;
+}
+
+/* ============================================================
+   COMIC SMALL BOXES: Mandatory initial default tilt (STRICTLY NO HOVER TILT ANIMATION)
+   ============================================================ */
+.comic-small-box,
+.tilt-box-1,
+.tilt-box-2,
+.tilt-box-3,
+.tilt-box-4,
+.tilt-box-5,
+.tilt-box-6 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+/* INITIAL MANDATORY TILTS - PERSIST IDENTICALLY ON HOVER (NO HOVER TILT ANIMATIONS) */
+.tilt-box-1,
+.tilt-box-1:hover,
+.comic-box-tilt-1,
+.comic-box-tilt-1:hover {
+  transform: rotate(-3deg) !important;
+}
+
+.tilt-box-2,
+.tilt-box-2:hover,
+.comic-box-tilt-2,
+.comic-box-tilt-2:hover {
+  transform: rotate(3deg) !important;
+}
+
+.tilt-box-3,
+.tilt-box-3:hover,
+.comic-box-tilt-3,
+.comic-box-tilt-3:hover {
+  transform: rotate(-2.5deg) !important;
+}
+
+.tilt-box-4,
+.tilt-box-4:hover,
+.comic-box-tilt-4,
+.comic-box-tilt-4:hover {
+  transform: rotate(2.5deg) !important;
+}
+
+.tilt-box-5,
+.tilt-box-5:hover {
+  transform: rotate(-3.5deg) !important;
+}
+
+.tilt-box-6,
+.tilt-box-6:hover {
+  transform: rotate(3.5deg) !important;
+}
+
+/* STRICT RULE: TAGLINES NEVER ANIMATE OR TILT */
+.comic-tagline,
+.comic-tagline:hover,
+.badge,
+.badge:hover,
+[class*="Badge"],
+[class*="Badge"]:hover,
+[data-tagline],
+[data-tagline]:hover {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+/* CARDS THEMSELVES STAY LOCKED */
+.comic-home [data-home-section] .comic-card,
+.comic-home [data-home-section] .aspect-video,
+.comic-home [data-home-section] p {
+  transform: none;
+}
+
+/* GLOBAL BUTTON STYLES & COLOR INVERSIONS (RED <-> YELLOW, BLACK <-> WHITE) */
+button,
+a.comic-btn,
+[class*="btn-"] {
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.16s ease, color 0.16s ease !important;
+}
+
+/* Red button -> turns Yellow on hover */
+.btn-primary:hover,
+button[class*="bg-[#f04b2b]"]:hover,
+a[class*="bg-[#f04b2b]"]:hover,
+button[class*="bg-[var(--color-ember)]"]:hover,
+a[class*="bg-[var(--color-ember)]"]:hover {
+  background-color: #F2AE30 !important;
+  color: #121110 !important;
+  border-color: #121110 !important;
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0px #121110 !important;
+}
+
+/* Yellow button -> turns Red on hover */
+.btn-gold:hover,
+button[class*="bg-[#F2AE30]"]:hover,
+a[class*="bg-[#F2AE30]"]:hover,
+button[class*="bg-[var(--color-yellow)]"]:hover,
+a[class*="bg-[var(--color-yellow)]"]:hover {
+  background-color: #f04b2b !important;
+  color: #ffffff !important;
+  border-color: #121110 !important;
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0px #121110 !important;
+}
+
+/* White button -> turns Black on hover */
+.btn-outline:hover,
+button[class*="bg-white"]:hover,
+a[class*="bg-white"]:hover {
+  background-color: #121110 !important;
+  color: #ffffff !important;
+  border-color: #121110 !important;
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0px #121110 !important;
+}
+
+/* Black button -> turns White on hover */
+.btn-black:hover,
+button[class*="bg-[#121110]"]:hover,
+a[class*="bg-[#121110]"]:hover {
+  background-color: #ffffff !important;
+  color: #121110 !important;
+  border-color: #121110 !important;
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0px #121110 !important;
+}
+
+/* Home section system: keep the hero and footer outside these rules. */
+.comic-home .home-section-heading { flex: 1 1 75%; width: 100%; max-width: none; min-width: 0; }
+.comic-home .home-section-rule { border-color: rgba(255,255,255,.48); }
+.comic-home [data-home-section="events"] .home-section-rule,
+.comic-home [data-home-section="quest"] .home-section-rule,
+.comic-home [data-home-section="factions"] .home-section-rule,
+.comic-home [data-home-section="gallery"] .home-section-rule { border-color: rgba(18,17,16,.45); }
+.comic-home [data-home-section="intro"] { color: #fff; background-color: #111110; }
+.comic-home [data-home-section="events"],
+.comic-home [data-home-section="quest"],
+.comic-home [data-home-section="gallery"] {
+  color: #fff;
+  background-color: #f04b2b;
+  background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+.comic-home [data-home-section="schedule"],
+.comic-home [data-home-section="sponsors"] {
+  color: #fff;
+  background-color: #111110;
+  background-image: radial-gradient(rgba(255,255,255,.11) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.comic-home [data-home-section="schedule"] {
+  background-image:
+    radial-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+    linear-gradient(rgba(17,17,16,.24), rgba(17,17,16,.24)),
+    url("/festival-timeline-paper.png");
+  background-size: 16px 16px, auto, cover;
+  background-position: 0 0, center, center;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
+.comic-home [data-home-section="factions"] { color: #121110; background-color: #fff; }
+
+.comic-home [data-home-section] .home-section-heading > h2,
+.comic-home [data-home-section] .home-section-title {
+  font-size: clamp(42px, 5.5vw, 76px);
+  line-height: .8;
+  letter-spacing: -.035em;
+  font-family: var(--font-anton), var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  -webkit-text-stroke: 0 transparent;
+  paint-order: stroke fill;
+}
+.comic-home [data-home-section="intro"] .home-section-title,
+.comic-home [data-home-section="schedule"] .home-section-heading > h2,
+.comic-home [data-home-section="sponsors"] .home-section-heading > h2 {
+  color: #f04b2b;
+  -webkit-text-stroke-color: #fff;
+}
+.comic-home [data-home-section="intro"] .home-section-title {
+  width: 100%;
+  max-width: none;
+}
+.comic-home [data-home-section="events"] .home-section-heading > h2,
+.comic-home [data-home-section="quest"] .home-section-heading > h2,
+.comic-home [data-home-section="gallery"] .home-section-heading > h2 { color: #f2ae30; }
+.comic-home [data-home-section="factions"] .home-section-heading > h2 {
+  color: #121110;
+}
+.comic-home [data-home-section="quest"] [class*="tilt-box-"] { transform: none !important; }
+.comic-home [data-home-section="intro"] .home-section-heading > p,
+.comic-home [data-home-section="events"] .home-section-heading > p,
+.comic-home [data-home-section="schedule"] .home-section-heading > p,
+.comic-home [data-home-section="quest"] .home-section-heading > p,
+.comic-home [data-home-section="sponsors"] .home-section-heading > p,
+.comic-home [data-home-section="gallery"] .home-section-heading > p { color: #fff; }
+.comic-home [data-home-section="factions"] .home-section-heading > p { color: #4b4540; }
+
+/* Standard taglines and card edges across the home sections. */
+.comic-home [data-home-section] .comic-tagline {
+  border: 2px solid #121110;
+  border-radius: 5px;
+  padding: 4px 10px;
+  box-shadow: 2px 2px 0 #121110 !important;
+  letter-spacing: .08em;
+}
+.comic-home [data-home-section="quest"] .home-section-heading .comic-tagline { color: #121110 !important; }
+.comic-home [data-home-section="sponsors"] .home-section-heading .comic-tagline,
+.comic-home [data-home-section="intro"] .comic-tagline,
+.comic-home [data-home-section="schedule"] .home-section-heading .comic-tagline {
+  color: #121110 !important;
+  background-color: #fff !important;
+}
+.comic-home [data-home-section] .comic-card,
+.comic-home [data-home-section] .quest-feature-card {
+  border: 2px solid #121110;
+  border-radius: 4px;
+  box-shadow: 5px 5px 0 #121110;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.comic-home [data-home-section] .comic-card { background-color: #fff; }
+.comic-home [data-home-section] .comic-card:hover,
+.comic-home [data-home-section] .quest-feature-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 7px 7px 0 #121110;
+}
+.comic-home [data-home-section="intro"] .about-number-box {
+  transition: none;
+}
+.comic-home [data-home-section="intro"] .about-number-box:hover { transform: none; }
+.comic-home [data-home-section="intro"] .grid > div:hover { transform: none !important; }
+.comic-home [data-home-section="intro"] .comic-card:nth-child(odd):hover { transform: rotate(-1.5deg) !important; }
+.comic-home [data-home-section="intro"] .comic-card:nth-child(even):hover { transform: rotate(1.5deg) !important; }
+.comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] p { color: #121110; }
+.comic-home [data-home-section="intro"] .comic-card h3,
+.comic-home [data-home-section="intro"] .comic-card p,
+.comic-home [data-home-section="intro"] .comic-card span { color: #121110; }
+
+/* Competition cards keep their staggered poster feel; other cards stay square. */
+.comic-home [data-home-section="events"] .comic-card:nth-child(2) { transform: rotate(-1deg); }
+.comic-home [data-home-section="events"] .comic-card:nth-child(3) { transform: rotate(1deg); }
+.comic-home [data-home-section="events"] .comic-card:nth-child(2):hover { transform: translateY(-4px) rotate(-1deg) !important; }
+.comic-home [data-home-section="events"] .comic-card:nth-child(3):hover { transform: translateY(-4px) rotate(1deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 1) { transform: rotate(-1.2deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 2) { transform: rotate(.8deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 3) { transform: rotate(-.6deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n) { transform: rotate(1.2deg); }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 1):hover { transform: translateY(-4px) rotate(-1.2deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 2):hover { transform: translateY(-4px) rotate(.8deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n + 3):hover { transform: translateY(-4px) rotate(-.6deg) !important; }
+.comic-home [data-home-section="factions"] .comic-card:nth-child(4n):hover { transform: translateY(-4px) rotate(1.2deg) !important; }
+.comic-home [data-home-section="sponsors"] .comic-small-box { transform: none !important; }
+.comic-home [data-home-section="schedule"] .schedule-meta-box { transform: none !important; }
+
+/* All home call-to-action buttons use the same black lower-right shadow and palette swaps. */
+.comic-home [data-home-section] a[class*="shadow"],
+.comic-home [data-home-section] button[class*="shadow"] { box-shadow: 4px 4px 0 #121110 !important; }
+.comic-home [data-home-section] :is(a, button)[class*="bg-[#f04b2b]"]:hover,
+.comic-home [data-home-section] :is(a, button)[class*="bg-[var(--color-ember)]"]:hover,
+.comic-home [data-home-section] :is(a, button)[class*="bg-[var(--color-orange)]"]:hover {
+  background-color: #f2ae30 !important; color: #121110 !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+.comic-home [data-home-section] :is(a, button)[class*="bg-[#F2AE30]"]:hover,
+.comic-home [data-home-section] :is(a, button)[class*="bg-[var(--color-yellow)]"]:hover {
+  background-color: #f04b2b !important; color: #fff !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+.comic-home [data-home-section] :is(a, button)[class*="bg-white"]:hover {
+  background-color: #121110 !important; color: #fff !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+.comic-home [data-home-section] :is(a, button)[class*="bg-[#121110]"]:hover {
+  background-color: #fff !important; color: #121110 !important;
+  border-color: #121110 !important; transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 #121110 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comic-home [data-home-section] .comic-card,
+  .comic-home [data-home-section] .quest-feature-card,
+  .comic-home [data-home-section] .about-number-box { transition: none; }
+}
+
+.comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] {
+  background: #fff;
+  border-color: #121110;
+  box-shadow: 5px 5px 0 #f04b2b;
+}
+.comic-home [data-home-section="intro"] .about-note-label { color: #0284c7 !important; }
+
+@media (min-width: 900px) {
+  .comic-home .home-section-heading { flex-basis: 75%; }
+}
+@media (min-width: 768px) {
+  .comic-home [data-home-section="intro"] .home-section-title { max-width: min(80vw, 1200px); }
+}
+
+/* Reveal takes more time (1.35s) */
+@keyframes comicReveal {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comic-reveal {
+  animation: comicReveal 1.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

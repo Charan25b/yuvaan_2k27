@@ -10,50 +10,52 @@ export function SponsorsPreviewSection() {
   const previewSponsors = SPONSORS_DATA.slice(0, 4);
 
   return (
-    <section className="py-14 sm:py-20 relative overflow-hidden">
+    <section data-home-section="sponsors" className="py-14 sm:py-20 relative overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
+          <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
               badge="Festival Partners"
-              badgeVariant="gold"
+              badgeVariant="section-light"
               title="Backed By Visionary Industry Partners"
               description="Yuvaan 2027 is supported by forward-thinking organizations empowering collegiate engineering, design, arts, and student innovation."
+              className="home-section-heading"
             />
-            <Button href="/sponsors" variant="primary" size="md" className="shrink-0">
+            <Button href="/sponsors" variant="gold" size="md" className="shrink-0">
               View All Partners &rarr;
             </Button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {previewSponsors.map((sp, idx) => {
-              const tints = ["gold", "cyan", "peach", "blush"] as const;
               const strips = ["gold", "cyan", "orange", "ember"] as const;
-              const badgeVariants = ["gold", "cyan", "primary", "emerald"] as const;
+              const badgeVariants = ["gold", "cyan", "blush", "emerald"] as const;
+              const boxTilts = ["tilt-box-1", "tilt-box-2", "tilt-box-3", "tilt-box-4"] as const;
 
               return (
                 <Card
                   key={sp.id}
                   variant="comic"
-                  bgTint={tints[idx % tints.length]}
+                  bgTint="white"
                   accentStrip={strips[idx % strips.length]}
-                  className="flex flex-col justify-between text-center p-3 comic-shadow-hover transition-all"
+                  className="flex flex-col justify-between text-center p-3"
                 >
                   <CardHeader className="p-3">
-                    <Badge
-                      variant={badgeVariants[idx % badgeVariants.length]}
-                      className="mb-3 self-center text-[10px] font-black"
-                    >
+                    {/* Tagline: strictly static without hover animation */}
+                    <Badge variant={badgeVariants[idx % badgeVariants.length]} className="mb-3 self-center text-[10px] font-black">
                       {sp.tier}
                     </Badge>
-                    <div className="h-24 w-full rounded-xl bg-white border-2 border-[var(--color-border-dark)] comic-shadow-sm flex flex-col items-center justify-center p-3 mb-4">
-                      <span className="text-[9px] font-black text-[var(--color-text-muted)] uppercase tracking-widest">
+
+                    {/* Keep partner logo frames straight for legibility. */}
+                    <div className={`comic-small-box ${boxTilts[idx % boxTilts.length]} h-24 w-full rounded-xl bg-white border-2 border-[#121110] shadow-[3.5px_3.5px_0px_#121110] flex flex-col items-center justify-center p-3 mb-4 select-none`}>
+                      <span className="text-[9px] font-black text-[var(--color-text-muted)] uppercase tracking-widest pointer-events-none transition-none transform-none">
                         Partner Logo
                       </span>
-                      <span className="font-black text-base text-[var(--color-text-dark)] mt-0.5">
+                      <span className="font-black text-base text-[#121110] mt-0.5 pointer-events-none transition-none transform-none">
                         {sp.name}
                       </span>
                     </div>
+
                     <CardTitle className="text-base font-black">
                       {sp.category}
                     </CardTitle>
