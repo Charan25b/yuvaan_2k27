@@ -543,16 +543,49 @@ small,
   /* .hero-comic-track continuously scrolls */
 }
 
-/* Homepage art direction drawn from the supplied Comic Verse reference. */
 .comic-home {
-  --poster-ink: #111110;
-  --poster-orange: #f04b2b;
-  background: #fff;
+  /* section's own torn top edge (0-20px deep) */
+  --tear-outer: polygon(0 9px, 2% 3px, 4.5% 14px, 6% 6px, 9% 17px, 11% 2px, 13.5% 11px,
+    16% 5px, 18% 16px, 21% 8px, 23% 1px, 26% 13px, 28.5% 6px, 31% 18px, 33% 4px,
+    35% 12px, 38% 7px, 41% 19px, 43% 3px, 46% 10px, 48.5% 16px, 51% 5px, 54% 14px,
+    56% 2px, 59% 11px, 61.5% 18px, 64% 6px, 66% 13px, 69% 1px, 72% 9px, 74.5% 17px,
+    77% 4px, 79% 12px, 82% 7px, 85% 15px, 87% 3px, 90% 10px, 92.5% 18px, 95% 5px,
+    97.5% 13px, 100% 6px, 100% 100%, 0 100%);
+
+  /* white strip's lower edge (inside a 34px-tall box) */
+  --tear-inner: polygon(0 0, 100% 0, 100% 46px, 96% 52px, 91% 43px, 87% 50px, 82% 41px,
+    77% 53px, 71% 44px, 66% 49px, 60% 40px, 55% 52px, 49% 45px, 44% 54px, 38% 42px,
+    33% 49px, 27% 43px, 22% 53px, 16% 46px, 11% 51px, 5% 42px, 0 48px);
 }
 
-.comic-home > section:not(.yuvaan-hero) {
-  border-color: var(--poster-ink);
+.comic-home [data-home-section] {
+  margin-top: -20px;
+  position: relative;
+  isolation: isolate;
+  clip-path: var(--tear-outer);
 }
+
+.comic-home [data-home-section]::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 56px;
+  z-index: 5;
+  background: #fff;
+  pointer-events: none;
+  clip-path: var(--tear-inner);
+}
+.comic-home [data-home-section]::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 34px;
+  pointer-events: none;
+  clip-path: var(--tear-inner);
+}
+.comic-home [data-home-section]::before { z-index: 5; background: #fff; }
 
 .comic-home [data-home-section="intro"] {
   padding-top: 104px;
