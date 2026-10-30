@@ -37,9 +37,17 @@ function ComicScene({ src }: { src: string }) {
   );
 }
 
-function ComicRail({ images, reverse = false }: { images: string[]; reverse?: boolean }) {
+function ComicRail({
+  images,
+  reverse = false,
+}: {
+  images: string[];
+  reverse?: boolean;
+}) {
   return (
-    <div className={`hero-comic-rail${reverse ? " hero-comic-rail--reverse" : ""}`}>
+    <div
+      className={`hero-comic-rail${reverse ? " hero-comic-rail--reverse" : ""}`}
+    >
       <div className="hero-comic-track">
         {[0, 1].map((group) => (
           <div className="hero-comic-sequence" key={group}>
@@ -74,14 +82,18 @@ export function HeroSection() {
               <span className="hero-word">ENTER</span>
               <span className="hero-word">THE</span>
             </span>
+
             <span className="hero-title-row hero-title-row--bottom">
               <span className="hero-word hero-word--brand">YUVAAN</span>
-              <span className="hero-word">VERSE</span><span className="hero-word hero-word--bang">!</span>
+
+              <span className="hero-word-group">
+                <span className="hero-word hero-word--verse">VERSE</span>
+                <span className="hero-word hero-word--bang">!</span>
+              </span>
             </span>
           </h1>
         </div>
       </Container>
-
     </section>
   );
 }

@@ -1150,6 +1150,8 @@ a[class*="bg-[#121110]"]:hover {
   box-shadow: 6px 6px 0 #121110 !important;
 }
 
+
+/* Mobile */
 @media (prefers-reduced-motion: reduce) {
   .comic-home [data-home-section] .comic-card,
   .comic-home [data-home-section] .quest-feature-card,
@@ -1161,13 +1163,21 @@ a[class*="bg-[#121110]"]:hover {
   border-color: #121110;
   box-shadow: 5px 5px 0 #f04b2b;
 }
-.comic-home [data-home-section="intro"] .about-note-label { color: #0284c7 !important; }
+
+.comic-home [data-home-section="intro"] .about-note-label {
+  color: #0284c7 !important;
+}
 
 @media (min-width: 900px) {
-  .comic-home .home-section-heading { flex-basis: 75%; }
+  .comic-home .home-section-heading {
+    flex-basis: 75%;
+  }
 }
+
 @media (min-width: 768px) {
-  .comic-home [data-home-section="intro"] .home-section-title { max-width: min(80vw, 1200px); }
+  .comic-home [data-home-section="intro"] .home-section-title {
+    max-width: min(80vw, 1200px);
+  }
 }
 
 /* Reveal takes more time (1.35s) */
@@ -1184,4 +1194,61 @@ a[class*="bg-[#121110]"]:hover {
 
 .comic-reveal {
   animation: comicReveal 1.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Keep VERSE and ! together */
+.hero-word-group {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.hero-word--verse {
+  white-space: nowrap;
+}
+
+.hero-word--bang {
+  display: inline-block;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Mobile title layout */
+@media (max-width: 767px) {
+  .hero-title-comic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Line 1: ENTER THE */
+  .hero-title-row--top {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  /* Lines 2 and 3: YUVAAN / VERSE! */
+  .hero-title-row--bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .hero-title-row--bottom .hero-word--brand {
+    display: block;
+  }
+
+  .hero-word-group {
+    display: inline-flex;
+    justify-content: center;
+    width: auto;
+  }
 }
