@@ -1020,6 +1020,15 @@ a[class*="bg-[#121110]"]:hover {
   background-image: radial-gradient(rgba(255,255,255,.11) 1px, transparent 1px);
   background-size: 16px 16px;
 }
+.comic-home [data-home-section="schedule"] {
+  background-image:
+    radial-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+    linear-gradient(rgba(17,17,16,.24), rgba(17,17,16,.24)),
+    url("/festival-timeline-paper.png");
+  background-size: 16px 16px, auto, cover;
+  background-position: 0 0, center, center;
+  background-repeat: repeat, no-repeat, no-repeat;
+}
 .comic-home [data-home-section="factions"] { color: #121110; background-color: #fff; }
 
 .comic-home [data-home-section] .home-section-heading > h2,
