@@ -14,7 +14,7 @@ export function AboutSection() {
         {/* Section Heading */}
         <div className="mb-8 sm:mb-12 flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <Badge variant="section-dark" comicStamp>
+            <Badge variant="section-light" comicStamp>
               ✦ About Yuvaan
             </Badge>
           </div>
@@ -38,7 +38,7 @@ export function AboutSection() {
                 for technical innovation and creative self-expression.
               </p>
               <div className="p-4 rounded-xl bg-[var(--color-cream-canvas)] border-2 border-[var(--color-border-dark)] comic-shadow-sm flex items-start gap-3">
-                <span className="font-black text-sm text-[var(--color-ember)] uppercase tracking-wider shrink-0">
+                <span className="about-note-label font-black text-sm text-[var(--color-cyan)] uppercase tracking-wider shrink-0">
                   NOTE:
                 </span>
                 <p className="text-xs text-[var(--color-text-dark)] font-bold">
@@ -49,11 +49,8 @@ export function AboutSection() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Button href="/events" variant="primary" size="md">
+              <Button href="/events" variant="gold" size="md">
                 View Event Categories &rarr;
-              </Button>
-              <Button href="/team" variant="outline" size="md">
-                Meet Organizing Team
               </Button>
             </div>
           </div>

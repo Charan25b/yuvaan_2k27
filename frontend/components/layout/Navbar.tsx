@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Container } from "@/components/ui/Container";
+import { GameSiteEntryModal } from "@/components/ui/GameSiteEntryModal";
 
 interface NavItem {
   label: string;
@@ -91,7 +92,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => setGameModalOpen(true)}
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#F2AE30] hover:bg-[#f04b2b] text-[#121110] hover:text-white border-2 border-[#121110] shadow-[2px_2px_0_#121110] hover:shadow-[3px_3px_0_#121110] transition-all"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#F2AE30] hover:bg-[#f04b2b] text-[#121110] hover:text-white border-2 border-[#121110] shadow-[2px_2px_0_#121110] hover:shadow-[3px_3px_0_#121110] transition-all cursor-pointer"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 group-hover:bg-green-400 opacity-75" />
@@ -106,7 +107,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => setGameModalOpen(true)}
-                className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#FEF3C7] border-2 border-[#121110] text-[#121110]"
+                className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-black rounded-lg bg-[#FEF3C7] border-2 border-[#121110] text-[#121110] cursor-pointer"
               >
                 <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse group-hover:bg-[#22c55e] transition-colors" />
                 Game Site
@@ -181,74 +182,7 @@ export function Navbar() {
         )}
       </header>
 
-      {/* Game Site Info Modal */}
-      {gameModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
-          onClick={() => setGameModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border-dark)] comic-shadow-lg p-0 overflow-hidden text-left"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="comic-tape-amber h-3 w-full border-b-2 border-[var(--color-border-dark)]" />
-
-            <div className="p-6">
-              <div className="flex items-center justify-between pb-3 border-b border-[var(--color-border-subtle)]">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-wider bg-[var(--color-cream)] text-[var(--color-ember)] border border-[var(--color-border-dark)] comic-shadow-sm">
-                  <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                  Separate Experience
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setGameModalOpen(false)}
-                  className="h-8 w-8 rounded-lg flex items-center justify-center font-black text-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-dark)] hover:bg-[var(--color-cream)] transition-colors cursor-pointer"
-                  aria-label="Close dialog"
-                >
-                  &times;
-                </button>
-              </div>
-
-              <div className="mt-4 flex flex-col gap-3">
-                <h3 className="text-2xl font-black text-[var(--color-text-dark)] leading-tight">
-                  Yuvaan Game Site
-                </h3>
-                <p className="text-xs sm:text-sm text-[var(--color-text-muted)] font-medium leading-relaxed">
-                  The interactive Game Site is a dedicated student competition platform separate from this public festival website.
-                </p>
-
-                <div className="rounded-xl bg-[#FEF3C7] p-3.5 text-xs text-[var(--color-text-dark)] space-y-1.5 border-2 border-[var(--color-border-dark)] comic-shadow-sm">
-                  <p className="font-black text-xs uppercase tracking-wider text-[var(--color-ember)]">
-                    Upcoming Game Site Features:
-                  </p>
-                  <ul className="list-disc pl-4 space-y-1 font-semibold">
-                    <li>Student authentication &amp; faction profiles</li>
-                    <li>Campus physical QR checkpoint scanners</li>
-                    <li>1v1 duel arena &amp; browser mini-games</li>
-                    <li>Live faction championship leaderboards</li>
-                  </ul>
-                </div>
-
-                <div className="p-2.5 rounded-lg bg-[var(--color-cream-canvas)] border border-[var(--color-border-subtle)] text-[11px] font-bold text-[var(--color-ember)]">
-                  ✦ Destination unconfigured — access portal activates during on-campus festival registration.
-                </div>
-              </div>
-
-              <div className="mt-6 pt-3 border-t border-[var(--color-border-subtle)] flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setGameModalOpen(false)}
-                  className="px-5 py-2 text-xs font-black uppercase tracking-wider rounded-xl bg-[#F2AE30] border-2 border-[#121110] shadow-[3.5px_3.5px_0px_#121110] text-[#121110] hover:bg-[#f04b2b] hover:text-white transition-all cursor-pointer"
-                >
-                  Understood
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <GameSiteEntryModal open={gameModalOpen} onClose={() => setGameModalOpen(false)} />
     </>
   );
 }

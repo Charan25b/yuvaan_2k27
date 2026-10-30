@@ -7,10 +7,7 @@ export function Footer() {
   const currentYear = 2027;
 
   return (
-    <footer className="mt-auto border-t-2 border-[var(--color-border-dark)] bg-[var(--color-cream-canvas)] text-[var(--color-text-dark)] relative overflow-hidden">
-      {/* Decorative top color tape stripe */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-[var(--color-ember)] via-[var(--color-yellow)] to-[var(--color-cyan)]" />
-
+    <footer className="mt-auto bg-[var(--color-cream-canvas)] text-[var(--color-text-dark)] relative overflow-hidden">
       {/* Subtle halftone background */}
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-40" />
 

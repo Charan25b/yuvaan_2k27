@@ -47,7 +47,7 @@ const factionStyling: Record<
 
 export function FactionsSection() {
   return (
-    <section data-home-section="factions" className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
+    <section data-home-section="factions" className="py-14 sm:py-20 bg-[var(--color-surface)] relative overflow-hidden">
       {/* Halftone texture */}
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-40" />
 
@@ -55,7 +55,7 @@ export function FactionsSection() {
         <div className="flex flex-col gap-10">
           <SectionHeading
             badge="Festival Lore & Rivalry"
-            badgeVariant="section-light"
+            badgeVariant="section-dark"
             title="Four Factions. One Festival Championship."
             description="Every festival competitor belongs to one of the four legendary campus divisions. Points earned in hackathons, esports brackets, and cultural battles fuel each faction's standings."
             className="home-section-heading"

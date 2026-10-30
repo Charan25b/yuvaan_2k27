@@ -11,7 +11,7 @@ export function GalleryPreviewSection() {
   const badgeVariants = ["blush", "cyan", "gold"] as const;
 
   return (
-    <section data-home-section="gallery" className="py-14 sm:py-20 bg-[var(--color-surface)] border-t-2 border-[var(--color-border-dark)] relative">
+    <section data-home-section="gallery" className="py-14 sm:py-20 bg-[var(--color-surface)] relative">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">

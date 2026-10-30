@@ -1,5 +1,6 @@
 import React from "react";
 import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
 
 /**
  * 9 SCROLLING HERO COMIC IMAGES
@@ -92,6 +93,9 @@ export function HeroSection() {
       </Container>
 
       <div className="hero-scroll-cue" aria-hidden="true"><span /> SCROLL TO EXPLORE</div>
+      <Button href="/team" variant="gold" size="md" className="hero-team-link">
+        Meet Organizing Team &rarr;
+      </Button>
     </section>
   );
 }

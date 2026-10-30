@@ -52,7 +52,7 @@ export function SchedulePreviewSection() {
           <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 pb-6">
             <SectionHeading
               badge="Festival Timeline"
-              badgeVariant="section-dark"
+              badgeVariant="section-light"
               title="Three Days of Uninterrupted Action"
               description="A quick glance at key milestones across the 3-day schedule. View the full timeline for comprehensive venue alignments and hourly programs."
               className="home-section-heading"

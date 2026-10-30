@@ -221,7 +221,6 @@ small,
   align-items: center;
   color: #fffaf1;
   background: var(--hero-ink);
-  border-bottom: 3px solid var(--color-border-dark);
 }
 
 .hero-artwork,
@@ -506,6 +505,12 @@ small,
 .hero-stamp { position: absolute; z-index: 3; right: max(24px, calc((100vw - 1280px)/2)); bottom: 28px; display: flex; align-items: center; gap: 6px; color: #171513; font-size: 9px; font-weight: 950; text-transform: uppercase; transform: rotate(-7deg); }
 .hero-stamp span, .hero-stamp b { display: grid; place-items: center; height: 38px; padding: 0 9px; background: #f3b32e; border: 2px solid #171513; box-shadow: 3px 3px 0 #171513; }
 .hero-stamp b { font-size: 15px; }
+.hero-team-link {
+  position: absolute;
+  z-index: 4;
+  right: max(24px, calc((100vw - 1280px)/2));
+  bottom: 24px;
+}
 
 @keyframes hero-panel-scroll {
   from { transform: translateY(0); }
@@ -530,6 +535,7 @@ small,
   .hero-actions { gap: 18px; margin-top: 24px; }
   .hero-footnote { flex-wrap: wrap; margin-top: 36px; font-size: 8px; letter-spacing: .1em; }
   .hero-stamp { right: 14px; bottom: 15px; }
+  .hero-team-link { right: 14px; bottom: 16px; }
   .hero-scroll-cue { left: 17px; bottom: 30px; transform: none; }
 }
 
@@ -555,28 +561,6 @@ small,
   background-color: #111110;
   background-image: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,.055), transparent 55%), repeating-linear-gradient(157deg, transparent 0 8px, rgba(255,255,255,.014) 9px 11px, transparent 12px 23px);
   border: 0;
-}
-
-.comic-home [data-home-section="intro"]::before,
-.comic-home [data-home-section="intro"]::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  left: -1%;
-  width: 102%;
-  height: 27px;
-  background: #fff;
-  pointer-events: none;
-}
-
-.comic-home [data-home-section="intro"]::before {
-  top: -1px;
-  clip-path: polygon(0 0,100% 0,100% 42%,94% 66%,89% 40%,82% 72%,76% 40%,70% 68%,64% 36%,58% 66%,51% 42%,43% 71%,36% 40%,29% 67%,21% 39%,14% 72%,7% 42%,0 68%);
-}
-
-.comic-home [data-home-section="intro"]::after {
-  bottom: -1px;
-  clip-path: polygon(0 25%,8% 54%,15% 30%,22% 58%,30% 31%,38% 62%,46% 34%,54% 60%,62% 30%,70% 58%,78% 32%,86% 60%,94% 34%,100% 56%,100% 100%,0 100%);
 }
 
 .comic-home [data-home-section="intro"] > .absolute.inset-0 {
@@ -657,19 +641,6 @@ small,
   background-size: 14px 14px;
 }
 
-.comic-home [data-home-section="quest"]::before,
-.comic-home [data-home-section="quest"]::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  left: -1%;
-  width: 102%;
-  height: 24px;
-  background: #fff;
-}
-
-.comic-home [data-home-section="quest"]::before { top: -1px; clip-path: polygon(0 0,100% 0,100% 50%,90% 28%,80% 58%,70% 32%,60% 62%,50% 30%,40% 57%,30% 29%,20% 58%,10% 29%,0 58%); }
-.comic-home [data-home-section="quest"]::after { bottom: -1px; clip-path: polygon(0 38%,10% 68%,20% 39%,30% 70%,40% 40%,50% 68%,60% 40%,70% 70%,80% 40%,90% 67%,100% 39%,100% 100%,0 100%); }
 .comic-home [data-home-section="quest"] > div > div { border: 0; border-radius: 0; box-shadow: none; background: transparent; overflow: visible; }
 .comic-home [data-home-section="quest"] > div > div > .comic-tape-amber { display: none; }
 .comic-home [data-home-section="quest"] h2 { color: #fff; font-size: clamp(44px, 7vw, 88px); line-height: .86; text-transform: uppercase; }
@@ -996,12 +967,12 @@ a[class*="bg-[#121110]"]:hover {
 .comic-home [data-home-section] .home-section-heading > h2,
 .comic-home [data-home-section] .home-section-title {
   font-size: clamp(42px, 5.5vw, 76px);
-  line-height: .88;
+  line-height: .8;
   letter-spacing: -.035em;
   font-family: var(--font-anton), var(--font-display);
   font-weight: 900;
   text-transform: uppercase;
-  -webkit-text-stroke: 2px #121110;
+  -webkit-text-stroke: 0 transparent;
   paint-order: stroke fill;
 }
 .comic-home [data-home-section="intro"] .home-section-title,
@@ -1019,8 +990,8 @@ a[class*="bg-[#121110]"]:hover {
 .comic-home [data-home-section="gallery"] .home-section-heading > h2 { color: #f2ae30; }
 .comic-home [data-home-section="factions"] .home-section-heading > h2 {
   color: #121110;
-  -webkit-text-stroke-color: #121110;
 }
+.comic-home [data-home-section="quest"] [class*="tilt-box-"] { transform: none !important; }
 .comic-home [data-home-section="intro"] .home-section-heading > p,
 .comic-home [data-home-section="events"] .home-section-heading > p,
 .comic-home [data-home-section="schedule"] .home-section-heading > p,
@@ -1037,8 +1008,13 @@ a[class*="bg-[#121110]"]:hover {
   box-shadow: 2px 2px 0 #121110 !important;
   letter-spacing: .08em;
 }
-.comic-home [data-home-section="quest"] .home-section-heading .comic-tagline,
-.comic-home [data-home-section="sponsors"] .home-section-heading .comic-tagline { color: #121110 !important; }
+.comic-home [data-home-section="quest"] .home-section-heading .comic-tagline { color: #121110 !important; }
+.comic-home [data-home-section="sponsors"] .home-section-heading .comic-tagline,
+.comic-home [data-home-section="intro"] .comic-tagline,
+.comic-home [data-home-section="schedule"] .home-section-heading .comic-tagline {
+  color: #121110 !important;
+  background-color: #fff !important;
+}
 .comic-home [data-home-section] .comic-card,
 .comic-home [data-home-section] .quest-feature-card {
   border: 2px solid #121110;
@@ -1113,26 +1089,12 @@ a[class*="bg-[#121110]"]:hover {
   .comic-home [data-home-section] .about-number-box { transition: none; }
 }
 
-/* Repeating jagged white dividers, matching the hero-to-About separator. */
-.comic-home [data-home-section]:not([data-home-section="intro"]):not([data-home-section="quest"])::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  left: -1%;
-  bottom: -1px;
-  width: 102%;
-  height: 27px;
-  background: #fff;
-  clip-path: polygon(0 25%,8% 54%,15% 30%,22% 58%,30% 31%,38% 62%,46% 34%,54% 60%,62% 30%,70% 58%,78% 32%,86% 60%,94% 34%,100% 56%,100% 100%,0 100%);
-  pointer-events: none;
-}
-.comic-home [data-home-section]::before,
-.comic-home [data-home-section]::after { filter: drop-shadow(0 3px 0 #121110); }
 .comic-home [data-home-section="intro"] .rounded-xl.bg-\[var\(--color-cream-canvas\)\] {
   background: #fff;
   border-color: #121110;
   box-shadow: 5px 5px 0 #f04b2b;
 }
+.comic-home [data-home-section="intro"] .about-note-label { color: #0284c7 !important; }
 
 @media (min-width: 900px) {
   .comic-home .home-section-heading { flex-basis: 75%; }
@@ -1140,7 +1102,6 @@ a[class*="bg-[#121110]"]:hover {
 @media (min-width: 768px) {
   .comic-home [data-home-section="intro"] .home-section-title { max-width: min(80vw, 1200px); }
 }
-
 
 /* Reveal takes more time (1.35s) */
 @keyframes comicReveal {
