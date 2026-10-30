@@ -390,7 +390,7 @@ small,
 .hero-title-comic {
   margin: 0;
   font-family: var(--font-anton), var(--font-display);
-  font-size: clamp(54px, 8.8vw, 126px);
+  font-size: clamp(68px, 12vw, 180px);
   font-weight: 900;
   text-transform: uppercase;
   display: flex;
@@ -505,13 +505,6 @@ small,
 .hero-stamp { position: absolute; z-index: 3; right: max(24px, calc((100vw - 1280px)/2)); bottom: 28px; display: flex; align-items: center; gap: 6px; color: #171513; font-size: 9px; font-weight: 950; text-transform: uppercase; transform: rotate(-7deg); }
 .hero-stamp span, .hero-stamp b { display: grid; place-items: center; height: 38px; padding: 0 9px; background: #f3b32e; border: 2px solid #171513; box-shadow: 3px 3px 0 #171513; }
 .hero-stamp b { font-size: 15px; }
-.hero-team-link {
-  position: absolute;
-  z-index: 4;
-  right: max(24px, calc((100vw - 1280px)/2));
-  bottom: 24px;
-}
-
 @keyframes hero-panel-scroll {
   from { transform: translateY(0); }
   to { transform: translateY(-50%); }
@@ -530,12 +523,11 @@ small,
   .hero-content { padding-top: 70px; padding-bottom: 90px; }
   .hero-kicker { font-size: 9px; letter-spacing: .14em; }
   .hero-issue { flex-wrap: wrap; margin-top: 22px; font-size: 8px; }
-  .hero-copy h1 { font-size: clamp(49px, 12vw, 76px); line-height: .98; letter-spacing: -.025em; text-shadow: 3px 4px 0 #171513, 5px 6px 0 rgba(243, 179, 46, .95); }
+  .hero-copy h1 { font-size: clamp(54px, 15.5vw, 98px); line-height: .98; letter-spacing: -.025em; text-shadow: 3px 4px 0 #171513, 5px 6px 0 rgba(243, 179, 46, .95); }
   .hero-description { max-width: 390px; margin-top: 24px; font-size: 15px; }
   .hero-actions { gap: 18px; margin-top: 24px; }
   .hero-footnote { flex-wrap: wrap; margin-top: 36px; font-size: 8px; letter-spacing: .1em; }
   .hero-stamp { right: 14px; bottom: 15px; }
-  .hero-team-link { right: 14px; bottom: 16px; }
   .hero-scroll-cue { left: 17px; bottom: 30px; transform: none; }
 }
 
@@ -556,6 +548,39 @@ small,
   --tear-inner: polygon(0 0, 100% 0, 100% 46px, 96% 52px, 91% 43px, 87% 50px, 82% 41px,
     77% 53px, 71% 44px, 66% 49px, 60% 40px, 55% 52px, 49% 45px, 44% 54px, 38% 42px,
     33% 49px, 27% 43px, 22% 53px, 16% 46px, 11% 51px, 5% 42px, 0 48px);
+
+  /* Alternate tear profiles keep each section break from repeating exactly. */
+  --tear-outer-b: polygon(0 5px, 2.5% 13px, 5% 4px, 8% 18px, 10% 9px, 13% 2px, 15.5% 15px,
+    19% 6px, 22% 17px, 25% 3px, 28% 12px, 31.5% 19px, 35% 8px, 38% 14px, 41% 1px,
+    44% 11px, 47% 5px, 50% 18px, 53% 9px, 56% 2px, 59% 16px, 62.5% 7px, 66% 13px,
+    69% 3px, 72% 20px, 75% 9px, 78% 15px, 81% 4px, 84% 12px, 87% 1px, 90% 17px,
+    93% 8px, 96% 14px, 98% 3px, 100% 10px, 100% 100%, 0 100%);
+  --tear-inner-b: polygon(0 0, 100% 0, 100% 48px, 97% 42px, 93% 54px, 89% 44px, 86% 51px,
+    81% 39px, 78% 55px, 74% 47px, 70% 52px, 65% 41px, 61% 54px, 57% 43px, 53% 49px,
+    49% 40px, 45% 55px, 41% 46px, 37% 52px, 32% 39px, 28% 50px, 24% 43px, 20% 55px,
+    16% 47px, 12% 51px, 8% 40px, 5% 54px, 2% 45px, 0 50px);
+
+  --tear-outer-c: polygon(0 14px, 3% 6px, 5.5% 18px, 8% 3px, 11% 12px, 14% 19px, 17% 5px,
+    20% 10px, 23% 2px, 26% 16px, 29% 7px, 32% 20px, 35% 11px, 38% 4px, 41% 15px,
+    44% 6px, 47% 18px, 50% 9px, 53% 1px, 56% 13px, 59% 20px, 62% 7px, 65% 16px,
+    68% 3px, 71% 11px, 74% 19px, 77% 5px, 80% 14px, 83% 2px, 86% 10px, 89% 18px,
+    92% 6px, 95% 15px, 98% 4px, 100% 12px, 100% 100%, 0 100%);
+  --tear-inner-c: polygon(0 0, 100% 0, 100% 44px, 98% 55px, 94% 46px, 90% 40px, 87% 52px,
+    83% 43px, 78% 55px, 74% 39px, 71% 48px, 67% 53px, 63% 41px, 59% 50px, 55% 44px,
+    51% 54px, 47% 39px, 43% 49px, 39% 55px, 35% 42px, 31% 51px, 27% 40px, 23% 54px,
+    19% 46px, 15% 52px, 11% 39px, 7% 50px, 4% 42px, 0 53px);
+}
+
+.comic-home [data-home-section="events"],
+.comic-home [data-home-section="quest"] {
+  --tear-outer: var(--tear-outer-b);
+  --tear-inner: var(--tear-inner-b);
+}
+
+.comic-home [data-home-section="schedule"],
+.comic-home [data-home-section="sponsors"] {
+  --tear-outer: var(--tear-outer-c);
+  --tear-inner: var(--tear-inner-c);
 }
 
 .comic-home [data-home-section] {

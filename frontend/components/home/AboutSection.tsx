@@ -49,8 +49,8 @@ export function AboutSection() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Button href="/events" variant="gold" size="md">
-                View Event Categories &rarr;
+              <Button href="/team" variant="gold" size="md">
+                Meet Organizing Team &rarr;
               </Button>
             </div>
           </div>

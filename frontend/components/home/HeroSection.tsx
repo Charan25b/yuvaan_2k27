@@ -1,6 +1,5 @@
 import React from "react";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 
 /**
  * 9 SCROLLING HERO COMIC IMAGES
@@ -70,8 +69,6 @@ export function HeroSection() {
 
       <Container className="hero-content">
         <div className="hero-copy">
-          <div className="hero-kicker"><span /> IIIT GUWAHATI · FEBRUARY 19–21, 2027 <span /></div>
-          <p className="hero-issue">THE NEXT BIG THING STARTS HERE</p>
           <h1 id="hero-title" className="hero-title-comic">
             <span className="hero-title-row hero-title-row--top">
               <span className="hero-word">ENTER</span>
@@ -82,20 +79,9 @@ export function HeroSection() {
               <span className="hero-word">VERSE</span><span className="hero-word hero-word--bang">!</span>
             </span>
           </h1>
-          <p className="hero-description">
-            Three days. One campus. A universe of music, makers, and moments you won’t find anywhere else.
-          </p>
-
-          <div className="hero-footnote">
-            <span className="hero-spark">✦</span> THE ANNUAL CULTURAL &amp; TECHNICAL FESTIVAL <span>·</span> 3 DAYS OF ACTION
-          </div>
         </div>
       </Container>
 
-      <div className="hero-scroll-cue" aria-hidden="true"><span /> SCROLL TO EXPLORE</div>
-      <Button href="/team" variant="gold" size="md" className="hero-team-link">
-        Meet Organizing Team &rarr;
-      </Button>
     </section>
   );
 }
