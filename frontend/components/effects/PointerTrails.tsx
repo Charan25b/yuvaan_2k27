@@ -3,27 +3,29 @@
 import { useEffect, useRef } from "react";
 import { useMotion } from "./useMotion";
 
-// Replace with local transparent character art; no downloaded or licensed component code.
-// Array order is the repeating desktop trail order.
-export const TRAIL_ASSETS = [
-  "/trails/spider-mask.svg",
-  "/trails/luffy.svg",
-  "/trails/superman.svg",
-  "/trails/batman.svg",
-  "/trails/wonder-woman.svg",
-  "/trails/iron-man.svg",
-];
-export const TRAIL_SETTINGS = {
-  desktop: { max: 10, distance: 100, lifetime: 1800, size: 48 },
-  touch: { max: 24, distance: 10, lifetime: 1000, size: 42 },
+// A procedural marker: no sprites, images, filters, or animation dependencies.
+export const MARKER_SETTINGS = {
+  desktop: { maxPoints: 96, lifetime: 900, width: 10 },
+  touch: { maxPoints: 72, lifetime: 720, width: 7 },
+  followMs: 24,
+  colorDistance: 280,
+  palette: [[255, 212, 59], [240, 91, 76], [89, 186, 223], [172, 144, 225]],
 };
 
 type Point = { x: number; y: number };
-type Particle = Point & {
-  born: number; life: number;
-  rotation: number; size: number; drift: number; image: number;
-};
-const interactive = "a, button, input, select, textarea, nav, [role='dialog'], [data-no-trail]";
+type InkPoint = Point & { born: number; width: number; color: string; stroke: number; life: number };
+type Mode = "desktop" | "touch";
+const interactive = "a, button, input, select, textarea, nav, header, [contenteditable='true'], [role='dialog'], [data-no-trail]";
+const midpoint = (a: Point, b: Point) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+
+function inkColor(distance: number) {
+  const phase = distance / MARKER_SETTINGS.colorDistance;
+  const index = Math.floor(phase) % MARKER_SETTINGS.palette.length;
+  const from = MARKER_SETTINGS.palette[index];
+  const to = MARKER_SETTINGS.palette[(index + 1) % MARKER_SETTINGS.palette.length];
+  const blend = phase % 1;
+  return `rgb(${from.map((channel, i) => Math.round(channel + (to[i] - channel) * blend)).join(",")})`;
+}
 
 export function PointerTrails() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -36,161 +38,121 @@ export function PointerTrails() {
     if (!ctx) return;
     const fine = matchMedia("(any-hover: hover) and (any-pointer: fine)");
     const lowPower = navigator.hardwareConcurrency <= 4;
-    const images = TRAIL_ASSETS.map((src) => { const img = new Image(); img.src = src; return img; });
-    // Bake overlapping, feathered wisps into one small texture. The irregular
-    // silhouette reads as fog rather than individual circular particles.
-    // No full-screen blur or per-frame gradient allocation is needed.
-    const mist = document.createElement("canvas");
-    mist.width = mist.height = 128;
-    const brush = mist.getContext("2d")!;
-    const wisps = [
-      { x: 61, y: 66, radius: 47, opacity: .26 },
-      { x: 36, y: 59, radius: 30, opacity: .22 },
-      { x: 87, y: 52, radius: 32, opacity: .24 },
-      { x: 74, y: 83, radius: 30, opacity: .18 },
-      { x: 48, y: 39, radius: 26, opacity: .16 },
-    ];
-    for (const { x, y, radius, opacity } of wisps) {
-      const gradient = brush.createRadialGradient(x, y, 0, x, y, radius);
-      gradient.addColorStop(0, `rgba(238,245,249,${opacity})`);
-      gradient.addColorStop(.4, `rgba(215,230,239,${opacity * .6})`);
-      gradient.addColorStop(1, "rgba(200,218,230,0)");
-      brush.fillStyle = gradient;
-      brush.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-    }
-
-    let particles: Particle[] = [];
-    let last: Point | null = null;
-    let distanceRemainder = 0;
+    let points: InkPoint[] = [];
+    let target: Point | null = null;
+    let pen: Point | null = null;
+    let mode: Mode = "desktop";
+    let touchId: number | null = null;
+    let suppressMouseUntil = 0;
     let frame = 0;
     let lastDraw = 0;
-    let touchId: number | null = null;
-    let mode: "desktop" | "touch" = "desktop";
-    let sequence = 0;
-    let lastEmit = 0;
+    let stroke = 0;
+    let distance = 0;
+    let penWidth = MARKER_SETTINGS.desktop.width;
     let width = innerWidth;
     let height = innerHeight;
+
+    const lift = () => { target = null; pen = null; stroke++; };
     const clear = () => ctx.clearRect(0, 0, width, height);
     const reset = () => {
-      cancelAnimationFrame(frame); frame = 0;
-      particles = []; last = null; distanceRemainder = 0; touchId = null; lastEmit = 0; clear();
+      cancelAnimationFrame(frame); frame = 0; lastDraw = 0;
+      points = []; touchId = null; lift(); clear();
     };
     const resize = () => {
+      // A collapsing mobile browser bar must not cancel the active touch gesture.
+      if (width !== innerWidth) reset();
       width = innerWidth; height = innerHeight;
       const dpr = Math.min(devicePixelRatio || 1, lowPower ? 1 : 1.5);
       canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      particles = []; last = null; distanceRemainder = 0;
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+    };
+    const paint = (start: Point, control: Point, end: Point, offset: number, thickness: number, color: string, opacity: number) => {
+      ctx.beginPath();
+      ctx.moveTo(start.x + offset, start.y - offset * .55);
+      ctx.quadraticCurveTo(control.x + offset, control.y - offset * .55, end.x + offset, end.y - offset * .55);
+      ctx.lineWidth = thickness; ctx.strokeStyle = color; ctx.globalAlpha = opacity;
+      ctx.stroke();
     };
     const draw = (now: number) => {
       frame = 0;
-      const interval = mode === "touch" || lowPower ? 1000 / 30 : 1000 / 60;
-      if (now - lastDraw < interval - 1) { frame = requestAnimationFrame(draw); return; }
+      const interval = lowPower ? 1000 / 30 : 1000 / 60;
+      if (lastDraw && now - lastDraw < interval - 1) { frame = requestAnimationFrame(draw); return; }
+      const delta = Math.min(40, lastDraw ? now - lastDraw : 16);
       lastDraw = now;
+      const settings = MARKER_SETTINGS[mode];
+      if (target) {
+        const fresh = !pen;
+        const previous = pen || target;
+        const follow = 1 - Math.exp(-delta / MARKER_SETTINGS.followMs);
+        pen = { x: previous.x + (target.x - previous.x) * follow, y: previous.y + (target.y - previous.y) * follow };
+        const step = Math.hypot(pen.x - previous.x, pen.y - previous.y);
+        if (fresh || step > .25) {
+          distance += step;
+          // Fast strokes narrow like a felt nib; the small variation is fixed
+          // to distance, so the dry-ink texture never jitters while fading.
+          const pressure = 1 - Math.min(step / delta / 3, .4);
+          penWidth += (settings.width * pressure - penWidth) * .4;
+          points.push({ ...pen, born: now, life: settings.lifetime, stroke,
+            width: penWidth * (1 + Math.sin(distance * .075) * .09), color: inkColor(distance) });
+        }
+      }
+      points = points.filter((point) => now - point.born < point.life);
+      const cap = lowPower ? 48 : settings.maxPoints;
+      if (points.length > cap) points.splice(0, points.length - cap);
       clear();
-      particles = particles.filter((particle) => now - particle.born < particle.life);
-      for (const p of particles) {
-        const age = (now - p.born) / p.life;
-        const fadeInDuration = mode === "touch" ? 120 : 300;
-        const fadeInProgress = Math.min((now - p.born) / fadeInDuration, 1);
-        const fadeIn = fadeInProgress * fadeInProgress * (3 - 2 * fadeInProgress);
-        const fade = fadeIn * (1 - age) ** (mode === "touch" ? 1.2 : 1.5);
-        const size = p.size * (mode === "touch" ? 1 + age * 1.4 : 1 - age * .16);
-        ctx.save();
-        ctx.translate(p.x + (mode === "touch" ? p.drift * age : 0), p.y - age * (mode === "touch" ? 36 : 0));
-        ctx.rotate(mode === "touch" ? p.rotation + age * .12 : p.rotation);
-        ctx.globalAlpha = fade * (mode === "touch" ? 1 : .85);
-        if (mode === "touch") {
-          // Broad, slightly flattened clouds overlap into a translucent trail;
-          // each expands and lifts away from the touch point as it dissipates.
-          ctx.drawImage(mist, -size, -size * .75, size * 2, size * 1.5);
-        } else {
-          const sprite = images[p.image];
-          if (sprite.complete && sprite.naturalWidth) ctx.drawImage(sprite, -size / 2, -size / 2, size, size * 1.16);
-        }
-        ctx.restore();
+      for (let i = 0; i < points.length; i++) {
+        const p = points[i];
+        const before = points[i - 1]?.stroke === p.stroke ? points[i - 1] : p;
+        const after = points[i + 1]?.stroke === p.stroke ? points[i + 1] : p;
+        const start = midpoint(before, p);
+        const end = midpoint(p, after);
+        // A tiny nib dash also gives a single tap a visible, fading ink mark.
+        if (before === p && after === p) { start.x -= 1; end.x += 1; end.y -= 1; }
+        const fade = (1 - (now - p.born) / p.life) ** 1.4;
+        paint(start, p, end, 0, p.width + 1.5, "#142039", fade * .18);
+        paint(start, p, end, 0, p.width, p.color, fade * .72);
+        paint(start, p, end, p.width * .22, .8, "#fff8df", fade * .45);
       }
-      if (particles.length) frame = requestAnimationFrame(draw);
+      const following = target && pen && Math.hypot(target.x - pen.x, target.y - pen.y) > .5;
+      if (points.length || following) frame = requestAnimationFrame(draw);
     };
-    const emit = (point: Point, kind: typeof mode) => {
+    const move = (point: Point, kind: Mode) => {
       if (document.hidden) return;
-      if (mode !== kind) { reset(); mode = kind; }
-      const settings = TRAIL_SETTINGS[kind];
-      const now = performance.now();
-      const positions: Point[] = [];
-      if (kind === "touch") {
-        if (now - lastEmit < 28) return;
-        if (last && Math.hypot(point.x - last.x, point.y - last.y) < settings.distance) return;
-        positions.push(point);
-        last = point;
-        lastEmit = now;
-      } else {
-        const previous = last;
-        if (!previous) {
-          positions.push(point);
-          distanceRemainder = 0;
-        } else {
-          const dx = point.x - previous.x;
-          const dy = point.y - previous.y;
-          const segmentLength = Math.hypot(dx, dy);
-          const carriedDistance = distanceRemainder % settings.distance;
-          const totalDistance = carriedDistance + segmentLength;
-          const sampleCount = Math.floor(totalDistance / settings.distance);
-          const firstSample = settings.distance - carriedDistance;
-          for (let sample = 0; sample < sampleCount; sample++) {
-            const distanceAlongSegment = firstSample + sample * settings.distance;
-            const ratio = distanceAlongSegment / segmentLength;
-            positions.push({ x: previous.x + dx * ratio, y: previous.y + dy * ratio });
-          }
-          distanceRemainder = totalDistance - sampleCount * settings.distance;
-        }
-        last = point;
-      }
-      if (positions.length === 0) return;
-
-      for (const position of positions) {
-        particles.push({
-          ...position,
-          born: now,
-          life: settings.lifetime,
-          size: settings.size * (kind === "touch" ? .85 + Math.random() * .3 : .95 + Math.random() * .1),
-          rotation: (Math.random() - .5) * (kind === "touch" ? .5 : .16),
-          drift: kind === "touch" ? (Math.random() - .5) * 42 : 0,
-          image: kind === "desktop" ? sequence++ % images.length : 0,
-        });
-      }
-      const cap = lowPower ? Math.min(settings.max, 16) : settings.max;
-      if (particles.length > cap) particles.splice(0, particles.length - cap);
+      if (mode !== kind) { reset(); mode = kind; penWidth = MARKER_SETTINGS[kind].width; }
+      // Start a fresh stroke after a large pointer jump or switching windows.
+      if (target && Math.hypot(point.x - target.x, point.y - target.y) > 240) lift();
+      target = point;
       if (!frame) frame = requestAnimationFrame(draw);
     };
     const mouse = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse" || !fine.matches || touchId !== null) return;
-      const target = event.target as Element;
-      if (target.closest(interactive)) { last = null; distanceRemainder = 0; return; }
-      emit({ x: event.clientX, y: event.clientY }, "desktop");
+      if (event.pointerType !== "mouse" || !fine.matches || touchId !== null || performance.now() < suppressMouseUntil) return;
+      if ((event.target as Element).closest(interactive)) { lift(); return; }
+      move({ x: event.clientX, y: event.clientY }, "desktop");
     };
-    // Touch events continue during native scrolling, unlike cancelled Pointer Events.
-    // Every listener is passive; we never capture pointers or preventDefault.
+    // Passive Touch Events keep delivering positions during native page scrolling.
+    // We never preventDefault, capture a pointer, or change touch-action.
+    const endTouch = () => { touchId = null; suppressMouseUntil = performance.now() + 700; lift(); };
     const startTouch = (event: TouchEvent) => {
-      if (event.touches.length !== 1 || (event.target as Element).closest(interactive)) {
-        touchId = null; last = null; distanceRemainder = 0; lastEmit = 0; return;
-      }
-      if (mode !== "touch") { reset(); mode = "touch"; }
+      if (event.touches.length !== 1 || (event.target as Element).closest(interactive)) { endTouch(); return; }
       const touch = event.touches[0];
-      touchId = touch.identifier; last = null; distanceRemainder = 0; lastEmit = 0;
-      emit({ x: touch.clientX, y: touch.clientY }, "touch");
+      lift();
+      move({ x: touch.clientX, y: touch.clientY }, "touch");
+      touchId = touch.identifier;
     };
     const moveTouch = (event: TouchEvent) => {
-      if (event.touches.length !== 1) { touchId = null; last = null; distanceRemainder = 0; lastEmit = 0; return; }
+      if (event.touches.length !== 1) { endTouch(); return; }
       const touch = event.touches[0];
-      if (touch.identifier !== touchId) return;
-      emit({ x: touch.clientX, y: touch.clientY }, "touch");
+      if (touch.identifier === touchId) move({ x: touch.clientX, y: touch.clientY }, "touch");
     };
-    const endTouch = () => { touchId = null; last = null; distanceRemainder = 0; lastEmit = 0; };
     const visibility = () => { if (document.hidden) reset(); };
+    const leave = (event: PointerEvent) => { if (event.pointerType === "mouse" && !event.relatedTarget) lift(); };
+    const scroll = () => { if (mode === "desktop") lift(); };
     resize();
     window.addEventListener("resize", resize, { passive: true });
     window.addEventListener("pointermove", mouse, { passive: true });
+    window.addEventListener("pointerout", leave, { passive: true });
+    window.addEventListener("scroll", scroll, { passive: true });
     window.addEventListener("touchstart", startTouch, { passive: true });
     window.addEventListener("touchmove", moveTouch, { passive: true });
     window.addEventListener("touchend", endTouch, { passive: true });
@@ -201,6 +163,8 @@ export function PointerTrails() {
       reset();
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", mouse);
+      window.removeEventListener("pointerout", leave);
+      window.removeEventListener("scroll", scroll);
       window.removeEventListener("touchstart", startTouch);
       window.removeEventListener("touchmove", moveTouch);
       window.removeEventListener("touchend", endTouch);
