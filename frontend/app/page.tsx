@@ -9,7 +9,6 @@ import { GameSiteSection } from "@/components/home/GameSiteSection";
 import { FactionsSection } from "@/components/home/FactionsSection";
 import { SponsorsPreviewSection } from "@/components/home/SponsorsPreviewSection";
 import { GalleryPreviewSection } from "@/components/home/GalleryPreviewSection";
-import { Reveal } from "@/components/ui/Reveal";
 
 export default function HomePage() {
   // Always start at the top (Hero) when refreshing or loading the page
@@ -27,27 +26,13 @@ export default function HomePage() {
       {/* Hero section is always immediately visible at the top */}
       <HeroSection />
 
-      <Reveal>
-        <AboutSection />
-      </Reveal>
-      <Reveal>
-        <FeaturedEventsSection />
-      </Reveal>
-      <Reveal>
-        <SchedulePreviewSection />
-      </Reveal>
-      <Reveal>
-        <GameSiteSection />
-      </Reveal>
-      <Reveal>
-        <FactionsSection />
-      </Reveal>
-      <Reveal>
-        <SponsorsPreviewSection />
-      </Reveal>
-      <Reveal>
-        <GalleryPreviewSection />
-      </Reveal>
+      <AboutSection />
+      <FeaturedEventsSection />
+      <SchedulePreviewSection />
+      <GameSiteSection />
+      <FactionsSection />
+      <SponsorsPreviewSection />
+      <GalleryPreviewSection />
     </div>
   );
 }
