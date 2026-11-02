@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { GameSiteEntryModal } from "@/components/ui/GameSiteEntryModal";
 import styles from "./Navbar.module.css";
@@ -69,9 +70,13 @@ export function Navbar() {
         }}>
         <div className={styles.bar}>
           <Link href="/" onClick={close} className={styles.brand} aria-label="YUVAAN 2027 — IIIT Guwahati home">
-            <span className={styles.emblem} aria-hidden="true">
+            {pathname === "/" ? (
+              <span className={styles.homeLogo}>
+                <Image src="/brand/yuvaan-logo.jpg" alt="" width={52} height={52} sizes="52px" />
+              </span>
+            ) : <span className={styles.emblem} aria-hidden="true">
               <svg viewBox="0 0 24 32" fill="currentColor"><path d="M13 0 2 18h8L8 32l14-20h-9z" /></svg>
-            </span>
+            </span>}
             <span><span className={styles.wordmark}>YUVAAN <small>2027</small></span>
               <span className={styles.institute}>IIIT GUWAHATI</span></span>
           </Link>

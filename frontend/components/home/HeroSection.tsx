@@ -21,8 +21,8 @@ export const HERO_IMAGES: HeroImage[] = [
 ];
 
 export const HERO_MOTION = {
-  desktop: { zoom: 0.14, backgroundShift: 40, titleShift: 16 },
-  mobile: { zoom: 0.06, backgroundShift: 18, titleShift: 8 },
+  desktop: { zoom: 0.32, backgroundShift: 96, brandGrowth: 0.22, preludeShrink: 0.22, outward: 48 },
+  mobile: { zoom: 0.14, backgroundShift: 42, brandGrowth: 0.14, preludeShrink: 0.18, outward: 24 },
 };
 
 function ComicScene({ image, priority = false }: { image: HeroImage; priority?: boolean }) {
@@ -58,7 +58,7 @@ function ComicRail({
     if (!trackElement || !sequenceElement) return;
 
     const updateDuration = () => {
-      const sequenceHeight = sequenceElement.getBoundingClientRect().height;
+      const sequenceHeight = sequenceElement.offsetHeight;
       if (sequenceHeight > 0) {
         trackElement.style.setProperty("--comic-duration", `${sequenceHeight / 42}s`);
       }
@@ -103,14 +103,28 @@ export function HeroSection() {
     let frame = 0;
     let visible = true;
     let height = element.offsetHeight;
-    let top = element.getBoundingClientRect().top + window.scrollY;
-    const update = () => {
+    const headerHeight = () => document.querySelector("header")?.offsetHeight || 0;
+    let top = Math.max(0, element.getBoundingClientRect().top + window.scrollY - headerHeight());
+    let smoothProgress = Math.max(0, Math.min(1, (window.scrollY - top) / height));
+    let lastTime = 0;
+    const update = (time: number) => {
       frame = 0;
-      const progress = Math.max(0, Math.min(1, (window.scrollY - top) / height));
+      const targetProgress = Math.max(0, Math.min(1, (window.scrollY - top) / height));
+      const elapsed = Math.min(50, lastTime ? time - lastTime : 16);
+      lastTime = time;
+      smoothProgress += (targetProgress - smoothProgress) * (1 - Math.exp(-elapsed / 65));
+      const progress = Math.min(1, smoothProgress / .65);
       const amount = mobile.matches ? HERO_MOTION.mobile : HERO_MOTION.desktop;
-      element.style.setProperty("--comic-scale", String(1.04 + amount.zoom * (1 - progress)));
-      element.style.setProperty("--comic-y", `${progress * amount.backgroundShift}px`);
-      element.style.setProperty("--title-y", `${-progress * amount.titleShift}px`);
+      // Smoothstep softens the start/end of the background depth, while the
+      // established title zoom and outward lettering keep their own progress.
+      const depthProgress = smoothProgress * smoothProgress * (3 - 2 * smoothProgress);
+      element.style.setProperty("--comic-scale", String(1.12 + amount.zoom * (1 - depthProgress)));
+      element.style.setProperty("--comic-y", `${depthProgress * amount.backgroundShift}px`);
+      element.style.setProperty("--brand-scale", String(1 + amount.brandGrowth * progress));
+      element.style.setProperty("--prelude-scale", String(1 - amount.preludeShrink * progress));
+      element.style.setProperty("--verse-scale", String(1 - amount.preludeShrink * progress));
+      element.style.setProperty("--satellite-y", `${amount.outward * progress}px`);
+      if (Math.abs(targetProgress - smoothProgress) > .001 && visible && !document.hidden) frame = requestAnimationFrame(update);
     };
     const schedule = () => {
       if (visible && !document.hidden && !frame) frame = requestAnimationFrame(update);
@@ -130,7 +144,7 @@ export function HeroSection() {
     });
     const resize = new ResizeObserver(() => {
       height = element.offsetHeight;
-      top = element.getBoundingClientRect().top + window.scrollY;
+      top = Math.max(0, element.getBoundingClientRect().top + window.scrollY - headerHeight());
       schedule();
     });
 
@@ -147,12 +161,12 @@ export function HeroSection() {
       window.removeEventListener("scroll", schedule);
       document.removeEventListener("visibilitychange", activity);
       element.dataset.running = "false";
-      ["--comic-scale", "--comic-y", "--title-y"].forEach((key) => element.style.removeProperty(key));
+      ["--brand-scale", "--prelude-scale", "--verse-scale", "--satellite-y", "--comic-scale", "--comic-y"].forEach((key) => element.style.removeProperty(key));
     };
   }, [enabled]);
 
   return (
-    <section ref={hero} className={styles.hero} aria-labelledby="hero-title" data-running="false">
+    <section ref={hero} className={styles.hero} aria-labelledby="hero-title" data-running="true">
       <div className={styles.artwork} aria-hidden="true">
         <ComicRail images={firstColumn} firstRail />
         <ComicRail images={secondColumn} reverse />
@@ -162,10 +176,22 @@ export function HeroSection() {
       <div className={styles.copy}>
         <p className={styles.eyebrow}>CULTURE. CHAOS. CONNECTION.</p>
         <h1 id="hero-title" className={styles.title}>
-          <span className={styles.prelude}>ENTER THE</span>
-          <span className={styles.brand}>YUVAAN</span>
-          <span className={styles.verse}>
-            VERSE<span>!</span>
+          <span className={styles.splash}>
+            <Image
+              className={styles.bubble}
+              src="/brand/hero-cloud-red.png"
+              width={1537}
+              height={1023}
+              alt=""
+              aria-hidden="true"
+              sizes="(max-width: 680px) 100vw, 1100px"
+              loading="eager"
+            />
+            <span className={styles.prelude}>ENTER THE</span>
+            <span className={styles.brand}>YUVAAN</span>
+            <span className={styles.verse}>
+              VERSE<span>!</span>
+            </span>
           </span>
         </h1>
         <Link className={styles.explore} href="/events">

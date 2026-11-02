@@ -1,15 +1,18 @@
 .hero {
   --comic-duration: 32s;
-  --comic-scale: 1.08;
+  --comic-scale: 1.12;
   --comic-y: 0px;
-  --title-y: 0px;
+  --brand-scale: 1;
+  --prelude-scale: 1;
+  --verse-scale: 1;
+  --satellite-y: 0px;
   position: relative;
   isolation: isolate;
   min-height: min(820px, calc(100svh - 96px));
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: clip;
   background: #142039;
   color: #f6f0df;
 }
@@ -22,6 +25,7 @@
 }
 
 .artwork {
+  inset: -100px -60px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -45,12 +49,12 @@
   display: flex;
   flex-direction: column;
   animation: comic-panels var(--comic-duration, 32s) linear infinite;
-  animation-play-state: paused;
+  animation-play-state: running;
   will-change: transform;
 }
 
-.hero[data-running="true"] .track {
-  animation-play-state: running;
+.hero[data-running="false"] .track {
+  animation-play-state: paused;
 }
 
 .reverse .track {
@@ -61,6 +65,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-bottom: 12px;
 }
 
 .scene {
@@ -85,14 +90,12 @@
   z-index: 2;
   width: min(880px, 100%);
   margin-inline: auto;
-  padding: 100px 24px 110px;
+  padding: 80px 24px 90px;
   text-align: center;
-  transform: translateY(var(--title-y));
-  will-change: transform;
 }
 
 .eyebrow {
-  margin: 0 0 24px;
+  margin: 0 0 52px;
   font-family: var(--font-barlow), Arial, sans-serif;
   font-size: 13px;
   font-weight: 600;
@@ -103,10 +106,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
   font-family: var(--font-bangers), Impact, sans-serif;
   font-weight: 400;
-  line-height: .83;
+  line-height: 1;
   letter-spacing: .01em;
   transform: rotate(-4deg);
   paint-order: stroke fill;
@@ -115,21 +120,30 @@
 }
 
 .prelude {
-  margin-bottom: 7px;
+  margin-bottom: 2px;
+  transform: translateY(calc(var(--satellite-y) * -1)) scale(var(--prelude-scale));
+  transform-origin: center;
+  will-change: transform;
   font-size: clamp(34px, 4.3vw, 62px);
 }
 
 .brand {
+  transform: scale(var(--brand-scale));
+  transform-origin: center;
+  will-change: transform;
   color: #ffd43b;
-  font-size: clamp(100px, 21vw, 280px);
+  font-size: clamp(100px, 19vw, 230px);
   -webkit-text-stroke: 4px #142039;
   text-shadow: 6px 7px 0 #142039, 8px 9px 0 #f6f0df;
 }
 
 .verse {
-  align-self: flex-end;
-  margin-top: 8px;
-  margin-right: 3%;
+  align-self: center;
+  margin-top: 2px;
+  margin-right: 0;
+  transform: translateY(var(--satellite-y)) scale(var(--verse-scale));
+  transform-origin: center;
+  will-change: transform;
   font-size: clamp(48px, 6.8vw, 94px);
   white-space: nowrap;
 }
@@ -170,11 +184,12 @@
 @media (max-width: 680px) {
   .hero {
     --comic-duration: 32s;
-    --comic-scale: 1.16;
+    --comic-scale: 1.12;
     min-height: clamp(560px, calc(100svh - 82px), 780px);
   }
 
   .artwork {
+    inset: -50px -20px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     padding-inline: 6px;
@@ -190,6 +205,7 @@
   }
 
   .sequence {
+    padding-bottom: 8px;
     gap: 8px;
   }
 
@@ -202,7 +218,7 @@
   }
 
   .copy {
-    padding: 86px 20px 94px;
+    padding: 80px 30px 90px;
   }
 
   .eyebrow {
@@ -217,18 +233,19 @@
   }
 
   .brand {
-    font-size: clamp(88px, 23vw, 154px);
+    font-size: clamp(70px, 22vw, 146px);
     -webkit-text-stroke-width: 2px;
     text-shadow: 3px 4px 0 #142039, 5px 6px 0 #f6f0df;
   }
 
   .prelude {
-    font-size: 33px;
+    font-size: clamp(26px, 7vw, 38px);
   }
 
   .verse {
-    margin-top: 12px;
-    font-size: 46px;
+    align-self: center;
+    margin-top: 2px;
+    font-size: clamp(36px, 10vw, 54px);
   }
 }
 
@@ -257,8 +274,35 @@
     will-change: auto;
   }
 
-  .copy {
+  .brand, .prelude, .verse {
     transform: none;
     will-change: auto;
   }
+}
+
+.splash {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 18px;
+  margin-block: 30px;
+}
+
+.bubble {
+  position: absolute;
+  z-index: -1;
+  /* Center the lettering in the cloud body, excluding its lower-right tail. */
+  top: -21%;
+  left: -29%;
+  width: 158%;
+  max-width: none;
+  height: 160%;
+  pointer-events: none;
+}
+
+@media (max-width: 680px) {
+  .splash { padding: 10px 8px; margin-block: 20px; }
+  .title { transform: rotate(-3deg); }
 }
