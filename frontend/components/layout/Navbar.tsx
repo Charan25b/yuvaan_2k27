@@ -51,6 +51,15 @@ export function Navbar() {
     </Link>
   ));
   const gameAction = () => { close(); setGameModalOpen(true); };
+  const gameEntryContent = (
+    <>
+      <span className={styles.pulseIndicator} aria-hidden="true">
+        <span className={styles.pulse} />
+        <span className={styles.dot} />
+      </span>
+      <span>✦ Game Site Entry →</span>
+    </>
+  );
 
   return (
     <>
@@ -68,7 +77,7 @@ export function Navbar() {
           </Link>
           <nav className={styles.desktopLinks} aria-label="Main navigation">{links}</nav>
           <button className={`${styles.gameButton} ${styles.desktopAction}`} onClick={gameAction}>
-            Game Site Entry <span aria-hidden="true">→</span>
+            {gameEntryContent}
           </button>
           <button ref={toggle} className={styles.toggle} aria-controls="mobile-navigation"
             aria-expanded={menuOpen} aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
@@ -80,7 +89,7 @@ export function Navbar() {
         </div>
         <div id="mobile-navigation" className={styles.drawer} hidden={!menuOpen}>
           <nav aria-label="Mobile navigation">{links}</nav>
-          <button className={styles.gameButton} onClick={gameAction}>Game Site Entry <span aria-hidden="true">→</span></button>
+          <button className={styles.gameButton} onClick={gameAction}>{gameEntryContent}</button>
           <p className={styles.caption}>FEBRUARY 2027 · IIIT GUWAHATI</p>
         </div>
       </header>

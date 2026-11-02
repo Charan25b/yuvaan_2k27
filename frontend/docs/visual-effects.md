@@ -18,7 +18,7 @@ The existing Next.js/React/Tailwind application and npm lockfile are retained. N
 
 ## Artwork
 
-The first-edition strip reuses six existing project files (`spiderman.jpg`, `dragon ball.jpg`, `batman.jpg`, `zoro.jpg`, `superman.jpg`, `vagabond.jpg`) as replaceable artwork. No external placeholder was downloaded. Next Image generates appropriately sized optimized images. Change `HERO_IMAGES` for final art; leave enough panels to cover the viewport, and keep both sequences identical. All hero artwork and the trails are decorative and hidden from assistive technology.
+The first-edition strip reuses nine project files that remain in `public/` (`spiderman.jpg`, `horimiya.webp`, `dr doom.jpg`, `beserk.jpg`, `batman.jpeg`, `jojo.jpg`, `vagabond.jpg`, `superman.jpg`, `zoro.jpg`) as replaceable artwork. No external placeholder was downloaded. Next Image generates appropriately sized optimized images. Change `HERO_IMAGES` for final art, including each source image's intrinsic dimensions; leave enough panels to cover the viewport, and keep both sequences identical. All hero artwork and the trails are decorative and hidden from assistive technology.
 
 The supplied mobile reference is a navigation guide, not a complete mobile homepage. The navigation follows it; the mobile hero composition is an interpretation using the existing festival content and artwork.
 
@@ -26,7 +26,9 @@ The marker replaces both the previous character sprites and the touch fog. It dr
 
 Normal cursors are preserved. Desktop uses a fine hovering mouse; mobile uses passive Touch Events so ordinary scrolling and pinch-to-zoom are preserved. Multitouch lifts the marker. Synthetic mouse events immediately after touch are suppressed on hybrid devices. A height-only resize (mobile browser bar movement) preserves the active touch. All drawing is held in the effect closure, with no React state updates on movement. Canvas DPR is capped at 1.5 (1 on low-power devices). Rendering stops when ink fades, when the page is hidden, on unmount, or when motion is paused/reduced.
 
-## Verification (31 October 2026)
+## Previous verification (31 October 2026)
+
+The checks below describe the implementation before the later hero, navigation-button, and page-wide mouse-trail changes. Those changes have not yet been visually or mechanically verified.
 
 - Inspected the original running site at desktop and 390 px before edits; original browser console had no errors.
 - Visually inspected updated 320×740, 390×844, 768×1024, 844×390 landscape, and 1440×900 layouts. No document horizontal overflow at these sizes. Landscape menu scrolls internally to keep all actions reachable.
@@ -40,7 +42,7 @@ Normal cursors are preserved. Desktop uses a fine hovering mouse; mobile uses pa
 - `npm run build`: passed, generating all 18 pages. The first sandboxed attempt failed to fetch fonts and left a cached Turbopack worker-port failure. A clean build cache and the required execution permissions resolved it. The existing multiple-lockfile warning remains.
 - Full-project `npm run lint`: still fails on the pre-existing `app/schedule/page.tsx:72` synchronous state-in-effect error, plus the existing unused `comicStamp` warning in `components/ui/Badge.tsx:53`. The old Reveal error and hero image warning are resolved.
 
-Remaining checks: physical iOS/Android scrolling, taps, pinch-to-zoom, touch mist appearance, real low-end frame pacing, and OS-level reduced-motion rendering. Viewport resizing is not touch-device emulation. Reduced-motion logic and CSS safeguards are implemented, but the browser interface used here does not expose media-preference emulation. No registration or contact submission was performed.
+Checks still outstanding: physical iOS/Android scrolling, taps, pinch-to-zoom, touch mist appearance, real low-end frame pacing, and OS-level reduced-motion rendering. Viewport resizing is not touch-device emulation. Reduced-motion logic and CSS safeguards are implemented, but the browser interface used here does not expose media-preference emulation. No registration or contact submission was performed.
 
 Run locally from `frontend`: `npm ci`, then `npm run dev -- --hostname 127.0.0.1`. Preview: http://127.0.0.1:3000.
 

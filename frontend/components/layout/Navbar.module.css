@@ -10,10 +10,16 @@
 .desktopLinks a { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; font-weight: 600; white-space: nowrap; text-underline-offset: 7px; }
 .desktopLinks a:hover, .desktopLinks a[aria-current] { text-decoration: underline; text-decoration-thickness: 2px; }
 .linkArrow { display: none; }
-.gameButton { display: inline-flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 44px; padding: 8px 15px; border: 2px solid var(--ink); border-radius: 2px; background: var(--action); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-.gameButton span { font-size: 26px; font-weight: 400; line-height: 1; }
-.gameButton:hover { background: #ffe477; }
-.gameButton:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.gameButton { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 12px 20px; border: 2px solid #121110; border-radius: 8px; background: #f2ae30; color: #121110; box-shadow: 4px 4px 0 #121110; font-size: 14px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: transform .18s ease, box-shadow .18s ease; }
+.gameButton:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #121110; }
+.gameButton:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #121110; }
+.pulseIndicator { position: relative; display: flex; flex: 0 0 12px; width: 12px; height: 12px; }
+.pulse, .dot { position: absolute; inset: 0; border-radius: 999px; }
+.pulse { background: #f87171; opacity: .75; animation: gameButtonPing 1s cubic-bezier(0, 0, .2, 1) infinite; }
+.dot { background: #dc2626; box-shadow: 0 0 8px #ef4444; transition: background-color .18s ease, box-shadow .18s ease; }
+.gameButton:hover .pulse { background: #4ade80; }
+.gameButton:hover .dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+@keyframes gameButtonPing { 75%, 100% { transform: scale(2); opacity: 0; } }
 .dark { background: var(--ink); color: var(--paper); }
 .dark .emblem { background: var(--action); color: var(--ink); }
 .dark .wordmark small { color: var(--action); }
