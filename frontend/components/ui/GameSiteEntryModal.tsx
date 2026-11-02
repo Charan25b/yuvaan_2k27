@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface GameSiteEntryModalProps {
   open: boolean;
@@ -8,18 +8,34 @@ interface GameSiteEntryModalProps {
 }
 
 export function GameSiteEntryModal({ open, onClose }: GameSiteEntryModalProps) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const element = dialog.current;
+    if (!open || !element) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    element.showModal();
+    return () => {
+      element.close();
+      document.body.style.overflow = overflow;
+      if (previous?.isConnected && previous !== document.body && previous.getClientRects().length) previous.focus();
+      else document.querySelector<HTMLButtonElement>("[aria-controls='mobile-navigation']")?.focus();
+    };
+  }, [open]);
   if (!open) return null;
 
   return (
-    <div
-      role="dialog"
+    <dialog
+      ref={dialog}
+      onCancel={onClose}
       aria-modal="true"
       aria-labelledby="game-site-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 m-0 h-dvh w-screen max-h-none max-w-none border-0 flex items-center justify-center bg-black/60 p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border-dark)] comic-shadow-lg p-0 overflow-hidden text-left"
+        className="w-full max-w-md rounded-2xl bg-[var(--color-surface)] border-2 border-[var(--color-border-dark)] comic-shadow-lg p-0 max-h-full overflow-y-auto text-left"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="comic-tape-amber h-3 w-full border-b-2 border-[var(--color-border-dark)]" />
@@ -33,7 +49,7 @@ export function GameSiteEntryModal({ open, onClose }: GameSiteEntryModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="h-8 w-8 rounded-lg flex items-center justify-center font-black text-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-dark)] hover:bg-[var(--color-cream)] transition-colors cursor-pointer"
+              className="h-11 w-11 rounded-lg flex items-center justify-center font-black text-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-dark)] hover:bg-[var(--color-cream)] transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
               &times;
@@ -76,6 +92,6 @@ export function GameSiteEntryModal({ open, onClose }: GameSiteEntryModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

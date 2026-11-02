@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Anton, Roboto_Mono, Permanent_Marker } from "next/font/google";
+import { Anton, Roboto_Mono, Permanent_Marker, Bangers, Barlow } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
+import { PointerTrails } from "@/components/effects/PointerTrails";
 import { Footer } from "@/components/layout/Footer";
+
+const bangers = Bangers({ weight: "400", subsets: ["latin"], variable: "--font-bangers", display: "swap" });
+const barlow = Barlow({ weight: ["400", "500", "600", "700"], subsets: ["latin"], variable: "--font-barlow", display: "swap" });
 
 const anton = Anton({
   weight: "400",
@@ -36,11 +40,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`h-full antialiased ${anton.variable} ${robotoMono.variable} ${permanentMarker.variable}`}>
+    <html lang="en" className={`h-full antialiased ${anton.variable} ${robotoMono.variable} ${permanentMarker.variable} ${bangers.variable} ${barlow.variable}`}>
       <body className="min-h-full flex flex-col paper-grid">
+        <a className="skip-link" href="#main-content">Skip to content</a>
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
         <Footer />
+        <PointerTrails />
       </body>
     </html>
   );
