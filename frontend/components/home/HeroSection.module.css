@@ -88,6 +88,9 @@
 .copy {
   position: relative;
   z-index: 2;
+  /* Uniform hero zoom keeps the cloud, lettering, CTA and spacing in proportion. */
+  transform: scale(.9);
+  transform-origin: center;
   width: min(880px, 100%);
   margin-inline: auto;
   padding: 80px 24px 90px;
