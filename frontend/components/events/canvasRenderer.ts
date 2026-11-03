@@ -63,85 +63,104 @@ export function drawSpiderWebSplat(
 
 export function drawWebStrands(
     ctx: CanvasRenderingContext2D, chain: WebChain): void {
-  chain.webMidpoints.forEach((m) => {
-    let startPt: {x: number; y: number};
-    if (m.fromCardIndex === -1) {
-      startPt = chain.ceilingAnchor;
-    } else {
-      startPt = chain.cards[m.fromCardIndex].getBottomAttachWorld();
-    }
+  // Fewer curve samples with no temporary points array.
+  const steps = 24;
+  const numStrands = 4;
+
+  for (const m of chain.webMidpoints) {
+    const startPt = m.fromCardIndex === -1 ?
+        chain.ceilingAnchor :
+        chain.cards[m.fromCardIndex].getBottomAttachWorld();
 
     const endPt = chain.cards[m.toCardIndex].getTopAttachWorld();
 
+    const startX = startPt.x;
+    const startY = startPt.y;
+    const controlX = m.x;
+    const controlY = m.y;
+    const endX = endPt.x;
+    const endY = endPt.y;
+
     ctx.save();
 
-    // Sample points along the quadratic curve
-    const steps = 40;
-    const points: {x: number; y: number}[] = [];
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const u = 1 - t;
-      const xx = u * u * startPt.x + 2 * u * t * m.x + t * t * endPt.x;
-      const yy = u * u * startPt.y + 2 * u * t * m.y + t * t * endPt.y;
-      points.push({x: xx, y: yy});
-    }
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
 
-    const numStrands = 4;
+    // Dark outline strands.
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.lineWidth = 3.5;
 
-    // 1. Draw Dark Ink Outline / Background Strands for Alignment
     for (let s = 0; s < numStrands; s++) {
       ctx.beginPath();
+
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
+        const u = 1 - t;
+
+        const x = u * u * startX + 2 * u * t * controlX + t * t * endX;
+
+        const y = u * u * startY + 2 * u * t * controlY + t * t * endY;
+
         const twist = Math.sin(t * 25 + s * 1.57) * 3.5;
-        const nx = points[i].x + twist + 1.2;
-        const ny = points[i].y + 1.2;
-        if (i === 0)
-          ctx.moveTo(nx, ny);
-        else
-          ctx.lineTo(nx, ny);
+
+        const px = x + twist + 1.2;
+        const py = y + 1.2;
+
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
       }
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
-      ctx.lineWidth = 3.5;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+
       ctx.stroke();
     }
 
-    // 2. Draw Crisp White Braided Foreground Strands
+    // White foreground strands.
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.98)';
+    ctx.lineWidth = 2.2;
+
     for (let s = 0; s < numStrands; s++) {
       ctx.beginPath();
+
       for (let i = 0; i <= steps; i++) {
         const t = i / steps;
+        const u = 1 - t;
+
+        const x = u * u * startX + 2 * u * t * controlX + t * t * endX;
+
+        const y = u * u * startY + 2 * u * t * controlY + t * t * endY;
+
         const twist = Math.sin(t * 25 + s * 1.57) * 3.5;
-        const nx = points[i].x + twist;
-        const ny = points[i].y;
-        if (i === 0)
-          ctx.moveTo(nx, ny);
-        else
-          ctx.lineTo(nx, ny);
+
+        const px = x + twist;
+        const py = y;
+
+        if (i === 0) {
+          ctx.moveTo(px, py);
+        } else {
+          ctx.lineTo(px, py);
+        }
       }
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.98)';
-      ctx.lineWidth = 2.2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+
       ctx.stroke();
     }
 
-    // Midpoint node
+    // Midpoint node.
     ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
     ctx.beginPath();
     ctx.arc(m.x, m.y, 3.2, 0, Math.PI * 2);
     ctx.fill();
 
-    // 8-Sided Funnel Splats at start and end anchors
-    drawSpiderWebSplat(ctx, startPt.x, startPt.y, 14);
-    drawSpiderWebSplat(ctx, endPt.x, endPt.y, 14);
+    // Attachment anchors.
+    drawSpiderWebSplat(ctx, startX, startY, 14);
+    drawSpiderWebSplat(ctx, endX, endY, 14);
+
     ctx.restore();
-  });
+  }
 }
 
-export function drawComicCard(
+function drawComicCardUncached(
     ctx: CanvasRenderingContext2D, c: PhysicalCard, isHovered: boolean,
     isMobile: boolean): void {
   const cw = c.cardWidth;
@@ -367,6 +386,100 @@ export function drawComicCard(
   // Spider Web Funnels at attachment points on card
   drawSpiderWebSplat(ctx, c.topAttachOffset.x, c.topAttachOffset.y, 14);
   drawSpiderWebSplat(ctx, c.bottomAttachOffset.x, c.bottomAttachOffset.y, 14);
+
+  ctx.restore();
+}
+
+// Cache static card artwork so text, borders, stickers and shadows
+// are not recalculated and redrawn on every animation frame.
+const cardArtworkCache = new WeakMap < PhysicalCard, {
+  canvas: HTMLCanvasElement;
+  isMobile: boolean;
+}
+>();
+
+export function drawComicCard(
+    ctx: CanvasRenderingContext2D, card: PhysicalCard, isHovered: boolean,
+    isMobile: boolean): void {
+  let cached = cardArtworkCache.get(card);
+
+  // Create the static artwork once for each card.
+  if (!cached || cached.isMobile !== isMobile) {
+    const padding = 16;
+
+    const offscreen = document.createElement('canvas');
+    offscreen.width = Math.ceil(card.cardWidth + padding * 2);
+    offscreen.height = Math.ceil(card.cardHeight + padding * 2);
+
+    const offscreenCtx = offscreen.getContext('2d');
+
+    if (!offscreenCtx) {
+      drawComicCardUncached(ctx, card, isHovered, isMobile);
+      return;
+    }
+
+    offscreenCtx.translate(offscreen.width / 2, offscreen.height / 2);
+
+    // Draw the card in local coordinates.
+    // The main canvas handles its actual position and rotation.
+    const localCard =
+        Object.assign(Object.create(Object.getPrototypeOf(card)), card, {
+          x: 0,
+          y: 0,
+          angle: 0,
+        }) as PhysicalCard;
+
+    drawComicCardUncached(offscreenCtx, localCard, false, isMobile);
+
+    cached = {
+      canvas: offscreen,
+      isMobile,
+    };
+
+    cardArtworkCache.set(card, cached);
+  }
+
+  const image = cached.canvas;
+
+  ctx.save();
+  ctx.translate(card.x, card.y);
+  ctx.rotate(card.angle);
+
+  ctx.drawImage(image, -image.width / 2, -image.height / 2);
+
+  // Only draw the hover effects dynamically.
+  if (isHovered) {
+    const cw = card.cardWidth;
+    const ch = card.cardHeight;
+
+    ctx.strokeStyle = '#FDE047';
+    ctx.lineWidth = 7;
+    ctx.shadowColor = '#FDE047';
+    ctx.shadowBlur = 16;
+
+    drawRoundedRect(ctx, -cw / 2 - 4, -ch / 2 - 4, cw + 8, ch + 8, 18);
+
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    const ctaY = ch / 2 - 22;
+
+    ctx.fillStyle = '#FEF08A';
+
+    drawRoundedRect(ctx, -cw / 2 + 18, ctaY - 10, cw - 36, 24, 7);
+
+    ctx.fill();
+
+    ctx.strokeStyle = '#1C1917';
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#1C1917';
+    ctx.font = '900 9.5px sans-serif';
+    ctx.textAlign = 'center';
+
+    ctx.fillText('👉 CLICK TO OPEN RULEBOOK ↗', 0, ctaY + 5);
+  }
 
   ctx.restore();
 }
