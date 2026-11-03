@@ -3,7 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { EventItem } from "@/lib/data/festivalData";
 import { ComicBookData } from "./types";
-import { PhysicalCard, PhysicalWebMidpoint, updateWebChainsPhysics } from "./physics";
+import {
+  PhysicalCard,
+  PhysicalWebMidpoint,
+  updateWebChainsPhysics,
+} from "./physics";
 import { generateWebChains } from "./layoutGenerator";
 import { drawWebStrands, drawComicCard } from "./canvasRenderer";
 import { OpenComicBookModal } from "./OpenComicBookModal";
@@ -14,50 +18,59 @@ interface SpiderWebEventsCanvasProps {
 
 export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number | null>(null);
-
-  const [, setWindowWidth] = useState<number>(0);
-  const [shuffleCount, setShuffleCount] = useState<number>(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [shuffleCount, setShuffleCount] = useState(0);
 
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
-  const [selectedComicData, setSelectedComicData] = useState<ComicBookData | null>(null);
+  const [selectedComicData, setSelectedComicData] =
+    useState<ComicBookData | null>(null);
 
-  // Ref tracking modal open state to guard global keyboard shortcuts
   const isModalOpenRef = useRef(false);
+  const hoveredEventIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     isModalOpenRef.current = Boolean(selectedEvent && selectedComicData);
   }, [selectedEvent, selectedComicData]);
 
-  // High-performance hover ref (avoids triggering React re-renders on every mouse pixel movement)
-  const hoveredEventIdRef = useRef<string | null>(null);
-
-  // Window resize & keyboard shuffle listeners
+  // Viewport sizing and keyboard shortcut.
   useEffect(() => {
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+
+    setViewportWidth(window.innerWidth);
+
     const onResize = () => {
       if (resizeTimer) clearTimeout(resizeTimer);
+
       resizeTimer = setTimeout(() => {
-        setWindowWidth((w) => (w === window.innerWidth ? w : window.innerWidth));
+        setViewportWidth(window.innerWidth);
       }, 150);
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === "r" || e.key === "R") && !e.ctrlKey && !e.metaKey) {
+      if (
+        (e.key === "r" || e.key === "R") &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !isModalOpenRef.current
+      ) {
         const target = e.target as HTMLElement | null;
+
         if (
           target &&
-          (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)
+          (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable)
         ) {
           return;
         }
-        if (isModalOpenRef.current) return;
-        setShuffleCount((c) => c + 1);
+
+        setShuffleCount((count) => count + 1);
       }
     };
 
     window.addEventListener("resize", onResize);
     window.addEventListener("keydown", onKeyDown);
+
     return () => {
       if (resizeTimer) clearTimeout(resizeTimer);
       window.removeEventListener("resize", onResize);
@@ -65,29 +78,38 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
     };
   }, []);
 
-  // Main Canvas & Physics Loop
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || viewportWidth === 0) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", {
+      alpha: true,
+      desynchronized: true,
+    });
+
     if (!ctx) return;
 
-    const width = window.innerWidth;
+    const width = viewportWidth;
     const isMobile = width < 768;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    // Procedural layout generation with non-parallel & non-complementary logic
-    const { chains, totalHeight } = generateWebChains(events, width, isMobile);
+    const { chains, totalHeight } = generateWebChains(
+      events,
+      width,
+      isMobile
+    );
 
-    canvas.width = width * dpr;
-    canvas.height = totalHeight * dpr;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(totalHeight * dpr);
     canvas.style.width = `${width}px`;
     canvas.style.height = `${totalHeight}px`;
 
-    // Pointer Interaction State
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    let frameId: number | null = null;
     let activeDragCard: PhysicalCard | null = null;
     let activeDragMidpoint: PhysicalWebMidpoint | null = null;
+
     let dragPointerOffset = { x: 0, y: 0 };
     let pointerDownPos = { x: 0, y: 0 };
     let pointerDownTime = 0;
@@ -95,14 +117,92 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
 
     const getCanvasPos = (clientX: number, clientY: number) => {
       const rect = canvas.getBoundingClientRect();
+
       return {
         x: clientX - rect.left,
         y: clientY - rect.top,
       };
     };
 
+    const hasMotion = () => {
+      const velocityThreshold = 0.08;
+      const angularThreshold = 0.001;
+
+      for (const chain of chains) {
+        for (const card of chain.cards) {
+          if (
+            Math.abs(card.vx) > velocityThreshold ||
+            Math.abs(card.vy) > velocityThreshold ||
+            Math.abs(card.angularVelocity) > angularThreshold
+          ) {
+            return true;
+          }
+        }
+
+        for (const midpoint of chain.webMidpoints) {
+          if (
+            Math.abs(midpoint.vx) > velocityThreshold ||
+            Math.abs(midpoint.vy) > velocityThreshold
+          ) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    };
+
+    const renderFrame = () => {
+      frameId = null;
+
+      if (document.hidden) return;
+
+      updateWebChainsPhysics(chains, activeDragCard, width, isMobile);
+
+      ctx.clearRect(0, 0, width, totalHeight);
+
+      for (const chain of chains) {
+        drawWebStrands(ctx, chain);
+
+        for (const card of chain.cards) {
+          const isHovered =
+            hoveredEventIdRef.current === card.comic.event.id;
+
+          drawComicCard(ctx, card, isHovered, isMobile);
+        }
+      }
+
+      // Continue only while physics is still moving.
+      if (activeDragCard || activeDragMidpoint || hasMotion()) {
+        frameId = requestAnimationFrame(renderFrame);
+      }
+    };
+
+    const requestRender = () => {
+      if (document.hidden || frameId !== null) return;
+
+      frameId = requestAnimationFrame(renderFrame);
+    };
+
+    const resetDrag = () => {
+      if (activeDragMidpoint) {
+        activeDragMidpoint.isDragging = false;
+      }
+
+      activeDragCard = null;
+      activeDragMidpoint = null;
+      hasMovedSignificantly = false;
+
+      canvas.style.cursor = hoveredEventIdRef.current
+        ? "pointer"
+        : "grab";
+
+      requestRender();
+    };
+
     const handlePointerDown = (e: PointerEvent) => {
       const pos = getCanvasPos(e.clientX, e.clientY);
+
       pointerDownPos = pos;
       pointerDownTime = performance.now();
       hasMovedSignificantly = false;
@@ -110,112 +210,149 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
       activeDragCard = null;
       activeDragMidpoint = null;
 
-      // 1. Check card hit testing using rotated local coordinates for exact precision
+      // Check cards from front to back.
       for (const chain of chains) {
         for (let i = chain.cards.length - 1; i >= 0; i--) {
-          const c = chain.cards[i];
-          const dx = pos.x - c.x;
-          const dy = pos.y - c.y;
-          const cos = Math.cos(-c.angle);
-          const sin = Math.sin(-c.angle);
+          const card = chain.cards[i];
+
+          const dx = pos.x - card.x;
+          const dy = pos.y - card.y;
+
+          const cos = Math.cos(-card.angle);
+          const sin = Math.sin(-card.angle);
+
           const localX = dx * cos - dy * sin;
           const localY = dx * sin + dy * cos;
 
-          if (Math.abs(localX) <= c.cardWidth / 2 && Math.abs(localY) <= c.cardHeight / 2) {
-            activeDragCard = c;
+          if (
+            Math.abs(localX) <= card.cardWidth / 2 &&
+            Math.abs(localY) <= card.cardHeight / 2
+          ) {
+            activeDragCard = card;
             dragPointerOffset = { x: dx, y: dy };
+
             canvas.style.cursor = "grabbing";
+
             try {
               canvas.setPointerCapture(e.pointerId);
             } catch {}
+
+            requestRender();
             return;
           }
         }
       }
 
-      // 2. Check web midpoint / strand hit testing
-      if (!activeDragCard) {
-        for (const chain of chains) {
-          for (const m of chain.webMidpoints) {
-            const dist = Math.hypot(pos.x - m.x, pos.y - m.y);
-            if (dist < 45) {
-              activeDragMidpoint = m;
-              m.isDragging = true;
-              dragPointerOffset = { x: pos.x - m.x, y: pos.y - m.y };
-              canvas.style.cursor = "grabbing";
-              try {
-                canvas.setPointerCapture(e.pointerId);
-              } catch {}
-              return;
-            }
+      // Check draggable web midpoints.
+      for (const chain of chains) {
+        for (const midpoint of chain.webMidpoints) {
+          const dx = pos.x - midpoint.x;
+          const dy = pos.y - midpoint.y;
+
+          if (dx * dx + dy * dy < 45 * 45) {
+            activeDragMidpoint = midpoint;
+            midpoint.isDragging = true;
+
+            dragPointerOffset = { x: dx, y: dy };
+            canvas.style.cursor = "grabbing";
+
+            try {
+              canvas.setPointerCapture(e.pointerId);
+            } catch {}
+
+            requestRender();
+            return;
           }
         }
       }
     };
 
-    const resetDrag = () => {
-      if (activeDragMidpoint) {
-        activeDragMidpoint.isDragging = false;
-      }
-      activeDragCard = null;
-      activeDragMidpoint = null;
-      hasMovedSignificantly = false;
-      canvas.style.cursor = hoveredEventIdRef.current ? "pointer" : "grab";
-    };
-
     const handlePointerMove = (e: PointerEvent) => {
-      // Safety: If no mouse button is held, cancel drag immediately
-      if ((activeDragCard || activeDragMidpoint) && e.buttons === 0) {
+      if (
+        (activeDragCard || activeDragMidpoint) &&
+        e.buttons === 0
+      ) {
         resetDrag();
         return;
       }
 
       const pos = getCanvasPos(e.clientX, e.clientY);
-      const dist = Math.hypot(pos.x - pointerDownPos.x, pos.y - pointerDownPos.y);
-      if (dist > 8) {
+
+      const dxFromDown = pos.x - pointerDownPos.x;
+      const dyFromDown = pos.y - pointerDownPos.y;
+
+      if (
+        dxFromDown * dxFromDown + dyFromDown * dyFromDown >
+        8 * 8
+      ) {
         hasMovedSignificantly = true;
       }
 
-      // Dragging Card
+      // Move a dragged card.
       if (activeDragCard) {
         const targetX = pos.x - dragPointerOffset.x;
         const targetY = pos.y - dragPointerOffset.y;
+
         activeDragCard.vx = (targetX - activeDragCard.x) * 0.45;
         activeDragCard.vy = (targetY - activeDragCard.y) * 0.45;
+
         activeDragCard.x = targetX;
         activeDragCard.y = targetY;
       }
 
-      // Dragging Web Midpoint
+      // Move a dragged web midpoint.
       if (activeDragMidpoint) {
         activeDragMidpoint.x = pos.x - dragPointerOffset.x;
         activeDragMidpoint.y = pos.y - dragPointerOffset.y;
+
         activeDragMidpoint.vx = 0;
         activeDragMidpoint.vy = 0;
       }
 
-      // Hover tracking
+      // Find hovered card.
       let foundHover: string | null = null;
+
       for (const chain of chains) {
-        for (const c of chain.cards) {
-          const dx = pos.x - c.x;
-          const dy = pos.y - c.y;
-          const cos = Math.cos(-c.angle);
-          const sin = Math.sin(-c.angle);
+        for (const card of chain.cards) {
+          const dx = pos.x - card.x;
+          const dy = pos.y - card.y;
+
+          const cos = Math.cos(-card.angle);
+          const sin = Math.sin(-card.angle);
+
           const localX = dx * cos - dy * sin;
           const localY = dx * sin + dy * cos;
 
-          if (Math.abs(localX) <= c.cardWidth / 2 && Math.abs(localY) <= c.cardHeight / 2) {
-            foundHover = c.comic.event.id;
+          if (
+            Math.abs(localX) <= card.cardWidth / 2 &&
+            Math.abs(localY) <= card.cardHeight / 2
+          ) {
+            foundHover = card.comic.event.id;
             break;
           }
         }
+
         if (foundHover) break;
       }
 
-      hoveredEventIdRef.current = foundHover;
+      const hoverChanged =
+        foundHover !== hoveredEventIdRef.current;
+
+      if (hoverChanged) {
+        hoveredEventIdRef.current = foundHover;
+      }
+
       if (!activeDragCard && !activeDragMidpoint) {
         canvas.style.cursor = foundHover ? "pointer" : "grab";
+      }
+
+      // Only request a frame when something actually changed.
+      if (
+        activeDragCard ||
+        activeDragMidpoint ||
+        hoverChanged
+      ) {
+        requestRender();
       }
     };
 
@@ -228,10 +365,17 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
 
       const duration = performance.now() - pointerDownTime;
       const pos = getCanvasPos(e.clientX, e.clientY);
-      const dist = Math.hypot(pos.x - pointerDownPos.x, pos.y - pointerDownPos.y);
 
-      // Clean tap click: open modal
-      if (!hasMovedSignificantly && dist < 10 && duration < 320 && activeDragCard) {
+      const dx = pos.x - pointerDownPos.x;
+      const dy = pos.y - pointerDownPos.y;
+      const distanceSquared = dx * dx + dy * dy;
+
+      if (
+        !hasMovedSignificantly &&
+        distanceSquared < 100 &&
+        duration < 320 &&
+        activeDragCard
+      ) {
         setSelectedEvent(activeDragCard.comic.event);
         setSelectedComicData(activeDragCard.comic);
       }
@@ -239,53 +383,50 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
       resetDrag();
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (frameId !== null) {
+          cancelAnimationFrame(frameId);
+          frameId = null;
+        }
+      } else {
+        requestRender();
+      }
+    };
+
     canvas.addEventListener("pointerdown", handlePointerDown);
     canvas.addEventListener("pointermove", handlePointerMove);
-    canvas.addEventListener("pointerup", handlePointerUp);
+
+    // Pointerup is registered on window only, avoiding duplicate bubbling.
     window.addEventListener("pointerup", handlePointerUp);
     window.addEventListener("pointercancel", resetDrag);
     window.addEventListener("blur", resetDrag);
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
 
-    // Main 60fps Physics & Render Loop
-    const render = () => {
-      // 1. Step forward physics
-      updateWebChainsPhysics(chains, activeDragCard, width, isMobile);
-
-      // 2. Render Canvas Frame
-      ctx.save();
-      ctx.scale(dpr, dpr);
-      ctx.clearRect(0, 0, width, totalHeight);
-
-      for (const chain of chains) {
-        // Draw Web Strands
-        drawWebStrands(ctx, chain);
-
-        // Draw Comic Book Cards
-        chain.cards.forEach((c) => {
-          const isHovered = hoveredEventIdRef.current === c.comic.event.id;
-          drawComicCard(ctx, c, isHovered, isMobile);
-        });
-      }
-
-      ctx.restore();
-      animationFrameRef.current = requestAnimationFrame(render);
-    };
-
-    animationFrameRef.current = requestAnimationFrame(render);
+    // Initial draw and initial physics settling.
+    requestRender();
 
     return () => {
       canvas.removeEventListener("pointerdown", handlePointerDown);
       canvas.removeEventListener("pointermove", handlePointerMove);
-      canvas.removeEventListener("pointerup", handlePointerUp);
+
       window.removeEventListener("pointerup", handlePointerUp);
       window.removeEventListener("pointercancel", resetDrag);
       window.removeEventListener("blur", resetDrag);
 
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
       }
     };
-  }, [events, shuffleCount]);
+  }, [events, viewportWidth, shuffleCount]);
 
   return (
     <div className="relative w-full p-0 m-0 overflow-x-hidden flex justify-center select-none">
@@ -294,7 +435,6 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
         className="cursor-grab active:cursor-grabbing block touch-pan-y"
       />
 
-      {/* 3D Open Comic Book 2-Page Spread Modal (<= 1s open / <= 1s exit) */}
       <OpenComicBookModal
         isOpen={Boolean(selectedEvent && selectedComicData)}
         event={selectedEvent}
