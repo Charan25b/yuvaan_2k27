@@ -1,0 +1,566 @@
+.page {
+  min-height: 100vh;
+  background: #101419;
+  color: #f5f5f5;
+  overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.hero {
+  padding: 35px 7%;
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle at 80% 40%, #572323 0%, transparent 35%),
+    linear-gradient(120deg, #111419, #1b1c20);
+  border-bottom: 1px solid #343434;
+}
+
+.heroTop,
+.heroBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.eyebrow,
+.heroLabel,
+.heroBottom,
+.sectionEyebrow,
+.sectionHeading > p,
+.trackName,
+.live,
+.eventTop,
+.eventBottom,
+.detailsTop,
+.detailsInfo span,
+.detailsSector {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.eyebrow {
+  color: #f5bd35;
+}
+
+.live {
+  color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c58b;
+  box-shadow: 0 0 12px #22c58b;
+}
+
+.heroContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.heroLabel {
+  color: #f5bd35;
+  margin-bottom: 18px;
+}
+
+.heroContent h1 {
+  font-size: clamp(65px, 11vw, 145px);
+  line-height: 0.82;
+  letter-spacing: -8px;
+  margin: 0;
+  font-weight: 950;
+  color: #fff;
+}
+
+.heroContent h1 span {
+  color: #e83b3b;
+}
+
+.heroDescription {
+  color: #aaa;
+  max-width: 440px;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-top: 30px;
+}
+
+.heroNumber {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #888;
+  gap: 8px;
+  border: 1px solid #555;
+  padding: 25px;
+}
+
+.heroNumber strong {
+  color: #f5bd35;
+  font-size: 90px;
+  line-height: 1;
+}
+
+.heroNumber span {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.heroBottom {
+  color: #777;
+  border-top: 1px solid #343434;
+  padding-top: 20px;
+}
+
+.scheduleSection,
+.eventsSection {
+  padding: 90px 7%;
+}
+
+.sectionHeading,
+.trackHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.sectionEyebrow {
+  color: #f5bd35;
+}
+
+.sectionHeading h2,
+.trackHeader h2 {
+  margin: 10px 0 0;
+  font-size: clamp(30px, 5vw, 55px);
+  font-weight: 900;
+  letter-spacing: -2px;
+}
+
+.sectionHeading h2 span,
+.trackHeader h2 span,
+.detailsLabel h2 span {
+  color: #e83b3b;
+}
+
+.sectionHeading > p {
+  color: #777;
+}
+
+.daySelector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 80px;
+}
+
+.dayButton {
+  position: relative;
+  text-align: left;
+  padding: 25px;
+  background: #191e24;
+  border: 1px solid #343b42;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.dayButton:hover,
+.activeDay {
+  border-color: #e83b3b;
+  background: #241a1c;
+}
+
+.dayButton span {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #999;
+}
+
+.dayButton strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 21px;
+}
+
+.dayArrow {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 18px !important;
+  color: #e83b3b !important;
+}
+
+.trackHeader {
+  margin-bottom: 25px;
+}
+
+.trackName {
+  color: #aaa;
+}
+
+.trackContainer {
+  width: 100%;
+  min-height: 560px;
+  border: 1px solid #343b42;
+  background: #101419;
+  overflow: hidden;
+}
+
+.legend {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  padding: 22px 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #aaa;
+}
+
+.legendItem span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.eventsSection {
+  background: #151a20;
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.eventCard {
+  min-height: 220px;
+  padding: 20px;
+  background: #1c2229;
+  color: white;
+  text-align: left;
+  border: 1px solid #343b42;
+  border-top: 4px solid var(--sector-color);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: 0.2s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-5px);
+  background: #252c34;
+}
+
+.selectedCard {
+  background: #292d32;
+  box-shadow: inset 0 0 0 1px var(--sector-color);
+}
+
+.eventTop,
+.eventBottom {
+  display: flex;
+  justify-content: space-between;
+  color: var(--sector-color);
+}
+
+.eventContent h3 {
+  font-size: 20px;
+  margin: 0 0 12px;
+  line-height: 1.3;
+}
+
+.eventCategory {
+  color: #999;
+  font-size: 12px;
+}
+
+.eventBottom {
+  padding-top: 15px;
+  border-top: 1px solid #3c4249;
+}
+
+.detailsSection {
+  display: grid;
+  grid-template-columns: 0.8fr 2fr;
+  gap: 50px;
+  padding: 90px 7%;
+}
+
+.detailsLabel h2 {
+  font-size: 65px;
+  line-height: 0.9;
+  margin-top: 20px;
+  letter-spacing: -3px;
+}
+
+.detailsContent {
+  border: 1px solid #343b42;
+  background: #191e24;
+  padding: 35px;
+}
+
+.detailsTop {
+  display: flex;
+  justify-content: space-between;
+  color: #888;
+}
+
+.detailsContent h3 {
+  font-size: clamp(28px, 4vw, 48px);
+  margin: 30px 0 10px;
+}
+
+.detailsContent > p {
+  color: #aaa;
+  line-height: 1.8;
+}
+
+.detailsInfo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  border-top: 1px solid #343b42;
+  margin-top: 35px;
+  padding-top: 25px;
+}
+
+.detailsInfo div {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detailsInfo span {
+  color: #888;
+}
+
+.detailsInfo strong {
+  font-size: 14px;
+  color: white;
+}
+
+.pageFooter {
+  padding: 25px 7%;
+  border-top: 1px solid #343b42;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #888;
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+
+/* 3D scene */
+
+.trackContainer :global(.race-scene) {
+  position: relative;
+  width: 100%;
+  height: 560px;
+  background: #101419;
+}
+
+.trackContainer :global(.race-canvas) {
+  position: absolute;
+  inset: 0;
+}
+
+.trackContainer :global(.race-camera-controls) {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+}
+
+.trackContainer :global(.race-camera-controls button) {
+  border: 1px solid #555;
+  background: #171d23;
+  color: #aaa;
+  padding: 11px 15px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.trackContainer :global(.race-camera-controls button.camera-active) {
+  color: white;
+  background: #e83b3b;
+  border-color: #e83b3b;
+}
+
+.trackContainer :global(.race-event-strip) {
+  position: absolute;
+  z-index: 5;
+  bottom: 45px;
+  left: 18px;
+  right: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.trackContainer :global(.race-event) {
+  min-width: 0;
+  text-align: left;
+  padding: 13px;
+  background: #171d23ee;
+  border: 1px solid #454b52;
+  border-top: 3px solid var(--sector-color);
+  color: white;
+  cursor: pointer;
+}
+
+.trackContainer :global(.race-event span),
+.trackContainer :global(.race-event small) {
+  display: block;
+  font-size: 9px;
+  color: var(--sector-color);
+  letter-spacing: 1px;
+}
+
+.trackContainer :global(.race-event strong) {
+  display: block;
+  margin: 9px 0;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackContainer :global(.race-event.active) {
+  background: #34383e;
+  border-color: var(--sector-color);
+}
+
+.trackContainer :global(.race-hud) {
+  position: absolute;
+  z-index: 5;
+  bottom: 12px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: space-between;
+  color: #aaa;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .eventGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detailsSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 500px;
+    padding: 25px 6%;
+  }
+
+  .heroContent h1 {
+    font-size: 75px;
+    letter-spacing: -4px;
+  }
+
+  .heroNumber {
+    display: none;
+  }
+
+  .heroBottom {
+    flex-wrap: wrap;
+    font-size: 9px;
+  }
+
+  .scheduleSection,
+  .eventsSection {
+    padding: 60px 6%;
+  }
+
+  .sectionHeading,
+  .trackHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .daySelector {
+    gap: 7px;
+  }
+
+  .dayButton {
+    padding: 15px 10px;
+  }
+
+  .dayButton strong {
+    font-size: 14px;
+  }
+
+  .trackContainer {
+    min-height: 480px;
+  }
+
+  .trackContainer :global(.race-scene) {
+    height: 480px;
+  }
+
+  .trackContainer :global(.race-event-strip) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    bottom: 48px;
+  }
+
+  .trackContainer :global(.race-event) {
+    padding: 8px;
+  }
+
+  .trackContainer :global(.race-event strong) {
+    font-size: 10px;
+  }
+
+  .eventGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .detailsSection {
+    padding: 60px 6%;
+  }
+
+  .detailsContent {
+    padding: 22px;
+  }
+
+  .detailsInfo {
+    grid-template-columns: 1fr;
+  }
+
+  .pageFooter {
+    flex-direction: column;
+  }
+}
