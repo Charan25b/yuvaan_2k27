@@ -45,17 +45,37 @@ const factionStyling: Record<
   },
 };
 
+const factionsTopDividerPath =
+  "M 1000 46 L 960 52 L 910 43 L 870 50 L 820 41 L 770 53 L 710 44 L 660 49 L 600 40 L 550 52 L 490 45 L 440 54 L 380 42 L 330 49 L 270 43 L 220 53 L 160 46 L 110 51 L 50 42 L 0 48";
+
+const factionsBottomDividerPath =
+  "M 0 14 L 30 6 L 55 18 L 80 3 L 110 12 L 140 19 L 170 5 L 200 10 L 230 2 L 260 16 L 290 7 L 320 20 L 350 11 L 380 4 L 410 15 L 440 6 L 470 18 L 500 9 L 530 1 L 560 13 L 590 20 L 620 7 L 650 16 L 680 3 L 710 11 L 740 19 L 770 5 L 800 14 L 830 2 L 860 10 L 890 18 L 920 6 L 950 15 L 980 4 L 1000 12";
+
 export function FactionsSection() {
   return (
-    <section data-home-section="factions" className="py-14 sm:py-20 bg-[var(--color-surface)] relative overflow-hidden">
+    <section data-home-section="factions" className="py-16 sm:py-24 bg-[var(--color-surface)] relative overflow-hidden">
       {/* Halftone texture */}
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-40" />
+
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 z-[6] h-14 w-full"
+        viewBox="0 0 1000 56"
+        preserveAspectRatio="none"
+      >
+        <path
+          d={factionsTopDividerPath}
+          fill="none"
+          stroke="#111110"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+          strokeLinejoin="round"
+        />
+      </svg>
 
       <Container className="relative z-10">
         <div className="flex flex-col gap-10">
           <SectionHeading
-            badge="Festival Lore & Rivalry"
-            badgeVariant="section-dark"
             title="Four Factions. One Festival Championship."
             description="Every festival competitor belongs to one of the four legendary campus divisions. Points earned in hackathons, esports brackets, and cultural battles fuel each faction's standings."
             className="home-section-heading"
@@ -121,6 +141,22 @@ export function FactionsSection() {
           </div>
         </div>
       </Container>
+
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 left-0 z-[6] h-5 w-full overflow-visible"
+        viewBox="0 0 1000 20"
+        preserveAspectRatio="none"
+      >
+        <path
+          d={factionsBottomDividerPath}
+          fill="none"
+          stroke="#111110"
+          strokeWidth="4"
+          vectorEffect="non-scaling-stroke"
+          strokeLinejoin="round"
+        />
+      </svg>
     </section>
   );
 }

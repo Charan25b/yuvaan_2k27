@@ -11,13 +11,11 @@ export function GalleryPreviewSection() {
   const badgeVariants = ["blush", "cyan", "gold"] as const;
 
   return (
-    <section data-home-section="gallery" className="py-14 sm:py-20 bg-[var(--color-surface)] relative">
+    <section data-home-section="gallery" className="py-16 sm:py-24 bg-[var(--color-surface)] relative">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
-              badge="Festival Memories"
-              badgeVariant="highlight"
               title="Snapshots of the Yuvaan Spirit"
               description="From packed pro-night amphitheatre crowds to late-night hackathon coding sessions, experience the energy of previous festival editions."
               className="home-section-heading"

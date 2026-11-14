@@ -180,7 +180,7 @@ transform: translateY(-53px) scale(0.95);
 
 @keyframes comic-panels {
   from { transform: translateY(0); }
-  to { transform: translateY(-50%); }
+  to { transform: translateY(-20%); }
 }
 
 @media (max-width: 680px) {

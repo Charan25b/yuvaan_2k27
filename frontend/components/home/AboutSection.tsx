@@ -6,47 +6,31 @@ import { Badge } from "@/components/ui/Badge";
 
 export function AboutSection() {
   return (
-    <section data-home-section="intro" className="py-14 sm:py-20 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
+    <section data-home-section="intro" className="py-16 sm:py-24 bg-[var(--color-surface)] border-y-2 border-[var(--color-border-dark)] relative overflow-hidden">
       {/* Background halftone accent */}
       <div className="absolute inset-0 comic-dots-subtle pointer-events-none opacity-50" />
 
       <Container className="relative z-10">
         {/* Section Heading */}
         <div className="mb-8 sm:mb-12 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="section-light" comicStamp>
-              ✦ About Yuvaan
-            </Badge>
-          </div>
           <h2 className="home-section-title text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight uppercase text-[var(--poster-orange)] leading-[1.15] w-full max-w-none">
             A Celebration of Student Ingenuity &amp; Artistry
           </h2>
         </div>
 
         {/* Below the heading: Text on the left, 4 feature boxes to the right */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Left: Explanatory text, notes, and navigation buttons */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          {/* Left: Explanatory text and navigation button */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             <p className="text-base sm:text-lg text-[#f8f7f4] font-medium leading-relaxed">
               Yuvaan is the landmark annual gathering that unites colleges across Northeast India and beyond at IIIT Guwahati. Drawing from contemporary comic arts, vibrant character design, and cutting-edge engineering, the 2027 edition combines high-energy stage performances with deep technical challenges.
             </p>
 
-            <div className="space-y-4 text-sm text-[var(--color-text-muted)] leading-relaxed font-medium">
-              <p>
-                From 24-hour product hackathons in the computer labs to battle-of-the-bands
-                under the open amphitheatre floodlights, Yuvaan serves as a launchpad
-                for technical innovation and creative self-expression.
-              </p>
-              <div className="p-4 rounded-xl bg-[var(--color-cream-canvas)] border-2 border-[var(--color-border-dark)] comic-shadow-sm flex items-start gap-3">
-                <span className="about-note-label font-black text-sm text-[var(--color-cyan)] uppercase tracking-wider shrink-0">
-                  NOTE:
-                </span>
-                <p className="text-xs text-[var(--color-text-dark)] font-bold">
-                  This public website provides the full festival schedule, event descriptions,
-                  rulebooks, sponsor details, and official merchandise without requiring a login.
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-[var(--color-text-muted)] leading-relaxed font-medium">
+              From 24-hour product hackathons in the computer labs to battle-of-the-bands
+              under the open amphitheatre floodlights, Yuvaan serves as a launchpad
+              for technical innovation and creative self-expression.
+            </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button href="/team" variant="gold" size="md">

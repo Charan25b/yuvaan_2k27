@@ -1,21 +1,83 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700;800;900&display=swap');
+
+/* =========================================
+   YUVAAN 2K27 — LIGHTNING MCQUEEN EDITION
+========================================= */
+
 .page {
+  --red: #e32624;
+  --red-dark: #a91418;
+  --yellow: #ffd52a;
+  --orange: #ff812e;
+  --blue: #159bd0;
+  --sky: #8ed9ed;
+  --teal: #42b8a5;
+  --black: #25262a;
+  --dark: #393b40;
+  --white: #fffdf4;
+  --cream: #fff1d7;
+  --brown: #49372a;
+  --muted: #92785d;
+  --border: #d6b78d;
+
   min-height: 100vh;
-  background: #101419;
-  color: #f5f5f5;
+  background: var(--cream);
+  color: var(--brown);
   overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
 }
 
+/* =========================================
+   HERO — LIGHTNING MCQUEEN RED
+========================================= */
+
 .hero {
-  padding: 35px 7%;
-  min-height: 580px;
+  position: relative;
+  isolation: isolate;
+  padding: 30px 7% 0;
+  min-height: 690px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+
   background:
-    radial-gradient(circle at 80% 40%, #572323 0%, transparent 35%),
-    linear-gradient(120deg, #111419, #1b1c20);
-  border-bottom: 1px solid #343434;
+    radial-gradient(ellipse at 85% 30%, #ffdc65 0%, transparent 25%),
+    radial-gradient(ellipse at 70% 90%, #f3a64e 0%, transparent 35%),
+    linear-gradient(125deg, #ffedc9 0%, #f8d69c 55%, #f5b878 100%);
+}
+
+/* Decorative racing stripes */
+
+.hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 550px;
+  height: 550px;
+  right: -140px;
+  top: 60px;
+  border-radius: 50%;
+  border: 35px solid #e3262415;
+  box-shadow:
+    0 0 0 35px #e3262410,
+    0 0 0 70px #e326240a;
+}
+
+.hero::after {
+  content: "95";
+  position: absolute;
+  z-index: -1;
+  right: 7%;
+  top: 100px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(230px, 35vw, 470px);
+  font-weight: 700;
+  line-height: 1;
+  color: #e326240b;
+  transform: rotate(-10deg);
+  pointer-events: none;
 }
 
 .heroTop,
@@ -26,106 +88,163 @@
   gap: 20px;
 }
 
-.eyebrow,
-.heroLabel,
-.heroBottom,
-.sectionEyebrow,
-.sectionHeading > p,
-.trackName,
-.live,
-.eventTop,
-.eventBottom,
-.detailsTop,
-.detailsInfo span,
-.detailsSector {
-  font-size: 11px;
-  font-weight: 800;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red-dark);
+  font-size: 12px;
+  font-weight: 900;
   letter-spacing: 2px;
 }
 
-.eyebrow {
-  color: #f5bd35;
-}
-
 .live {
-  color: #d9d9d9;
   display: flex;
   align-items: center;
   gap: 9px;
+  color: var(--brown);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
 }
 
 .liveDot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: #22c58b;
-  box-shadow: 0 0 12px #22c58b;
+  background: #26a96c;
+  box-shadow: 0 0 0 5px #26a96c20;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 9px #26a96c08;
+  }
 }
 
 .heroContent {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 30px;
+  padding: 55px 0;
 }
 
 .heroLabel {
-  color: #f5bd35;
-  margin-bottom: 18px;
+  display: inline-block;
+  padding: 8px 13px;
+  background: var(--yellow);
+  color: var(--red-dark);
+  border: 2px solid var(--brown);
+  border-radius: 5px;
+  box-shadow: 3px 3px 0 var(--brown);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  margin-bottom: 25px;
 }
 
 .heroContent h1 {
-  font-size: clamp(65px, 11vw, 145px);
-  line-height: 0.82;
-  letter-spacing: -8px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(75px, 12vw, 155px);
+  line-height: 0.79;
+  letter-spacing: -5px;
   margin: 0;
-  font-weight: 950;
-  color: #fff;
+  font-weight: 700;
+  color: var(--red);
+  text-shadow:
+    3px 3px 0 white,
+    6px 6px 0 var(--red-dark),
+    9px 9px 0 #49372a25;
 }
 
 .heroContent h1 span {
-  color: #e83b3b;
+  color: var(--yellow);
+  -webkit-text-stroke: 2px var(--red-dark);
+  text-shadow:
+    3px 3px 0 var(--red-dark),
+    6px 6px 0 #49372a30;
 }
 
 .heroDescription {
-  color: #aaa;
+  color: #76553a;
   max-width: 440px;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.8;
-  margin-top: 30px;
+  margin-top: 32px;
+  font-weight: 700;
 }
 
 .heroNumber {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #888;
+  color: var(--brown);
   gap: 8px;
-  border: 1px solid #555;
-  padding: 25px;
+  border: 3px solid var(--brown);
+  border-radius: 18px;
+  padding: 25px 35px;
+  background: var(--yellow);
+  transform: rotate(5deg);
+  box-shadow: 8px 8px 0 var(--red);
 }
 
 .heroNumber strong {
-  color: #f5bd35;
-  font-size: 90px;
+  color: var(--red);
+  font-family: 'Fredoka', sans-serif;
+  font-size: 110px;
   line-height: 1;
+  -webkit-text-stroke: 2px var(--red-dark);
 }
 
 .heroNumber span {
   font-size: 10px;
   letter-spacing: 2px;
+  font-weight: 900;
 }
 
 .heroBottom {
-  color: #777;
-  border-top: 1px solid #343434;
-  padding-top: 20px;
+  position: relative;
+  z-index: 3;
+  color: white;
+  background: var(--red);
+  margin: 0 -8.15%;
+  padding: 20px 8.15%;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+/* =========================================
+   CHECKERED FLAG
+========================================= */
+
+.heroBottom::after {
+  content: "";
+  position: absolute;
+  height: 9px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background:
+    repeating-conic-gradient(
+      #25262a 0% 25%,
+      white 0% 50%
+    ) 0 0 / 18px 18px;
 }
 
 .scheduleSection,
 .eventsSection {
   padding: 90px 7%;
 }
+
+/* =========================================
+   SECTION HEADINGS
+========================================= */
 
 .sectionHeading,
 .trackHeader {
@@ -137,93 +256,164 @@
 }
 
 .sectionEyebrow {
-  color: #f5bd35;
+  display: inline-block;
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
 }
 
 .sectionHeading h2,
 .trackHeader h2 {
+  font-family: 'Fredoka', sans-serif;
   margin: 10px 0 0;
-  font-size: clamp(30px, 5vw, 55px);
-  font-weight: 900;
-  letter-spacing: -2px;
+  font-size: clamp(34px, 5vw, 60px);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  color: var(--brown);
 }
 
 .sectionHeading h2 span,
 .trackHeader h2 span,
 .detailsLabel h2 span {
-  color: #e83b3b;
+  color: var(--red);
 }
 
 .sectionHeading > p {
-  color: #777;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
 }
+
+/* =========================================
+   DAY SELECTOR — RACING TICKETS
+========================================= */
 
 .daySelector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 80px;
+  gap: 16px;
+  margin-bottom: 85px;
 }
 
 .dayButton {
   position: relative;
+  overflow: hidden;
   text-align: left;
-  padding: 25px;
-  background: #191e24;
-  border: 1px solid #343b42;
-  color: white;
+  padding: 26px;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 13px;
+  color: var(--brown);
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.25s ease;
+  box-shadow: 0 6px 0 var(--border);
 }
 
-.dayButton:hover,
+.dayButton::after {
+  content: "";
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  right: -35px;
+  bottom: -40px;
+  background: var(--yellow);
+  border-radius: 50%;
+  opacity: 0.45;
+  transition: 0.25s ease;
+}
+
+.dayButton:hover {
+  transform: translateY(-5px);
+  border-color: var(--red);
+  box-shadow: 0 9px 0 var(--red);
+}
+
 .activeDay {
-  border-color: #e83b3b;
-  background: #241a1c;
+  background: var(--red);
+  border-color: var(--red-dark);
+  color: white;
+  box-shadow: 0 7px 0 var(--red-dark);
+  transform: translateY(-3px);
+}
+
+.activeDay::after {
+  background: var(--yellow);
+  opacity: 1;
 }
 
 .dayButton span {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 2px;
-  color: #999;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.activeDay span {
+  color: #ffd8bd;
 }
 
 .dayButton strong {
   display: block;
+  position: relative;
+  z-index: 1;
   margin-top: 12px;
-  font-size: 21px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 26px;
 }
 
 .dayArrow {
   position: absolute;
   right: 20px;
   top: 20px;
-  font-size: 18px !important;
-  color: #e83b3b !important;
+  font-size: 20px !important;
+  color: var(--red) !important;
 }
+
+.activeDay .dayArrow {
+  color: var(--yellow) !important;
+}
+
+/* =========================================
+   CIRCUIT SECTION
+========================================= */
 
 .trackHeader {
   margin-bottom: 25px;
 }
 
 .trackName {
-  color: #aaa;
+  padding: 12px 18px;
+  background: var(--yellow);
+  border: 2px solid var(--brown);
+  border-radius: 30px;
+  color: var(--brown);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  box-shadow: 3px 3px 0 var(--brown);
 }
 
 .trackContainer {
+  position: relative;
   width: 100%;
   min-height: 560px;
-  border: 1px solid #343b42;
-  background: #101419;
+  border: 4px solid var(--brown);
+  border-radius: 20px;
+  background: #a8dce5;
   overflow: hidden;
+  box-shadow:
+    0 9px 0 var(--red),
+    0 15px 30px #49372a20;
 }
 
 .legend {
   display: flex;
   gap: 25px;
   flex-wrap: wrap;
-  padding: 22px 0;
+  padding: 25px 5px;
 }
 
 .legendItem {
@@ -231,116 +421,230 @@
   align-items: center;
   gap: 9px;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 1px;
-  color: #aaa;
+  color: var(--brown);
 }
 
 .legendItem span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1px solid #49372a30;
 }
 
+/* =========================================
+   EVENT GRID — PISTON CUP STYLE
+========================================= */
+
 .eventsSection {
-  background: #151a20;
+  position: relative;
+  background:
+    radial-gradient(circle at 10% 20%, #ffdd7b 0%, transparent 25%),
+    linear-gradient(135deg, #ffdda4, #ffc77f);
+  border-top: 5px solid var(--red);
+  border-bottom: 5px solid var(--red);
+}
+
+.eventsSection::before,
+.eventsSection::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background:
+    repeating-conic-gradient(
+      #25262a 0% 25%,
+      white 0% 50%
+    ) 0 0 / 20px 20px;
+}
+
+.eventsSection::before {
+  top: 0;
+}
+
+.eventsSection::after {
+  bottom: 0;
 }
 
 .eventGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 15px;
+  gap: 17px;
 }
 
 .eventCard {
-  min-height: 220px;
+  position: relative;
+  overflow: hidden;
+  min-height: 240px;
   padding: 20px;
-  background: #1c2229;
-  color: white;
+  background: white;
+  color: var(--brown);
   text-align: left;
-  border: 1px solid #343b42;
-  border-top: 4px solid var(--sector-color);
+  border: 2px solid #c9ae8b;
+  border-top: 7px solid var(--sector-color);
+  border-radius: 13px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: 0.2s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 6px 0 #c9ae8b;
+}
+
+.eventCard::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  right: -40px;
+  bottom: -40px;
+  border-radius: 50%;
+  background: var(--sector-color);
+  opacity: 0.09;
+  transition: 0.25s ease;
 }
 
 .eventCard:hover {
-  transform: translateY(-5px);
-  background: #252c34;
+  transform: translateY(-8px) rotate(-1deg);
+  box-shadow: 0 12px 0 var(--sector-color);
+}
+
+.eventCard:hover::after {
+  transform: scale(2);
+  opacity: 0.17;
 }
 
 .selectedCard {
-  background: #292d32;
-  box-shadow: inset 0 0 0 1px var(--sector-color);
+  background: #fff5dd;
+  border-color: var(--sector-color);
+  box-shadow: 0 7px 0 var(--sector-color);
+  transform: translateY(-4px);
 }
 
 .eventTop,
 .eventBottom {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   color: var(--sector-color);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.eventContent {
+  position: relative;
+  z-index: 1;
 }
 
 .eventContent h3 {
-  font-size: 20px;
-  margin: 0 0 12px;
-  line-height: 1.3;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 22px;
+  margin: 12px 0;
+  line-height: 1.25;
 }
 
 .eventCategory {
-  color: #999;
-  font-size: 12px;
+  display: inline-block;
+  padding: 6px 11px;
+  background: #fff0cf;
+  color: #916a35;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 900;
 }
 
 .eventBottom {
   padding-top: 15px;
-  border-top: 1px solid #3c4249;
+  border-top: 1px solid #e9d9c3;
+  margin-top: 15px;
 }
 
+/* =========================================
+   EVENT DETAILS — RACE INTEL
+========================================= */
+
 .detailsSection {
+  position: relative;
   display: grid;
   grid-template-columns: 0.8fr 2fr;
   gap: 50px;
-  padding: 90px 7%;
+  padding: 100px 7%;
+  background:
+    radial-gradient(circle at 5% 90%, #f6c4a1 0%, transparent 30%),
+    linear-gradient(130deg, #fff2d9, #f8dfb9);
 }
 
 .detailsLabel h2 {
-  font-size: 65px;
-  line-height: 0.9;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 76px;
+  line-height: 0.88;
   margin-top: 20px;
   letter-spacing: -3px;
+  color: var(--red);
+  text-shadow: 3px 3px 0 white, 5px 5px 0 #49372a20;
 }
 
 .detailsContent {
-  border: 1px solid #343b42;
-  background: #191e24;
-  padding: 35px;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid var(--brown);
+  border-radius: 18px;
+  background: white;
+  padding: 38px;
+  box-shadow: 8px 8px 0 var(--yellow);
+}
+
+.detailsContent::before {
+  content: "95";
+  position: absolute;
+  right: -5px;
+  top: -45px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 180px;
+  font-weight: 700;
+  color: #e3262408;
+  pointer-events: none;
 }
 
 .detailsTop {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
-  color: #888;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
 }
 
 .detailsContent h3 {
-  font-size: clamp(28px, 4vw, 48px);
+  position: relative;
+  z-index: 1;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(30px, 4vw, 53px);
   margin: 30px 0 10px;
+  color: var(--red);
+  line-height: 1.1;
 }
 
 .detailsContent > p {
-  color: #aaa;
+  position: relative;
+  z-index: 1;
+  color: #806b54;
   line-height: 1.8;
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .detailsInfo {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  border-top: 1px solid #343b42;
+  border-top: 2px dashed #dfc9a8;
   margin-top: 35px;
   padding-top: 25px;
 }
@@ -352,33 +656,60 @@
 }
 
 .detailsInfo span {
-  color: #888;
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
 }
 
 .detailsInfo strong {
-  font-size: 14px;
-  color: white;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 16px;
+  color: var(--brown);
 }
 
+/* =========================================
+   FOOTER
+========================================= */
+
 .pageFooter {
-  padding: 25px 7%;
-  border-top: 1px solid #343b42;
+  position: relative;
+  overflow: hidden;
+  padding: 35px 7%;
+  border-top: 5px solid var(--red);
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  color: #888;
+  color: white;
   font-size: 10px;
   letter-spacing: 2px;
-  font-weight: 800;
+  font-weight: 900;
+  background: var(--red);
 }
 
-/* 3D scene */
+.pageFooter::after {
+  content: "";
+  position: absolute;
+  height: 10px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background:
+    repeating-conic-gradient(
+      #25262a 0% 25%,
+      white 0% 50%
+    ) 0 0 / 20px 20px;
+}
+
+/* =========================================
+   3D CIRCUIT — RACE CONTROL
+========================================= */
 
 .trackContainer :global(.race-scene) {
   position: relative;
   width: 100%;
   height: 560px;
-  background: #101419;
+  background: #a8dce5;
 }
 
 .trackContainer :global(.race-canvas) {
@@ -416,20 +747,29 @@
 }
 
 .trackContainer :global(.race-camera-controls button) {
-  border: 1px solid #555;
-  background: #171d23;
-  color: #aaa;
+  border: 2px solid var(--brown);
+  border-radius: 8px;
+  background: white;
+  color: var(--brown);
   padding: 11px 15px;
+  font-family: 'Nunito Sans', sans-serif;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 1px;
   cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 3px 3px 0 var(--brown);
+}
+
+.trackContainer :global(.race-camera-controls button:hover) {
+  transform: translateY(-2px);
 }
 
 .trackContainer :global(.race-camera-controls button.camera-active) {
   color: white;
-  background: #e83b3b;
-  border-color: #e83b3b;
+  background: var(--red);
+  border-color: var(--red-dark);
+  box-shadow: 3px 3px 0 var(--red-dark);
 }
 
 .trackContainer :global(.race-event-strip) {
@@ -447,11 +787,18 @@
   min-width: 0;
   text-align: left;
   padding: 13px;
-  background: #171d23ee;
-  border: 1px solid #454b52;
-  border-top: 3px solid var(--sector-color);
-  color: white;
+  background: #fff5e5ed;
+  border: 2px solid #bba17f;
+  border-top: 5px solid var(--sector-color);
+  border-radius: 9px;
+  color: var(--brown);
   cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 3px 0 #49372a30;
+}
+
+.trackContainer :global(.race-event:hover) {
+  transform: translateY(-3px);
 }
 
 .trackContainer :global(.race-event span),
@@ -460,19 +807,22 @@
   font-size: 9px;
   color: var(--sector-color);
   letter-spacing: 1px;
+  font-weight: 900;
 }
 
 .trackContainer :global(.race-event strong) {
   display: block;
   margin: 9px 0;
-  font-size: 12px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 13px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .trackContainer :global(.race-event.active) {
-  background: #34383e;
-  border-color: var(--sector-color);
+  background: var(--yellow);
+  border-color: var(--red);
+  box-shadow: 0 4px 0 var(--red);
 }
 
 .trackContainer :global(.race-hud) {
@@ -483,46 +833,62 @@
   right: 18px;
   display: flex;
   justify-content: space-between;
-  color: #aaa;
+  color: white;
+  text-shadow: 1px 1px 3px #49372a;
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 1px;
   pointer-events: none;
 }
 
-@media (max-width: 900px) {
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1000px) {
   .eventGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .detailsSection {
     grid-template-columns: 1fr;
+    gap: 25px;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .hero {
-    min-height: 500px;
-    padding: 25px 6%;
+    min-height: 550px;
+    padding: 25px 6% 0;
+  }
+
+  .heroContent {
+    padding: 40px 0;
   }
 
   .heroContent h1 {
-    font-size: 75px;
-    letter-spacing: -4px;
+    font-size: clamp(65px, 17vw, 95px);
+    letter-spacing: -3px;
   }
 
   .heroNumber {
     display: none;
   }
 
+  .heroDescription {
+    font-size: 14px;
+  }
+
   .heroBottom {
+    margin: 0 -6.8%;
+    padding: 18px 6.8%;
     flex-wrap: wrap;
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .scheduleSection,
   .eventsSection {
-    padding: 60px 6%;
+    padding: 65px 6%;
   }
 
   .sectionHeading,
@@ -532,15 +898,25 @@
   }
 
   .daySelector {
-    gap: 7px;
+    gap: 8px;
+    margin-bottom: 60px;
   }
 
   .dayButton {
-    padding: 15px 10px;
+    padding: 16px 10px;
   }
 
   .dayButton strong {
-    font-size: 14px;
+    font-size: 15px;
+  }
+
+  .dayButton span {
+    font-size: 9px;
+  }
+
+  .dayArrow {
+    right: 8px;
+    top: 8px;
   }
 
   .trackContainer {
@@ -564,23 +940,44 @@
     font-size: 10px;
   }
 
+  .trackContainer :global(.race-camera-controls button) {
+    padding: 9px;
+    font-size: 8px;
+  }
+
+  .trackContainer :global(.race-hud) {
+    font-size: 7px;
+    left: 8px;
+    right: 8px;
+  }
+
   .eventGrid {
     grid-template-columns: 1fr;
   }
 
+  .eventCard {
+    min-height: 200px;
+  }
+
   .detailsSection {
-    padding: 60px 6%;
+    padding: 65px 6%;
+  }
+
+  .detailsLabel h2 {
+    font-size: 60px;
   }
 
   .detailsContent {
-    padding: 22px;
+    padding: 23px;
   }
 
   .detailsInfo {
     grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .pageFooter {
     flex-direction: column;
+    padding: 30px 6%;
   }
 }

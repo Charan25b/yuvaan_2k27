@@ -33,10 +33,10 @@ type Props = {
 };
 
 const SECTOR_COLORS = [
-  "#ef4444",
-  "#f5bd35",
-  "#22c58b",
-  "#3b82f6",
+  "#d9362b",
+  "#f4b942",
+  "#4a9188",
+  "#6499b3",
 ];
 
 const SECTOR_NAMES = [
@@ -243,13 +243,13 @@ function Track({ curve }: { curve: THREE.CatmullRomCurve3 }) {
         position={[0, -0.2, 0]}
       >
         <planeGeometry args={[300, 300]} />
-        <meshBasicMaterial color="#101419" />
+        <meshBasicMaterial color="#dfc49e" />
       </mesh>
 
       {/* Thin continuous asphalt road */}
       <mesh geometry={roadGeometry} receiveShadow>
         <meshStandardMaterial
-          color="#34383d"
+          color="#51463c"
           roughness={0.95}
           side={THREE.DoubleSide}
         />
@@ -271,7 +271,7 @@ function Track({ curve }: { curve: THREE.CatmullRomCurve3 }) {
       {/* Thin white road edges */}
       {edgeGeometries.map((geometry, index) => (
         <mesh key={index} geometry={geometry}>
-          <meshBasicMaterial color="#eeeeee" />
+          <meshBasicMaterial color="#f4e7ce" />
         </mesh>
       ))}
     </group>
@@ -319,8 +319,8 @@ function TrackKerbs({
           rotation,
           color:
             Math.floor(i / 4) % 2 === 0
-              ? "#ed2929"
-              : "#ffffff",
+              ? "#d9362b"
+              : "#f4b942",
         });
       }
     }
@@ -382,7 +382,7 @@ function EventMarkers({
               color={SECTOR_COLORS[index]}
               anchorX="center"
               outlineWidth={0.03}
-              outlineColor="#101419"
+              outlineColor="#30251f"
             >
               {SECTOR_NAMES[index]}
             </Text>
@@ -649,7 +649,7 @@ export default function RaceTrackScene({
             far: 500,
           }}
         >
-          <color attach="background" args={["#101419"]} />
+          <color attach="background" args={["#dfc49e"]} />
 
           <ambientLight intensity={1.5} />
 
@@ -662,7 +662,7 @@ export default function RaceTrackScene({
           <pointLight
             position={[-20, 15, -20]}
             intensity={2}
-            color="#ef4444"
+            color="#f4b942"
           />
 
           <Circuit

@@ -20,11 +20,6 @@ export const HERO_IMAGES: HeroImage[] = [
   { src: "/zoro.jpg", width: 704, height: 1158 },
 ];
 
-export const HERO_MOTION = {
-  desktop: { zoom: 0.32, backgroundShift: 96 },
-  mobile: { zoom: 0.14, backgroundShift: 42 },
-};
-
 function ComicScene({ image, priority = false }: { image: HeroImage; priority?: boolean }) {
   return (
     <Image
@@ -49,31 +44,11 @@ function ComicRail({
   reverse?: boolean;
   firstRail?: boolean;
 }) {
-  const track = useRef<HTMLDivElement>(null);
-  const sequence = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const trackElement = track.current;
-    const sequenceElement = sequence.current;
-    if (!trackElement || !sequenceElement) return;
-
-    const updateDuration = () => {
-      const sequenceHeight = sequenceElement.offsetHeight;
-      if (sequenceHeight > 0) {
-        trackElement.style.setProperty("--comic-duration", `${sequenceHeight / 42}s`);
-      }
-    };
-    const observer = new ResizeObserver(updateDuration);
-    observer.observe(sequenceElement);
-    updateDuration();
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div className={`${styles.rail}${reverse ? ` ${styles.reverse}` : ""}`}>
-      <div ref={track} className={styles.track}>
-        {[0, 1].map((copy) => (
-          <div className={styles.sequence} key={copy} ref={copy === 0 ? sequence : undefined}>
+      <div className={styles.track}>
+        {Array.from({ length: 5 }, (_, copy) => (
+          <div className={styles.sequence} key={copy}>
             {images.map((image, index) => (
               <ComicScene
                 key={`${copy}-${index}`}
@@ -99,29 +74,19 @@ export function HeroSection() {
     const element = hero.current;
     if (!element || !enabled) return;
 
-    const mobile = matchMedia("(max-width: 680px)");
     let frame = 0;
     let visible = true;
     let height = element.offsetHeight;
     const headerHeight = () => document.querySelector("header")?.offsetHeight || 0;
     let top = Math.max(0, element.getBoundingClientRect().top + window.scrollY - headerHeight());
-    let smoothProgress = Math.max(0, Math.min(1, (window.scrollY - top) / height));
-    let lastTime = 0;
-    const update = (time: number) => {
+    const update = () => {
       frame = 0;
-      const targetProgress = Math.max(0, Math.min(1, (window.scrollY - top) / height));
-      const elapsed = Math.min(50, lastTime ? time - lastTime : 16);
-      lastTime = time;
-      smoothProgress += (targetProgress - smoothProgress) * (1 - Math.exp(-elapsed / 65));
-      const amount = mobile.matches ? HERO_MOTION.mobile : HERO_MOTION.desktop;
-      // Start from the tighter framing previously reached after scrolling,
-      // then smoothly open the artwork as the hero scrolls away.
-      const depthProgress = smoothProgress * smoothProgress * (3 - 2 * smoothProgress);
-      element.style.setProperty("--comic-scale", String(1.12 + amount.zoom * depthProgress));
-      element.style.setProperty("--comic-y", `${(1 - depthProgress) * amount.backgroundShift}px`);
+      const progress = Math.max(0, Math.min(1, (window.scrollY - top) / height));
+      // Keep the artwork's position and scale fixed; scrolling only reveals
+      // the two outer rails, growing the composition from three columns to five.
+      const depthProgress = progress * progress * (3 - 2 * progress);
       element.style.setProperty("--side-rail-fr", `${depthProgress}fr`);
       element.style.setProperty("--side-rail-opacity", String(depthProgress));
-      if (Math.abs(targetProgress - smoothProgress) > .001 && visible && !document.hidden) frame = requestAnimationFrame(update);
     };
     const schedule = () => {
       if (visible && !document.hidden && !frame) frame = requestAnimationFrame(update);
@@ -158,7 +123,7 @@ export function HeroSection() {
       window.removeEventListener("scroll", schedule);
       document.removeEventListener("visibilitychange", activity);
       element.dataset.running = "false";
-      ["--comic-scale", "--comic-y", "--side-rail-fr", "--side-rail-opacity"].forEach((key) => element.style.removeProperty(key));
+      ["--side-rail-fr", "--side-rail-opacity"].forEach((key) => element.style.removeProperty(key));
     };
   }, [enabled]);
 

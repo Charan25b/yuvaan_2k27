@@ -118,7 +118,12 @@ const schedule: Record<number, Event[]> = {
   ],
 };
 
-const sectorColors = ["#ef4444", "#f5bd35", "#22c58b", "#3b82f6"];
+const sectorColors = [
+  "#d9362b", // McQueen red
+  "#f4b942", // Racing yellow
+  "#4a9188", // Radiator Springs teal
+  "#6499b3", // Sky blue
+];
 
 const tracks: Record<number, string> = {
   1: "suzuka",

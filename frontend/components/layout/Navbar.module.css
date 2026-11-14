@@ -1,10 +1,8 @@
-.header { --paper: #f6f0df; --ink: #142039; --action: #ffd43b; position: sticky; top: 0; z-index: 40; background: var(--paper); color: var(--ink); border-bottom: 2px solid var(--ink); font-family: var(--font-barlow), Arial, sans-serif; }
+.header { --paper: #f6f0df; --ink: #142039; --action: #ffd43b; position: sticky; top: 0; z-index: 40; background: var(--ink); color: var(--paper); border-bottom: 2px solid var(--ink); font-family: var(--font-barlow), Arial, sans-serif; }
 .bar { max-width: 1440px; margin: auto; height: 94px; padding-inline: max(32px, env(safe-area-inset-left)) max(32px, env(safe-area-inset-right)); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .brand { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.emblem { width: 34px; height: 40px; display: grid; place-items: center; background: #d83e36; color: var(--paper); border: 2px solid var(--ink); transform: rotate(-6deg); border-radius: 2px; box-shadow: 2px 2px 0 var(--ink); }
-.emblem svg { height: 27px; width: 20px; }
 .wordmark { font-family: var(--font-bangers), Impact, sans-serif; font-size: 27px; line-height: 1; white-space: nowrap; }
-.wordmark small { font-family: inherit; font-size: 12px; color: #d83e36; margin-left: 2px; }
+.wordmark small { font-family: inherit; font-size: 12px; color: var(--action); margin-left: 2px; }
 .institute { display: block; font-size: 8px; font-weight: 700; letter-spacing: .03em; margin-top: 4px; }
 .desktopLinks { display: flex; align-items: center; gap: 24px; }
 .desktopLinks a { display: inline-flex; align-items: center; min-height: 44px; font-size: 16px; font-weight: 600; white-space: nowrap; text-underline-offset: 7px; }
@@ -20,23 +18,17 @@
 .gameButton:hover .pulse { background: #4ade80; }
 .gameButton:hover .dot { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
 @keyframes gameButtonPing { 75%, 100% { transform: scale(2); opacity: 0; } }
-.dark { background: var(--ink); color: var(--paper); }
-.dark .emblem { background: var(--action); color: var(--ink); }
-.dark .wordmark small { color: var(--action); }
 .toggle { display: none; }
 .drawer { display: none; }
 @media (max-width: 1099px) {
-  .header, .dark { background: var(--paper); color: var(--ink); }
   .bar { height: 80px; padding-inline: max(24px, env(safe-area-inset-left)) max(24px, env(safe-area-inset-right)); }
-  .dark .emblem { background: #d83e36; color: var(--paper); }
-  .dark .wordmark small { color: #d83e36; }
   .desktopLinks, .desktopAction { display: none; }
-  .toggle { display: grid; place-items: center; width: 44px; height: 44px; padding: 8px; border: 1.5px solid var(--ink); color: var(--ink); background: transparent; cursor: pointer; }
+  .toggle { display: grid; place-items: center; width: 44px; height: 44px; padding: 8px; border: 1.5px solid var(--paper); color: var(--paper); background: transparent; cursor: pointer; }
   .toggle svg { width: 24px; height: 24px; }
-  .drawer:not([hidden]) { display: block; position: absolute; top: 100%; left: 0; right: 0; max-height: calc(100dvh - 82px); overflow-y: auto; overscroll-behavior-y: contain; background: var(--paper); padding: 12px max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); border-bottom: 2px solid var(--ink); box-shadow: 0 15px 20px #14203918; }
+  .drawer:not([hidden]) { display: block; position: absolute; top: 100%; left: 0; right: 0; max-height: calc(100dvh - 82px); overflow-y: auto; overscroll-behavior-y: contain; background: var(--ink); color: var(--paper); padding: 12px max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); border-bottom: 2px solid var(--paper); box-shadow: 0 15px 20px #14203918; }
   .drawer nav { margin-bottom: 24px; }
-  .drawer nav a { display: flex; justify-content: space-between; align-items: center; min-height: 49px; padding-block: 10px; border-bottom: 1px solid #14203922; font-size: 20px; font-weight: 500; }
-  .drawer nav a:hover, .drawer nav a[aria-current] { color: #b52824; }
+  .drawer nav a { display: flex; justify-content: space-between; align-items: center; min-height: 49px; padding-block: 10px; border-bottom: 1px solid #f6f0df33; font-size: 20px; font-weight: 500; }
+  .drawer nav a:hover, .drawer nav a[aria-current] { color: var(--action); }
   .linkArrow { display: inline; font-size: 18px; }
   .caption { font-family: var(--font-barlow), Arial, sans-serif; font-size: 11px; margin-top: 20px; }
 }

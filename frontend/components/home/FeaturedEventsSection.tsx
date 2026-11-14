@@ -52,15 +52,13 @@ export function FeaturedEventsSection() {
   const featured = EVENTS_DATA.slice(0, 3);
 
   return (
-    <section data-home-section="events" className="py-14 sm:py-20 relative overflow-hidden">
+    <section data-home-section="events" className="py-16 sm:py-24 relative overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
-              badge="Marquee Competitions"
-              badgeVariant="highlight"
               title="Featured Festival Events"
-              description="Explore highlighted tracks across music, code, and esports. Detailed rulebooks, eligibility criteria, and schedules are provided on each event page."
+              description="Explore highlighted tracks across various fields. Detailed rulebooks, eligibility criteria, and schedules are provided on each event page."
               className="home-section-heading"
             />
             <Button href="/events" variant="gold" size="md" className="shrink-0">

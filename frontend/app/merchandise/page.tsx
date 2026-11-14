@@ -8,38 +8,30 @@ interface MerchItem {
   tag: string;
   price: string;
   title: string;
-  subtitle: string;
   image: string;
-  bountyberry: string;
 }
 
 const MERCH_ITEMS: MerchItem[] = [
   {
-    id: "mugiwara-hoody",
-    tag: "GEAR 5 EDITION",
+    id: "yuvaan-hoodie",
+    tag: "FESTIVAL COLLECTION",
     price: "₹549",
-    title: "Mugiwara Hoody",
-    subtitle: "Yuvaan Edition • Heavyweight Fleece",
+    title: "Yuvaan Hoodie",
     image: "/tshirt-1.png",
-    bountyberry: "549,000,000",
   },
   {
-    id: "pirate-cap",
-    tag: "STRAW HAT ERA",
+    id: "festival-cap",
+    tag: "ADJUSTABLE FIT",
     price: "₹299",
-    title: "The Pirate Cap",
-    subtitle: "Embroidered Crest • Adjustable Fit",
+    title: "Festival Cap",
     image: "/tshirt-1.png",
-    bountyberry: "299,000,000",
   },
   {
-    id: "straw-hat-tee",
-    tag: "BOUNTY WEAR",
+    id: "graphic-tee",
+    tag: "COTTON COLLECTION",
     price: "₹399",
-    title: "The Straw Hat Tee",
-    subtitle: "Oversized Combed Cotton • Graphic Tee",
+    title: "Graphic T-shirt",
     image: "/tshirt-1.png",
-    bountyberry: "399,000,000",
   },
 ];
 
@@ -127,10 +119,13 @@ export default function MerchandisePage() {
   const [selectedItem, setSelectedItem] = useState<MerchItem | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>("L");
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
+  const [showZoro, setShowZoro] = useState(false);
+  const [luffyBehindCard, setLuffyBehindCard] = useState(false);
+  const [zoroInFront, setZoroInFront] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Smooth Entrance Animation for Heading & Bounty Cards
+      // Smooth entrance animation for the heading and product cards
       gsap.fromTo(
         headingRef.current,
         { y: -20, opacity: 0 },
@@ -148,7 +143,7 @@ export default function MerchandisePage() {
             duration: 0.75,
             stagger: 0.12,
             ease: "power3.out",
-            delay: 0.15,
+            delay: 0.05,
           }
         );
       }
@@ -211,6 +206,16 @@ export default function MerchandisePage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
+        @font-face {
+          font-family: 'One Piece';
+          src: url('/fonts/one-piece.ttf') format('truetype');
+          font-weight: 400;
+          font-style: normal;
+          font-display: swap;
+        }
+        .font-one-piece {
+          font-family: 'One Piece', 'Cinzel', Georgia, serif;
+        }
         .font-merch-display {
           font-family: 'Cinzel', Georgia, serif;
         }
@@ -253,23 +258,23 @@ export default function MerchandisePage() {
 
       {/* 3. MAIN FOREGROUND CONTENT */}
       <div className="relative z-20 mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-4 pt-6 pb-20 sm:px-6 lg:px-8">
-        {/* --- HEADING SECTION: ONLY "MERCHANDISE" + SUBTITLE --- */}
+        {/* Merchandise heading */}
         <header
           ref={headingRef}
-          className="mb-8 sm:mb-11 flex flex-col items-center text-center"
+          className="relative -top-4 mb-8 sm:mb-11 flex flex-col items-center text-center"
         >
           {/* Decorative Compass Rose Divider Above Title */}
           <div className="mb-2 flex items-center gap-3">
             <span className="h-[2px] w-12 sm:w-20 bg-gradient-to-r from-transparent to-[#5c160c]" />
             <span className="font-merch-display text-xs sm:text-sm font-extrabold tracking-[0.28em] text-[#5c160c] uppercase">
-              ✦ GRAND LINE TREASURY ✦
+              YUVAAN 2027 OFFICIAL STORE
             </span>
             <span className="h-[2px] w-12 sm:w-20 bg-gradient-to-l from-transparent to-[#5c160c]" />
           </div>
 
           {/* Single Commanding "MERCHANDISE" Title */}
           <h1
-            className="font-merch-display text-4xl sm:text-6xl md:text-[4.85rem] font-black tracking-[0.08em] uppercase leading-none"
+            className="font-one-piece text-[2.6rem] sm:text-7xl md:text-[6rem] font-black tracking-[0.06em] uppercase leading-none"
             style={{
               backgroundImage:
                 "linear-gradient(180deg, #e63926 0%, #b51414 48%, #730808 88%, #3d0202 100%)",
@@ -285,11 +290,11 @@ export default function MerchandisePage() {
 
           {/* Subtitle Pill */}
           <p className="font-merch-display mt-3 border-y border-[#5c3610]/40 bg-[#f4e2bc]/75 px-5 py-1 text-xs sm:text-base md:text-lg font-extrabold tracking-[0.2em] text-[#2e1805] uppercase backdrop-blur-[2px] shadow-sm">
-            SAIL THE GRAND LINE OF FESTIVITY!
+            OFFICIAL FESTIVAL MERCHANDISE
           </p>
         </header>
 
-        {/* --- 3 ONE PIECE "WANTED" BOUNTY POSTER CARDS --- */}
+        {/* Featured merchandise cards */}
         <section
           ref={cardsGridRef}
           className="grid w-full max-w-6xl grid-cols-1 gap-8 md:grid-cols-3 lg:gap-10"
@@ -297,11 +302,49 @@ export default function MerchandisePage() {
           {MERCH_ITEMS.map((item) => (
             <article
               key={item.id}
-              className="group relative mx-auto flex w-full max-w-[370px] flex-col transition-all duration-300 hover:-translate-y-2"
+              className="group isolate relative mx-auto flex w-full max-w-[370px] flex-col opacity-0 transition-all duration-300 hover:-translate-y-2"
             >
+              {item.id === "graphic-tee" && (
+                <>
+                  <div className={`pointer-events-none absolute right-0 top-[6px] aspect-square w-32 -translate-x-16 -translate-y-[87%] sm:w-36 md:-right-4 xl:-right-16 xl:-translate-x-24 ${luffyBehindCard ? "z-0" : "z-30"}`}>
+                    <button
+                      type="button"
+                      aria-label="Bring Luffy down and reveal Zoro"
+                      disabled={showZoro}
+                      onClick={() => setShowZoro(true)}
+                      onTransitionEnd={(event) => {
+                        if (event.propertyName === "transform") setLuffyBehindCard(showZoro);
+                      }}
+                      style={{ transform: showZoro ? "translateY(160px)" : "translateY(0)" }}
+                      className={`pointer-events-auto absolute inset-0 flex h-full w-full cursor-pointer items-center justify-center border-0 bg-transparent p-0 transition-[transform,opacity] duration-[2000ms] ease-in-out ${showZoro ? "opacity-0" : "opacity-100"}`}
+                    >
+                      <img src="/merchandise/luffy.png" alt="" className="h-full w-full object-contain" />
+                    </button>
+                  </div>
+                  <div className={`pointer-events-none absolute right-0 top-[11px] aspect-square w-32 -translate-x-[51.5px] -translate-y-[87%] sm:w-36 md:-right-4 xl:-right-16 xl:-translate-x-[83.5px] ${zoroInFront ? "z-30" : "z-0"}`}>
+                    <button
+                      type="button"
+                      aria-label="Bring Zoro down and bring Luffy back"
+                      disabled={!showZoro}
+                      onClick={() => setShowZoro(false)}
+                      onTransitionEnd={(event) => {
+                        if (event.propertyName === "transform") setZoroInFront(showZoro);
+                      }}
+                      style={{
+                        transform: showZoro ? "translateY(0)" : "translateY(160px)",
+                        transitionDelay: showZoro ? "2250ms" : "0ms",
+                      }}
+                      className={`pointer-events-auto absolute inset-0 flex h-full w-full cursor-pointer items-center justify-center border-0 bg-transparent p-0 transition-[transform,opacity] duration-[2000ms] ease-in-out ${showZoro ? "opacity-100" : "opacity-0"}`}
+                    >
+                      <img src="/merchandise/zoro.png" alt="" className="h-full w-full object-contain" />
+                    </button>
+                  </div>
+                </>
+              )}
+
               {/* Dark Mahogany & Antique Brass Frame (Provides high contrast against the light map background) */}
               <div
-                className="relative p-[6px] shadow-[0_20px_38px_rgba(38,19,4,0.55),0_4px_10px_rgba(38,19,4,0.35)] transition-shadow duration-300 group-hover:shadow-[0_26px_48px_rgba(38,19,4,0.72)]"
+                className="relative z-10 p-[6px] shadow-[0_20px_38px_rgba(38,19,4,0.55),0_4px_10px_rgba(38,19,4,0.35)] transition-shadow duration-300 group-hover:shadow-[0_26px_48px_rgba(38,19,4,0.72)]"
                 style={{
                   background:
                     "linear-gradient(135deg, #3b230d 0%, #6e4720 28%, #261507 52%, #7c5227 78%, #2d1908 100%)",
@@ -357,24 +400,8 @@ export default function MerchandisePage() {
                       ))}
                     </div>
 
-                    {/* "WANTED" Header — Unified with Cinzel Display Font */}
-                    <div className="relative z-10 text-center">
-                      <h2
-                        className="font-merch-display text-4xl sm:text-[2.55rem] font-black tracking-[0.1em] uppercase leading-none"
-                        style={{
-                          backgroundImage:
-                            "linear-gradient(180deg, #6b3e11 0%, #3d2106 60%, #1f1002 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          filter: "drop-shadow(0 1px 0px rgba(255,245,220,0.8))",
-                        }}
-                      >
-                        WANTED
-                      </h2>
-                    </div>
-
-                    {/* Large Merchandise Display Window (h-72) */}
-                    <div className="relative z-10 mt-2.5 h-72 w-full overflow-hidden border-[3px] border-[#4a2b0d] bg-[#d6ba87] shadow-[inset_0_4px_18px_rgba(38,19,4,0.48)]">
+                    {/* Larger product image window */}
+                    <div className="relative z-10 mt-0 h-80 w-full overflow-hidden border-[3px] border-[#4a2b0d] bg-[#d6ba87] shadow-[inset_0_4px_18px_rgba(38,19,4,0.48)] sm:h-96">
                       {/* Vintage Sunburst Rays inside the frame */}
                       <div
                         className="absolute inset-0 opacity-40"
@@ -405,7 +432,7 @@ export default function MerchandisePage() {
                                 [item.id]: true,
                               }))
                             }
-                            className="max-h-[92%] max-w-[92%] object-contain scale-135 transition-transform duration-500 group-hover:scale-150 drop-shadow-[0_14px_18px_rgba(0,0,0,0.65)]"
+                            className="max-h-[98%] max-w-[98%] object-contain scale-135 transition-transform duration-500 group-hover:scale-150 drop-shadow-[0_14px_18px_rgba(0,0,0,0.65)]"
                           />
                         ) : (
                           <div className="flex flex-col items-center justify-center text-center">
@@ -416,9 +443,9 @@ export default function MerchandisePage() {
                               <path
                                 d="M35 12 L10 30 L22 50 L36 40 L36 98 L84 98 L84 40 L98 50 L110 30 L85 12 Q60 24 35 12 Z"
                                 fill={
-                                  item.id === "mugiwara-hoody"
+                                  item.id === "yuvaan-hoodie"
                                     ? "#4a0e17"
-                                    : item.id === "pirate-cap"
+                                    : item.id === "festival-cap"
                                     ? "#1e293b"
                                     : "#7c2d12"
                                 }
@@ -471,38 +498,26 @@ export default function MerchandisePage() {
                         </span>
                       </div>
 
-                      {/* Beveled Brass Price Plaque */}
-                      <div className="absolute right-2 bottom-2 z-20 rounded border-2 border-[#3b220c] bg-gradient-to-b from-[#fbf0d9] via-[#dfc088] to-[#a87e3e] px-2.5 py-0.5 shadow-[0_3px_8px_rgba(0,0,0,0.65)]">
-                        <span className="text-base sm:text-lg font-extrabold tracking-tight text-[#1e1105]">
-                          {item.price}
-                        </span>
-                      </div>
                     </div>
 
-                    {/* Dead or Alive / Berry Bounty Micro-Line for Authentic One Piece Detail */}
-                    <div className="relative z-10 mt-2 flex items-center justify-between border-b border-[#8c6230]/40 pb-1.5 text-[10px] font-bold tracking-[0.14em] text-[#5c3b14] uppercase">
-                      <span>DEAD OR ALIVE</span>
-                      <span>฿ {item.bountyberry}</span>
-                    </div>
-
-                    {/* Item Title & Subtitle (Uniform Typography) */}
-                    <div className="relative z-10 mt-2.5 text-center">
-                      <h3 className="font-merch-display text-xl sm:text-[1.4rem] font-extrabold tracking-wide text-[#211205] leading-snug">
+                    {/* Product name and price */}
+                    <div className="relative z-10 mt-3 text-left">
+                      <h3 className="font-merch-display text-2xl sm:text-[1.6rem] font-extrabold tracking-wide text-[#211205] leading-snug">
                         {item.title}
                       </h3>
-                      <p className="mt-0.5 text-xs sm:text-[13px] font-semibold text-[#543818]">
-                        {item.subtitle}
+                      <p className="mt-1 text-lg sm:text-xl font-extrabold text-[#7c1d12]">
+                        {item.price}
                       </p>
                     </div>
 
-                    {/* Wax-Seal Crimson "CLAIM THE BOUNTY!" CTA Button */}
+                    {/* Product details button */}
                     <div className="relative z-10 mt-4 px-0.5">
                       <button
                         type="button"
                         onClick={() => setSelectedItem(item)}
                         className="font-merch-display w-full cursor-pointer rounded border-2 border-[#d49b4b] bg-gradient-to-b from-[#a81818] via-[#780f0f] to-[#420505] py-2.5 px-4 text-center text-sm sm:text-[15px] font-bold tracking-[0.12em] text-[#fdf3dd] uppercase shadow-[0_4px_12px_rgba(66,5,5,0.5),inset_0_1px_1px_rgba(255,255,255,0.3)] transition-all duration-200 hover:brightness-110 hover:border-[#fde68a] active:scale-[0.98]"
                       >
-                        CLAIM THE BOUNTY!
+                        VIEW DETAILS
                       </button>
                     </div>
                   </div>
@@ -513,7 +528,7 @@ export default function MerchandisePage() {
         </section>
       </div>
 
-      {/* --- QUICK BOUNTY CLAIM MODAL --- */}
+      {/* Product details modal */}
       {selectedItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
@@ -525,13 +540,16 @@ export default function MerchandisePage() {
           >
             <div className="flex items-center justify-between border-b-2 border-[#6e4719]/50 pb-2.5">
               <span className="font-merch-display text-xs font-extrabold tracking-[0.18em] text-[#5c3610] uppercase">
-                GRAND LINE QUARTERMASTER
+                MERCHANDISE DETAILS
               </span>
               <button
                 onClick={() => setSelectedItem(null)}
-                className="cursor-pointer font-bold text-lg text-[#5c1313] hover:scale-110"
+                aria-label="Close product details"
+                className="cursor-pointer text-[#5c1313] transition-transform hover:scale-110"
               >
-                ✕
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="m6 6 12 12M18 6 6 18" />
+                </svg>
               </button>
             </div>
 
@@ -539,14 +557,13 @@ export default function MerchandisePage() {
               {selectedItem.title}
             </h3>
             <p className="mt-0.5 text-xs font-bold tracking-wider text-[#7c1d12] uppercase">
-              {selectedItem.tag} • {selectedItem.price} (฿{" "}
-              {selectedItem.bountyberry})
+              {selectedItem.tag} / {selectedItem.price}
             </p>
 
             <div className="mt-4 space-y-3 text-sm">
               <div>
                 <label className="block text-xs font-extrabold tracking-wider uppercase text-[#3d2308]">
-                  SELECT APPAREL SIZE
+                  SELECT SIZE
                 </label>
                 <div className="mt-1.5 flex gap-2">
                   {["S", "M", "L", "XL", "XXL"].map((sz) => (
@@ -567,8 +584,7 @@ export default function MerchandisePage() {
               </div>
 
               <p className="text-xs font-medium text-[#4a2f10]">
-                Selected Size: <span className="font-bold">{selectedSize}</span>{" "}
-                • Collect your bounty at the IIIT Guwahati Merch Desk!
+                Selected size: <span className="font-bold">{selectedSize}</span>. Pickup is available at the IIIT Guwahati Merchandise Desk.
               </p>
             </div>
 
@@ -577,7 +593,7 @@ export default function MerchandisePage() {
               onClick={() => setSelectedItem(null)}
               className="font-merch-display mt-5 w-full cursor-pointer border-2 border-[#d49b4b] bg-gradient-to-b from-[#a81818] to-[#420505] py-2.5 text-sm font-bold tracking-[0.14em] text-[#fdf3dd] uppercase shadow-md hover:brightness-110"
             >
-              CONFIRM BOUNTY CLAIM
+              DONE
             </button>
           </div>
         </div>

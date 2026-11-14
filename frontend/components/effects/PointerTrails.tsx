@@ -180,7 +180,14 @@ export function PointerTrails() {
     const leave = (event: PointerEvent) => {
       if (event.pointerType === "mouse" && !event.relatedTarget) { lift(); hideCursor(); }
     };
-    const scroll = () => { if (mode === "desktop") lift(); };
+    const scroll = () => {
+      if (mode === "desktop") {
+        lift();
+      } else if (touchId !== null) {
+        // Clear the touch trail once a gesture becomes page scrolling.
+        reset();
+      }
+    };
     const blur = () => { reset(); hideCursor(); };
     resize();
     updateCursorCapability();
