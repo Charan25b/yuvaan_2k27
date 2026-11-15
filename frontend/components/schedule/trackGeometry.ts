@@ -16,7 +16,7 @@ export function createTrackCurve(svgText: string) {
   const sourcePath = [...subPaths].sort(
     (a, b) => b.getLength() - a.getLength()
   )[0];
-  const svgPoints = sourcePath.getSpacedPoints(1800);
+  const svgPoints = sourcePath.getSpacedPoints(720);
   const points = svgPoints.map(
     (point) =>
       new THREE.Vector3(
