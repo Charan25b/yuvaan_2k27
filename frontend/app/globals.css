@@ -944,3 +944,17 @@ html { scroll-padding-top: 112px; }
 @media (prefers-reduced-motion: reduce) {
   .section-reveal[data-reveal="pending"] { opacity: 1; transform: none; }
 }
+body:has(.team-page),
+body:has(.gallery-page) {
+  min-height: auto;
+}
+
+body:has(.team-page) > #main-content,
+body:has(.gallery-page) > #main-content {
+  flex: 0 0 auto;
+}
+
+body:has(.team-page) > footer,
+body:has(.gallery-page) > footer {
+  margin-top: 0;
+}

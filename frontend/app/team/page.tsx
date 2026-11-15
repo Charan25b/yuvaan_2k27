@@ -295,31 +295,11 @@ export default function TeamsPage() {
   }, [activeMember]);
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} team-page`}>
       {/* Background atmosphere */}
       <div className={styles.noise} />
       <div className={styles.vignette} />
       <div className={styles.scanlines} />
-
-      {/* Top HUD */}
-      <header className={styles.topbar}>
-        <div className={styles.logo}>
-          <span className={styles.logoMark}>Y</span>
-          <div>
-            <strong>YUVAAN</strong>
-            <small>THE UNDERGROUND</small>
-          </div>
-        </div>
-
-        <div className={styles.systemStatus}>
-          <span className={styles.liveDot} />
-          HEADQUARTERS ONLINE
-        </div>
-
-        <div className={styles.accessLevel}>
-          ACCESS LEVEL <strong>09</strong>
-        </div>
-      </header>
 
       {/* Main heading */}
       <section className={styles.intro}>
@@ -370,25 +350,22 @@ export default function TeamsPage() {
                 <span className={styles.boardStatus}>● LIVE</span>
               </div>
 
-              <div className={styles.boardSymbol}>{team.symbol}</div>
-
-              <div className={styles.boardPhotos}>
+              <div className={styles.boardPhotos} aria-hidden="true">
                 {team.members.slice(0, 3).map((member, i) => (
                   <div
                     key={member.id}
                     className={`${styles.miniPhoto} ${styles[`mini${i}`]}`}
                   >
-                    {member.photo ? (
-                      <img src={member.photo} alt={member.name} />
-                    ) : (
-                      <span>{getInitials(member.name)}</span>
-                    )}
+                    {member.photo && <img src={member.photo} alt="" />}
                   </div>
                 ))}
               </div>
 
+              <div className={styles.boardSymbol} aria-hidden="true">
+                {team.symbol}
+              </div>
+
               <div className={styles.boardInfo}>
-                <span>{team.faction}</span>
                 <h2>{team.name}</h2>
                 <p>{team.members.length} MEMBERS</p>
               </div>
@@ -404,13 +381,6 @@ export default function TeamsPage() {
         </div>
       </section>
 
-      {/* Bottom status */}
-      <footer className={styles.footer}>
-        <span>YUVAAN // PERSONNEL ARCHIVE</span>
-        <span>ALL IDENTITIES ARE UNDER SURVEILLANCE</span>
-        <span>EST. 2027</span>
-      </footer>
-
       {/* TEAM BOARD ZOOM */}
       {activeTeam && (
         <section
@@ -422,28 +392,23 @@ export default function TeamsPage() {
             } as CSSProperties
           }
         >
-          <div className={styles.boardBackdrop} />
-
-          <header className={styles.overlayHeader}>
-            {/* Themed security exit control */}
-            <button
-              type="button"
-              className={styles.securityExit}
-              onClick={closeTeam}
-              aria-label="Return to War Room"
-            >
-              <span className={styles.exitIndicator} />
-              <span className={styles.exitText}>← RETURN TO WAR ROOM</span>
-              <span className={styles.exitCode}>ESC / 00</span>
-            </button>
-
-            <div className={styles.overlayStatus}>
-              <span className={styles.liveDot} />
-              ACCESSING PERSONNEL FILES
-            </div>
-          </header>
+          <button
+            type="button"
+            className={styles.boardBackdrop}
+            onClick={closeTeam}
+            aria-label="Close team file"
+          />
 
           <div className={styles.expandedBoard}>
+            <button
+              type="button"
+              className={styles.fileClose}
+              onClick={closeTeam}
+              aria-label="Close team file"
+            >
+              &times;
+            </button>
+
             <div className={styles.expandedBoardHeader}>
               <div>
                 <span className={styles.fileNumber}>
@@ -454,8 +419,9 @@ export default function TeamsPage() {
                 <h3>{activeTeam.faction}</h3>
                 <p>{activeTeam.description}</p>
               </div>
-
-              <div className={styles.bigSymbol}>{activeTeam.symbol}</div>
+              <div className={styles.bigSymbol} aria-hidden="true">
+                {activeTeam.symbol}
+              </div>
             </div>
 
             <div className={styles.evidenceLabel}>
