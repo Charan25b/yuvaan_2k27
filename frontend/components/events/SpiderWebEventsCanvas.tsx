@@ -9,6 +9,7 @@ import {
 } from "./physics";
 import { generateWebChains } from "./layoutGenerator";
 import { drawWebStrands, drawComicCard } from "./canvasRenderer";
+import { findCardAtPoint } from "./hitTesting";
 import { OpenComicBookModal } from "./OpenComicBookModal";
 import { useEventCanvas } from "./useEventCanvas";
 
@@ -161,37 +162,19 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
       activeDragCard = null;
       activeDragMidpoint = null;
 
-      // Check cards from front to back.
-      for (const chain of chains) {
-        for (let i = chain.cards.length - 1; i >= 0; i--) {
-          const card = chain.cards[i];
+      const card = findCardAtPoint(chains, pos.x, pos.y);
+      if (card) {
+        activeDragCard = card;
+        dragPointerOffset = { x: pos.x - card.x, y: pos.y - card.y };
 
-          const dx = pos.x - card.x;
-          const dy = pos.y - card.y;
+        canvas.style.cursor = "grabbing";
 
-          const cos = Math.cos(-card.angle);
-          const sin = Math.sin(-card.angle);
+        try {
+          canvas.setPointerCapture(e.pointerId);
+        } catch {}
 
-          const localX = dx * cos - dy * sin;
-          const localY = dx * sin + dy * cos;
-
-          if (
-            Math.abs(localX) <= card.cardWidth / 2 &&
-            Math.abs(localY) <= card.cardHeight / 2
-          ) {
-            activeDragCard = card;
-            dragPointerOffset = { x: dx, y: dy };
-
-            canvas.style.cursor = "grabbing";
-
-            try {
-              canvas.setPointerCapture(e.pointerId);
-            } catch {}
-
-            requestRender();
-            return;
-          }
-        }
+        requestRender();
+        return;
       }
 
       // Check draggable web midpoints.
@@ -260,31 +243,8 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
         activeDragMidpoint.vy = 0;
       }
 
-      // Find hovered card.
-      let foundHover: string | null = null;
-
-      for (const chain of chains) {
-        for (const card of chain.cards) {
-          const dx = pos.x - card.x;
-          const dy = pos.y - card.y;
-
-          const cos = Math.cos(-card.angle);
-          const sin = Math.sin(-card.angle);
-
-          const localX = dx * cos - dy * sin;
-          const localY = dx * sin + dy * cos;
-
-          if (
-            Math.abs(localX) <= card.cardWidth / 2 &&
-            Math.abs(localY) <= card.cardHeight / 2
-          ) {
-            foundHover = card.comic.event.id;
-            break;
-          }
-        }
-
-        if (foundHover) break;
-      }
+      const hoveredCard = findCardAtPoint(chains, pos.x, pos.y);
+      const foundHover = hoveredCard?.comic.event.id ?? null;
 
       const hoverChanged =
         foundHover !== hoveredEventIdRef.current;
