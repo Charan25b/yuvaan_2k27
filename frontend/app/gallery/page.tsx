@@ -1,11 +1,12 @@
 
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
 import { GALLERY_DATA } from "@/lib/data/festivalData";
+import { useLightbox } from "./useLightbox";
 
 // --------------------------------------------------
 // CONFIGURATION
@@ -32,61 +33,14 @@ export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] =
     useState<string>("All");
 
-  const [activeIndex, setActiveIndex] =
-    useState<number | null>(null);
-
   const filteredItems = GALLERY_DATA.filter(
     (item) =>
       selectedCategory === "All" ||
       item.category === selectedCategory
   );
 
-  const activeItem =
-    activeIndex !== null ? filteredItems[activeIndex] : null;
-
-  // --------------------------------------------------
-  // LIGHTBOX CONTROLS
-  // --------------------------------------------------
-
-  const closeViewer = () => setActiveIndex(null);
-
-  const nextImage = useCallback(() => {
-    setActiveIndex((current) => {
-      if (current === null || !filteredItems.length) return current;
-      return (current + 1) % filteredItems.length;
-    });
-  }, [filteredItems.length]);
-
-  const previousImage = useCallback(() => {
-    setActiveIndex((current) => {
-      if (current === null || !filteredItems.length) return current;
-      return (current - 1 + filteredItems.length) % filteredItems.length;
-    });
-  }, [filteredItems.length]);
-
-  // --------------------------------------------------
-  // KEYBOARD CONTROLS
-  // --------------------------------------------------
-
-  useEffect(() => {
-    if (activeIndex === null) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeViewer();
-      if (event.key === "ArrowRight") nextImage();
-      if (event.key === "ArrowLeft") previousImage();
-    };
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [activeIndex, filteredItems.length, nextImage, previousImage]);
+  const { activeIndex, activeItem, setActiveIndex, close: closeViewer, next: nextImage, previous: previousImage } =
+    useLightbox(filteredItems);
 
   // --------------------------------------------------
   // GSAP ENTRANCE
