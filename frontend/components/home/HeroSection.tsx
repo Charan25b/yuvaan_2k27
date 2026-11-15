@@ -29,8 +29,8 @@ function ComicScene({ image, priority = false }: { image: HeroImage; priority?: 
       height={image.height}
       alt=""
       sizes="(max-width: 680px) 48vw, 32vw"
-      loading="eager"
-      fetchPriority={priority ? "high" : "auto"}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "low"}
     />
   );
 }
@@ -149,7 +149,7 @@ export function HeroSection() {
                 height={1023}
                 alt=""
                 sizes="(max-width: 680px) 100vw, 1100px"
-                loading="eager"
+                loading="lazy"
               />
               <span className={styles.bubbleFill} />
             </span>
