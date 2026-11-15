@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { EventItem } from "@/lib/data/festivalData";
 import { ComicBookData } from "./types";
 
-export function useEventCanvas(events: EventItem[]) {
+export function useEventCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [viewportWidth, setViewportWidth] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth : 0

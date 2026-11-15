@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { EventItem } from "@/lib/data/festivalData";
-import { ComicBookData } from "./types";
 import {
   PhysicalCard,
   PhysicalWebMidpoint,
@@ -26,8 +25,7 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
     setSelectedEvent,
     selectedComicData,
     setSelectedComicData,
-    isModalOpenRef,
-  } = useEventCanvas(events);
+  } = useEventCanvas();
 
   const hoveredEventIdRef = useRef<string | null>(null);
 
@@ -379,7 +377,7 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
         cancelAnimationFrame(frameId);
       }
     };
-  }, [events, viewportWidth, shuffleCount]);
+  }, [events, viewportWidth, shuffleCount, canvasRef, setSelectedEvent, setSelectedComicData]);
 
   return (
     <div className="relative w-full p-0 m-0 overflow-x-hidden flex justify-center select-none">
