@@ -1,108 +1,8 @@
+import Link from "next/link";
+import styles from "./page.module.css";
+import { SPONSORS_DATA, type SponsorItem } from "@/lib/data/festivalData";
 
-"use client";
-
-import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
-
-import {
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import {
-  SPONSORS_DATA,
-  type SponsorItem,
-} from "@/lib/data/festivalData";
-
-// --------------------------------------------------
-// GOLD DUST PARTICLES
-// --------------------------------------------------
-
-const MapDustParticles: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    let w = (canvas.width = window.innerWidth);
-    let h = (canvas.height = window.innerHeight);
-
-    const onResize = () => {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", onResize);
-
-    const motes = Array.from({ length: 28 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: -(Math.random() * 0.3 + 0.1),
-      size: Math.random() * 2.2 + 0.8,
-      alpha: Math.random() * 0.45 + 0.15,
-    }));
-
-    const render = () => {
-      ctx.clearRect(0, 0, w, h);
-
-      motes.forEach((m) => {
-        m.x += m.vx;
-        m.y += m.vy;
-
-        if (m.x > w + 10) m.x = -10;
-        if (m.x < -10) m.x = w + 10;
-        if (m.y < -10) m.y = h + 10;
-
-        ctx.save();
-        ctx.beginPath();
-
-        const grad = ctx.createRadialGradient(
-          m.x,
-          m.y,
-          0.1,
-          m.x,
-          m.y,
-          m.size * 2
-        );
-
-        grad.addColorStop(0, `rgba(255, 240, 180, ${m.alpha})`);
-        grad.addColorStop(0.5, `rgba(180, 115, 30, ${m.alpha * 0.6})`);
-        grad.addColorStop(1, "rgba(120, 70, 10, 0)");
-
-        ctx.fillStyle = grad;
-        ctx.arc(m.x, m.y, m.size * 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      });
-
-      animId = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-10 h-full w-full"
-    />
-  );
-};
-
-const placeholderSponsorNames = new Set([
+const hiddenPlaceholderNames = new Set([
   "National Technology Partner",
   "Regional Innovation Board",
   "Audio & Entertainment Collective",
@@ -116,561 +16,270 @@ const sponsorPlaceholders: SponsorItem[] = [
     id: "placeholder-title",
     name: "Title sponsor to be announced",
     tier: "Title Sponsor",
-    description: "Sponsor details to be confirmed.",
+    description: "",
     category: "PLACEHOLDER",
   },
   {
     id: "placeholder-powered-by",
     name: "Powered by sponsor to be announced",
     tier: "Powered By",
-    description: "Sponsor details to be confirmed.",
+    description: "",
     category: "PLACEHOLDER",
   },
   {
     id: "placeholder-event-partner",
     name: "Event partner to be announced",
     tier: "Associate Partner",
-    description: "Sponsor details to be confirmed.",
+    description: "",
     category: "PLACEHOLDER",
   },
 ];
 
-// --------------------------------------------------
-// SPONSORS PAGE
-// --------------------------------------------------
+function isPlaceholder(sponsor: SponsorItem) {
+  return sponsor.category === "PLACEHOLDER";
+}
+
+function StarField() {
+  return (
+    <svg className={styles.stars} aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id="sponsor-stars" width="180" height="170" patternUnits="userSpaceOnUse">
+          <circle cx="17" cy="22" r="0.8" />
+          <circle cx="94" cy="14" r="0.6" />
+          <circle cx="149" cy="51" r="0.7" />
+          <circle cx="54" cy="87" r="0.55" />
+          <circle cx="126" cy="111" r="0.8" />
+          <circle cx="30" cy="147" r="0.65" />
+          <circle cx="168" cy="158" r="0.55" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#sponsor-stars)" />
+    </svg>
+  );
+}
+
+function DeathStar() {
+  return (
+    <svg
+      className={styles.deathStar}
+      viewBox="0 0 600 600"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g stroke="currentColor" strokeWidth="1.4">
+        <circle cx="300" cy="300" r="270" />
+        <path d="M49 225c123 58 364 73 501 23M34 340c127 57 401 70 532 20" />
+        <path d="M45 360c142 67 386 76 509 31M56 379c139 63 353 71 484 33" />
+        <path d="M95 129c53 40 100 58 157 68m239-39c-38 28-75 46-121 57" />
+        <path d="M124 474c46-25 90-40 139-47m225 37c-51-26-91-38-137-43" />
+        <path d="M142 166c-31 48-48 103-52 159m327-237c-33 53-56 103-70 155m142-87c-40 34-68 74-89 117" />
+        <path d="M108 371c4 59 21 107 49 149m287-167c-2 65-18 123-48 169m101-205c-8 72-26 132-57 190" />
+        <circle cx="355" cy="214" r="77" />
+        <circle cx="355" cy="214" r="64" />
+        <circle cx="355" cy="214" r="49" />
+        <circle cx="355" cy="214" r="10" />
+        <path d="M286 181c21-26 44-42 69-48m-79 99c25 17 50 26 79 29m68-79c15 22 23 45 24 71m-49 34c-21 17-44 27-71 30" />
+        <path d="m84 273 44 13-5 47m342-93 45 6 4 31M147 411l41 8-4 36m232-28 43 5" />
+        <path d="M69 348c146 65 369 76 472 38M73 357c148 68 367 76 468 38" opacity=".55" />
+      </g>
+    </svg>
+  );
+}
+
+function TierHeading({
+  id,
+  number,
+  title,
+  tone,
+}: {
+  id: string;
+  number: string;
+  title: string;
+  tone: "yellow" | "cyan" | "silver";
+}) {
+  return (
+    <div className={styles.tierHeading} data-tone={tone}>
+      <span className={styles.tierNumber}>TIER {number}</span>
+      <h2 id={id}>{title}</h2>
+      <span className={styles.tierRule} aria-hidden="true" />
+    </div>
+  );
+}
+
+function AnnouncementPanel({
+  label,
+  large = false,
+}: {
+  label: string;
+  large?: boolean;
+}) {
+  return (
+    <div className={styles.announcementPanel}>
+      <div className={styles.announcementGrid} aria-hidden="true">
+        {Array.from({ length: 24 }, (_, index) => (
+          <span key={index} />
+        ))}
+      </div>
+      <span className={styles.panelLabel}>{label}</span>
+      <strong
+        className={`${styles.panelTitle} ${large ? styles.panelTitleLarge : ""}`}
+      >
+        {large ? (
+          <>
+            ANNOUNCEMENT
+            <br />
+            INCOMING
+          </>
+        ) : (
+          "ANNOUNCEMENT INCOMING"
+        )}
+      </strong>
+    </div>
+  );
+}
+
+function SponsorStatus({ sponsor }: { sponsor: SponsorItem }) {
+  return (
+    <span className={styles.statusTag}>
+      {isPlaceholder(sponsor) ? "TO BE REVEALED" : sponsor.category}
+    </span>
+  );
+}
+
+function SponsorDescription({ sponsor }: { sponsor: SponsorItem }) {
+  if (isPlaceholder(sponsor) || !sponsor.description.trim()) return null;
+  return <p className={styles.sponsorDescription}>{sponsor.description}</p>;
+}
+
+function TitleSponsorCard({ sponsor, index }: { sponsor: SponsorItem; index: number }) {
+  return (
+    <article className={styles.titleCard} data-tone="yellow">
+      <AnnouncementPanel label={sponsor.tier.toUpperCase()} large />
+      <div className={styles.titleCardDetails}>
+        <SponsorStatus sponsor={sponsor} />
+        <h3>{sponsor.name}</h3>
+        <SponsorDescription sponsor={sponsor} />
+        <div className={styles.titleCardMeta}>
+          {String(index + 1).padStart(2, "0")} <span>/</span> {sponsor.tier.toUpperCase()}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function PartnerCard({
+  sponsor,
+  index,
+  featured = false,
+}: {
+  sponsor: SponsorItem;
+  index: number;
+  featured?: boolean;
+}) {
+  return (
+    <article
+      className={styles.partnerCard}
+      data-tone={featured ? "cyan" : "silver"}
+    >
+      <AnnouncementPanel label={sponsor.tier.toUpperCase()} />
+      <div className={styles.partnerCardDetails}>
+        <SponsorStatus sponsor={sponsor} />
+        <h3>{sponsor.name}</h3>
+        <SponsorDescription sponsor={sponsor} />
+      </div>
+      <div className={styles.partnerCardMeta}>
+        <span>{featured ? "YUVAAN 2027" : sponsor.tier.toUpperCase()}</span>
+        {featured && <span>{String(index + 1).padStart(2, "0")}</span>}
+      </div>
+    </article>
+  );
+}
 
 export default function SponsorsPage() {
-  const sceneRef = useRef<HTMLDivElement | null>(null);
-  const bgLayerRef = useRef<HTMLDivElement | null>(null);
-  const headingRef = useRef<HTMLDivElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-
   const confirmedSponsors = SPONSORS_DATA.filter(
-    (sponsor) => !placeholderSponsorNames.has(sponsor.name)
+    (sponsor) => !hiddenPlaceholderNames.has(sponsor.name)
   );
-  const listedSponsors = confirmedSponsors.length
-    ? confirmedSponsors
-    : sponsorPlaceholders;
-
-  const titleSponsors = listedSponsors.filter(
-    (s) => s.tier === "Title Sponsor"
+  const sponsors = confirmedSponsors.length ? confirmedSponsors : sponsorPlaceholders;
+  const titleSponsors = sponsors.filter((sponsor) => sponsor.tier === "Title Sponsor");
+  const poweredBy = sponsors.filter((sponsor) => sponsor.tier === "Powered By");
+  const partners = sponsors.filter(
+    (sponsor) =>
+      sponsor.tier === "Associate Partner" ||
+      sponsor.tier === "Media & Beverage Partner"
   );
-
-  const poweredBy = listedSponsors.filter(
-    (s) => s.tier === "Powered By"
-  );
-
-  const associates = listedSponsors.filter(
-    (s) => s.tier === "Associate Partner"
-  );
-
-  const mediaPartners = listedSponsors.filter(
-    (s) => s.tier === "Media & Beverage Partner"
-  );
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headingRef.current,
-        { y: -25, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: "power3.out",
-        }
-      );
-
-      if (contentRef.current) {
-        gsap.fromTo(
-          contentRef.current.children,
-          { y: 35, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: "power3.out",
-            delay: 0.15,
-          }
-        );
-      }
-
-      const mm = gsap.matchMedia();
-
-      mm.add("(min-width: 1024px)", () => {
-        const bgX = gsap.quickTo(bgLayerRef.current, "x", {
-          duration: 1.1,
-          ease: "power2.out",
-        });
-
-        const bgY = gsap.quickTo(bgLayerRef.current, "y", {
-          duration: 1.1,
-          ease: "power2.out",
-        });
-
-        const headX = gsap.quickTo(headingRef.current, "x", {
-          duration: 0.9,
-          ease: "power2.out",
-        });
-
-        const headY = gsap.quickTo(headingRef.current, "y", {
-          duration: 0.9,
-          ease: "power2.out",
-        });
-
-        const handleMouseMove = (e: MouseEvent) => {
-          const nx = (e.clientX / window.innerWidth - 0.5) * 2;
-          const ny = (e.clientY / window.innerHeight - 0.5) * 2;
-
-          bgX(-nx * 4.5);
-          bgY(-ny * 3.5);
-
-          headX(nx * 3);
-          headY(ny * 2);
-        };
-
-        window.addEventListener("mousemove", handleMouseMove);
-
-        return () => {
-          window.removeEventListener("mousemove", handleMouseMove);
-        };
-      });
-    }, sceneRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const tierStyles = [
-    {
-      tint: "#f4dfb5",
-      strip: "#bd8739",
-      accent: "#80501c",
-    },
-    {
-      tint: "#e6d1a7",
-      strip: "#9b743a",
-      accent: "#62431d",
-    },
-    {
-      tint: "#ead5b1",
-      strip: "#a66b37",
-      accent: "#743c20",
-    },
-  ];
 
   return (
-    <div
-      ref={sceneRef}
-      className="sponsors-page font-merch-sans relative min-h-screen w-full overflow-hidden bg-[#d8be90] text-[#261607]"
-    >
-      {/* FONT SYSTEM */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
-
-        .font-merch-display {
-          font-family: 'Cinzel', Georgia, serif;
-        }
-
-        .font-merch-sans {
-          font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        .sponsors-page .comic-tagline {
-          font-size: 0.75rem !important;
-        }
-
-        .rope-border {
-          background-image: repeating-linear-gradient(
-            45deg,
-            #c69245 0px,
-            #c69245 6px,
-            #57330d 6px,
-            #57330d 10px,
-            #e8c27a 10px,
-            #e8c27a 13px
-          );
-        }
-      `}</style>
-
-      {/* BACKGROUND MAP */}
-      <div
-        ref={bgLayerRef}
-        className="pointer-events-none fixed -inset-3 z-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/onepiece-bg.png')",
-        }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 42%, rgba(255,248,228,0.12) 0%, rgba(122,82,34,0.28) 68%, rgba(46,26,8,0.58) 100%)",
-          }}
-        />
+    <div className={styles.page}>
+      <div className={styles.background} aria-hidden="true">
+        <StarField />
+        <DeathStar />
       </div>
 
-      {/* PARTICLES */}
-      <MapDustParticles />
-
-      {/* MAIN CONTENT */}
-      <main className="relative z-20 mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center px-4 pt-16 pb-24 sm:px-6 lg:px-8">
-
-        {/* HEADER */}
-        <header
-          ref={headingRef}
-          className="mb-14 flex flex-col items-center text-center"
-        >
-          <div className="mb-3 flex items-center gap-3">
-            <span className="h-[2px] w-12 sm:w-20 bg-gradient-to-r from-transparent to-[#5c160c]" />
-
-            <span className="font-merch-display text-xs sm:text-sm font-extrabold tracking-[0.28em] text-[#5c160c] uppercase">
-              YUVAAN 2027 SPONSORS
-            </span>
-
-            <span className="h-[2px] w-12 sm:w-20 bg-gradient-to-l from-transparent to-[#5c160c]" />
-          </div>
-
-          <h1
-            className="font-merch-display text-4xl font-black leading-tight tracking-[0.06em] uppercase sm:text-6xl md:text-[4.5rem]"
-            style={{
-              backgroundImage:
-                "linear-gradient(180deg, #e63926 0%, #b51414 48%, #730808 88%, #3d0202 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              WebkitTextStroke: "2px #3b1704",
-              filter:
-                "drop-shadow(0 4px 0px #f6e3ba) drop-shadow(0 8px 16px rgba(45,20,4,0.45))",
-            }}
-          >
-            SPONSORS
-          </h1>
-
-          <p className="font-merch-display mt-4 border-y border-[#5c3610]/40 bg-[#f4e2bc]/80 px-5 py-2 text-xs font-extrabold tracking-[0.15em] text-[#2e1805] uppercase shadow-sm sm:text-base">
-            YUVAAN 2027
+      <div className={styles.content}>
+        <section className={styles.hero} aria-labelledby="sponsors-title">
+          <p className={styles.eyebrow}>
+            YUVAAN 2027 <span>/</span> THE ALLIANCE
           </p>
+          <h1 id="sponsors-title">SPONSORS</h1>
+          <p className={styles.tagline}>THE FORCE BEHIND YUVAAN.</p>
+          <span className={styles.heroRule} aria-hidden="true" />
+        </section>
 
-          {confirmedSponsors.length === 0 && (
-            <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-[#39230d]">
-              Placeholder listings. Sponsor details are to be confirmed.
-            </p>
-          )}
-        </header>
-
-        {/* SPONSOR TIERS */}
-        <div
-          ref={contentRef}
-          className="flex w-full max-w-6xl flex-col gap-16"
-        >
-
-          {/* TITLE SPONSORS */}
+        <div className={styles.tiers}>
           {titleSponsors.length > 0 && (
-            <section className="flex flex-col gap-6">
-              <div className="flex items-center justify-center gap-4 sm:justify-start">
-                <Badge
-                  variant="gold"
-                  comicStamp
-                  className="text-xs"
-                >
-                  ★ TIER 1
-                </Badge>
-
-                <h2 className="font-merch-display text-xl font-black tracking-wider text-[#4a210d] uppercase sm:text-3xl">
-                  Title Sponsor
-                </h2>
-
-                <span className="hidden h-[2px] flex-1 bg-gradient-to-r from-[#80501c]/70 to-transparent sm:block" />
-              </div>
-
-              <div className="grid grid-cols-1 gap-8">
-                {titleSponsors.map((sp) => (
-                  <div
-                    key={sp.id}
-                    className="group relative p-[6px] shadow-[0_20px_38px_rgba(38,19,4,0.5)] transition-transform duration-300 hover:-translate-y-1"
-                    style={{
-                      background:
-                        "linear-gradient(135deg,#3b230d,#8b632d,#261507,#7c5227,#2d1908)",
-                      clipPath:
-                        "polygon(16px 0%,calc(100% - 16px) 0%,100% 16px,100% calc(100% - 16px),calc(100% - 16px) 100%,16px 100%,0% calc(100% - 16px),0% 16px)",
-                    }}
-                  >
-                    <div className="rope-border p-[5px]">
-                      <div
-                        className="relative grid grid-cols-1 items-center gap-8 border border-[#4a2c0f] p-5 sm:p-8 md:grid-cols-12"
-                        style={{
-                          background:
-                            "radial-gradient(circle at 50% 32%,#fbf0d9 0%,#ead2a5 62%,#cfa96e 100%)",
-                          boxShadow:
-                            "inset 0 0 24px rgba(82,46,10,0.4)",
-                        }}
-                      >
-                        {/* LOGO PLACEHOLDER */}
-                        <div className="relative flex h-44 flex-col items-center justify-center overflow-hidden border-[3px] border-[#4a2b0d] bg-[#d6ba87] p-5 text-center shadow-[inset_0_4px_18px_rgba(38,19,4,0.3)] md:col-span-5">
-                          <div className="absolute inset-0 opacity-30"
-                            style={{
-                              backgroundImage:
-                                "repeating-conic-gradient(from 0deg at 50% 60%,rgba(255,246,220,0.6) 0deg 8deg,transparent 8deg 16deg)",
-                            }}
-                          />
-
-                          <span className="relative z-10 font-merch-display text-xs font-bold tracking-[0.2em] text-[#80501c] uppercase">
-                            TITLE SPONSOR
-                          </span>
-
-                          <h3 className="font-merch-display relative z-10 mt-2 text-2xl font-black text-[#241304] sm:text-3xl">
-                            {sp.name}
-                          </h3>
-                        </div>
-
-                        {/* DETAILS */}
-                        <div className="flex flex-col gap-3 md:col-span-7">
-                          <div className="flex flex-wrap items-center gap-3">
-                            <Badge variant="gold">
-                              {sp.category}
-                            </Badge>
-
-                            <span className="text-xs font-black tracking-widest text-[#80501c] uppercase">
-                              {sp.tier}
-                            </span>
-                          </div>
-
-                          <h3 className="font-merch-display text-2xl font-black text-[#291607] sm:text-4xl">
-                            {sp.name}
-                          </h3>
-
-                          <p className="text-sm font-semibold leading-relaxed text-[#543818]">
-                            {sp.description}
-                          </p>
-
-                          <div className="mt-2 flex items-center gap-2 text-xs font-black tracking-[0.15em] text-[#80501c] uppercase">
-                            <span>✦</span>
-                            <span>{sp.tier}</span>
-                            <span>✦</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <section className={styles.tierSection} aria-labelledby="title-sponsor-tier">
+              <TierHeading id="title-sponsor-tier" number="01" title="TITLE SPONSOR" tone="yellow" />
+              <div className={styles.titleCards}>
+                {titleSponsors.map((sponsor, index) => (
+                  <TitleSponsorCard key={sponsor.id} sponsor={sponsor} index={index} />
                 ))}
               </div>
             </section>
           )}
 
-          {/* POWERED BY */}
           {poweredBy.length > 0 && (
-            <section className="flex flex-col gap-6">
-              <div className="flex items-center justify-center gap-4 sm:justify-start">
-                <Badge
-                  variant="cyan"
-                  comicStamp
-                  className="text-xs"
-                >
-                  ⚡ TIER 2
-                </Badge>
-
-                <h2 className="font-merch-display text-xl font-black tracking-wider text-[#4a210d] uppercase sm:text-3xl">
-                  Powered By
-                </h2>
-
-                <span className="hidden h-[2px] flex-1 bg-gradient-to-r from-[#80501c]/70 to-transparent sm:block" />
-              </div>
-
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-                {poweredBy.map((sp) => (
-                  <article
-                    key={sp.id}
-                    className="group relative p-[5px] shadow-[0_14px_30px_rgba(38,19,4,0.45)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_22px_38px_rgba(38,19,4,0.6)]"
-                    style={{
-                      background:
-                        "linear-gradient(135deg,#3b230d,#9b743a,#261507,#7c5227)",
-                    }}
-                  >
-                    <div className="rope-border p-[4px]">
-                      <div
-                        className="relative flex h-full flex-col border border-[#4a2c0f] p-5"
-                        style={{
-                          background:
-                            "radial-gradient(circle at 50% 32%,#fbf0d9 0%,#ead2a5 62%,#cfa96e 100%)",
-                          boxShadow:
-                            "inset 0 0 20px rgba(82,46,10,0.35)",
-                        }}
-                      >
-                        <div className="relative flex h-32 flex-col items-center justify-center overflow-hidden border-2 border-[#4a2b0d] bg-[#d6ba87] p-4 text-center">
-                          <div className="absolute inset-0 opacity-30"
-                            style={{
-                              backgroundImage:
-                                "repeating-conic-gradient(from 0deg at 50% 60%,rgba(255,246,220,0.6) 0deg 8deg,transparent 8deg 16deg)",
-                            }}
-                          />
-
-                          <span className="relative z-10 text-xs font-black tracking-widest text-[#80501c] uppercase">
-                            POWERED BY
-                          </span>
-
-                          <span className="font-merch-display relative z-10 mt-1 text-xl font-black text-[#291607]">
-                            {sp.name}
-                          </span>
-                        </div>
-
-                        <CardHeader className="relative z-10 mt-4 p-0">
-                          <span className="text-xs font-black tracking-wider text-[#80501c] uppercase">
-                            {sp.category}
-                          </span>
-
-                          <CardTitle className="font-merch-display mt-1 text-xl font-black text-[#291607]">
-                            {sp.name}
-                          </CardTitle>
-
-                          <CardDescription className="mt-2 text-sm font-semibold leading-relaxed text-[#543818]">
-                            {sp.description}
-                          </CardDescription>
-                        </CardHeader>
-
-                        <div className="mt-5 border-t border-[#8c6230]/40 pt-3 text-center text-xs font-black tracking-[0.2em] text-[#80501c] uppercase">
-                          YUVAAN 2027
-                        </div>
-                      </div>
-                    </div>
-                  </article>
+            <section className={styles.tierSection} aria-labelledby="powered-by-tier">
+              <TierHeading id="powered-by-tier" number="02" title="POWERED BY" tone="cyan" />
+              <div className={styles.poweredGrid}>
+                {poweredBy.map((sponsor, index) => (
+                  <PartnerCard
+                    key={sponsor.id}
+                    sponsor={sponsor}
+                    index={index + 1}
+                    featured
+                  />
                 ))}
               </div>
             </section>
           )}
 
-          {/* ASSOCIATES & MEDIA PARTNERS */}
-          {[...associates, ...mediaPartners].length > 0 && (
-            <section className="flex flex-col gap-6">
-              <div className="flex items-center justify-center gap-4 sm:justify-start">
-                <Badge
-                  variant="primary"
-                  comicStamp
-                  className="text-xs"
-                >
-                  ✦ TIER 3
-                </Badge>
-
-                <h2 className="font-merch-display text-xl font-black tracking-wider text-[#4a210d] uppercase sm:text-3xl">
-                  Event & Media Partners
-                </h2>
-
-                <span className="hidden h-[2px] flex-1 bg-gradient-to-r from-[#80501c]/70 to-transparent sm:block" />
-              </div>
-
-              <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
-                {[...associates, ...mediaPartners].map((sp, idx) => {
-                  const style = tierStyles[idx % tierStyles.length];
-
-                  return (
-                    <article
-                      key={sp.id}
-                      className="group relative p-[4px] shadow-[0_12px_25px_rgba(38,19,4,0.4)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_35px_rgba(38,19,4,0.55)]"
-                      style={{
-                        background:
-                          "linear-gradient(135deg,#3b230d,#9b743a,#261507,#7c5227)",
-                      }}
-                    >
-                      <div className="rope-border p-[3px]">
-                        <div
-                          className="relative flex h-full flex-col border border-[#4a2c0f] p-4"
-                          style={{
-                            background: `radial-gradient(circle at 50% 32%, #fbf0d9 0%, ${style.tint} 100%)`,
-                            boxShadow:
-                              "inset 0 0 18px rgba(82,46,10,0.3)",
-                          }}
-                        >
-                          <div className="relative flex h-24 flex-col items-center justify-center overflow-hidden border-2 border-[#4a2b0d] bg-[#d6ba87] p-3 text-center">
-                            <div className="absolute inset-0 opacity-30"
-                              style={{
-                                backgroundImage:
-                                  "repeating-conic-gradient(from 0deg at 50% 60%,rgba(255,246,220,0.6) 0deg 8deg,transparent 8deg 16deg)",
-                              }}
-                            />
-
-                            <span className="relative z-10 text-xs font-black tracking-widest text-[#80501c] uppercase">
-                              {sp.tier}
-                            </span>
-
-                            <span className="font-merch-display relative z-10 mt-1 text-lg font-black text-[#291607]">
-                              {sp.name}
-                            </span>
-                          </div>
-
-                          <CardHeader className="relative z-10 mt-3 p-0">
-                            <span
-                              className="text-xs font-black tracking-wider uppercase"
-                              style={{ color: style.accent }}
-                            >
-                              {sp.category}
-                            </span>
-
-                            <CardTitle className="font-merch-display mt-1 text-base font-black text-[#291607]">
-                              {sp.name}
-                            </CardTitle>
-
-                            <CardDescription className="mt-1 text-sm font-semibold leading-relaxed text-[#543818]">
-                              {sp.description}
-                            </CardDescription>
-                          </CardHeader>
-
-                          <div className="mt-4 border-t border-[#8c6230]/40 pt-2 text-center text-xs font-black tracking-widest text-[#80501c] uppercase">
-                            {sp.tier}
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
+          {partners.length > 0 && (
+            <section className={styles.tierSection} aria-labelledby="partners-tier">
+              <TierHeading id="partners-tier" number="03" title="EVENT & MEDIA PARTNERS" tone="silver" />
+              <div className={styles.partnerGrid}>
+                {partners.map((sponsor, index) => (
+                  <PartnerCard key={sponsor.id} sponsor={sponsor} index={index + 1} />
+                ))}
               </div>
             </section>
           )}
-
-          {/* PARTNER CTA */}
-          <section
-            className="relative overflow-hidden border-[5px] border-[#3b230d] p-[5px] shadow-[0_20px_40px_rgba(38,19,4,0.55)]"
-            style={{
-              background:
-                "linear-gradient(135deg,#c69245,#57330d,#e8c27a,#57330d)",
-            }}
-          >
-            <div
-              className="relative flex flex-col items-center justify-between gap-7 border border-[#4a2c0f] p-6 sm:flex-row sm:p-9"
-              style={{
-                background:
-                  "radial-gradient(circle at 50% 32%,#fbf0d9 0%,#ead2a5 62%,#cfa96e 100%)",
-                boxShadow:
-                  "inset 0 0 30px rgba(82,46,10,0.35)",
-              }}
-            >
-              <div className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
-                <Badge
-                  variant="gold"
-                  comicStamp
-                  className="text-xs"
-                >
-                  SPONSOR YUVAAN
-                </Badge>
-
-                <h2 className="font-merch-display text-xl font-black text-[#291607] sm:text-3xl">
-                  Sponsorship enquiries
-                </h2>
-
-                <p className="max-w-xl text-base font-semibold leading-relaxed text-[#543818]">
-                  Contact us to discuss sponsorship for Yuvaan 2027.
-                </p>
-              </div>
-
-              <Button
-                href="/contact"
-                variant="primary"
-                size="lg"
-                className="shrink-0 font-merch-display font-black tracking-wider"
-              >
-                CONTACT THE TEAM →
-              </Button>
-            </div>
-          </section>
         </div>
-      </main>
+
+        <section className={styles.contactPanel} aria-labelledby="sponsor-contact-title">
+          <div>
+            <p className={styles.contactEyebrow}>SPONSOR YUVAAN</p>
+            <h2 id="sponsor-contact-title">Sponsorship enquiries</h2>
+            <p>Contact us to discuss sponsorship for Yuvaan 2027.</p>
+          </div>
+          <Link className={styles.contactLink} href="/contact">
+            <span>CONTACT THE TEAM</span>
+            <svg viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+              <path d="M4 14 14 4M5 4h9v9" />
+            </svg>
+          </Link>
+        </section>
+      </div>
     </div>
   );
 }
