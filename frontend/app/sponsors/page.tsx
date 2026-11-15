@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 import { SPONSORS_DATA, type SponsorItem } from "@/lib/data/festivalData";
 
@@ -60,30 +61,15 @@ function StarField() {
 
 function DeathStar() {
   return (
-    <svg
+    <Image
+      src="/sponsors/death_star.png"
+      alt=""
+      width={812}
+      height={811}
+      sizes="(max-width: 700px) 440px, 560px"
       className={styles.deathStar}
-      viewBox="0 0 600 600"
-      fill="none"
       aria-hidden="true"
-      focusable="false"
-    >
-      <g stroke="currentColor" strokeWidth="1.4">
-        <circle cx="300" cy="300" r="270" />
-        <path d="M49 225c123 58 364 73 501 23M34 340c127 57 401 70 532 20" />
-        <path d="M45 360c142 67 386 76 509 31M56 379c139 63 353 71 484 33" />
-        <path d="M95 129c53 40 100 58 157 68m239-39c-38 28-75 46-121 57" />
-        <path d="M124 474c46-25 90-40 139-47m225 37c-51-26-91-38-137-43" />
-        <path d="M142 166c-31 48-48 103-52 159m327-237c-33 53-56 103-70 155m142-87c-40 34-68 74-89 117" />
-        <path d="M108 371c4 59 21 107 49 149m287-167c-2 65-18 123-48 169m101-205c-8 72-26 132-57 190" />
-        <circle cx="355" cy="214" r="77" />
-        <circle cx="355" cy="214" r="64" />
-        <circle cx="355" cy="214" r="49" />
-        <circle cx="355" cy="214" r="10" />
-        <path d="M286 181c21-26 44-42 69-48m-79 99c25 17 50 26 79 29m68-79c15 22 23 45 24 71m-49 34c-21 17-44 27-71 30" />
-        <path d="m84 273 44 13-5 47m342-93 45 6 4 31M147 411l41 8-4 36m232-28 43 5" />
-        <path d="M69 348c146 65 369 76 472 38M73 357c148 68 367 76 468 38" opacity=".55" />
-      </g>
-    </svg>
+    />
   );
 }
 

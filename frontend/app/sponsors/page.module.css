@@ -30,18 +30,19 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  fill: #9daab7;
-  opacity: 0.34;
+  fill: #d5e0eb;
+  opacity: 0.56;
 }
 
 .deathStar {
   position: absolute;
+  display: block;
   top: 22px;
-  right: -242px;
+  right: -200px;
   width: 560px;
-  height: 560px;
-  color: #293542;
-  opacity: 0.72;
+  height: auto;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .content {
@@ -456,10 +457,9 @@
 
   .deathStar {
     top: 24px;
-    right: -340px;
-    width: 470px;
-    height: 470px;
-    opacity: 0.45;
+    right: -280px;
+    width: 440px;
+    opacity: 0.24;
   }
 
   .hero h1 {
