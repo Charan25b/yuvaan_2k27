@@ -66,28 +66,28 @@
   place-items: center;
   background: #e52d32;
   color: white;
-  font-size: 23px;
+  font-size: 1.4375rem;
   font-weight: 1000;
   transform: skew(-8deg);
 }
 
 .logo strong {
   display: block;
-  font-size: 15px;
+  font-size: 0.9375rem;
   letter-spacing: 4px;
 }
 
 .logo small {
   display: block;
   color: #89898d;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   margin-top: 4px;
 }
 
 .systemStatus,
 .accessLevel {
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   color: #a4a4a4;
 }
@@ -106,7 +106,7 @@
 .accessLevel strong {
   color: #e34a4e;
   margin-left: 7px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 /* INTRO */
@@ -119,7 +119,7 @@
 }
 
 .eyebrow {
-  font-size: 9px;
+  font-size: 0.75rem;
   color: #d15a55;
   letter-spacing: 5px;
   display: flex;
@@ -135,7 +135,7 @@
 }
 
 .intro h1 {
-  font-size: clamp(42px, 6vw, 78px);
+  font-size: clamp(2.625rem, 6vw, 4.875rem);
   letter-spacing: 7px;
   line-height: 1;
   margin: 18px 0 12px;
@@ -150,7 +150,7 @@
 .intro > p {
   font-family: Georgia, serif;
   color: #aaa5a0;
-  font-size: 14px;
+  font-size: 1rem;
   line-height: 1.7;
 }
 
@@ -159,7 +159,7 @@
   align-items: center;
   gap: 10px;
   margin-top: 20px;
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   color: #d0c7b8;
   border: 1px solid #6e4543;
@@ -169,7 +169,7 @@
 
 .crosshair {
   color: #ff5757;
-  font-size: 19px;
+  font-size: 1.1875rem;
 }
 
 /* ROOM */
@@ -186,8 +186,9 @@
 .roomLabel {
   display: flex;
   justify-content: space-between;
-  color: #706e70;
-  font-size: 8px;
+  gap: 0.5rem 1rem;
+  color: #aaa5a0;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   margin-bottom: 15px;
 }
@@ -248,7 +249,7 @@
 .boardTop {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 1px;
   color: #d1c7b8;
   position: absolute;
@@ -267,7 +268,7 @@
   position: absolute;
   right: 14px;
   top: 37px;
-  font-size: 55px;
+  font-size: 3.4375rem;
   color: var(--team-accent);
   opacity: .18;
 }
@@ -311,7 +312,7 @@
   transform: translateX(-50%);
   width: 75px;
   color: #f1dfbd;
-  font-size: 8px;
+  font-size: 0.75rem;
   font-weight: 900;
   line-height: 1.2;
   text-align: center;
@@ -334,19 +335,19 @@
 
 .boardInfo > span {
   color: var(--team-accent);
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   font-weight: 900;
 }
 
 .boardInfo h2 {
-  font-size: 17px;
+  font-size: 1.0625rem;
   margin: 5px 0;
   letter-spacing: 1px;
 }
 
 .boardInfo p {
-  font-size: 7px;
+  font-size: 0.75rem;
   letter-spacing: 1px;
   color: #c4b9aa;
 }
@@ -366,7 +367,7 @@
   position: absolute;
   bottom: 10px;
   right: 13px;
-  font-size: 20px;
+  font-size: 1.25rem;
   color: var(--team-accent);
   opacity: .8;
 }
@@ -392,9 +393,9 @@
   display: flex;
   justify-content: space-between;
   padding: 8px 6%;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
-  color: #777477;
+  color: #aaa5a0;
   position: relative;
   z-index: 2;
 }
@@ -435,7 +436,7 @@
   border: 1px solid #ffffff3a;
   color: #ddd;
   padding: 12px 18px;
-  font-size: 10px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   cursor: pointer;
   transition: .2s;
@@ -447,7 +448,7 @@
 }
 
 .overlayStatus {
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   color: #999;
 }
@@ -475,32 +476,32 @@
 
 .fileNumber {
   color: var(--team-accent);
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 3px;
 }
 
 .expandedBoardHeader h2 {
-  font-size: clamp(30px, 5vw, 53px);
+  font-size: clamp(1.875rem, 5vw, 3.3125rem);
   margin: 12px 0 5px;
   letter-spacing: 2px;
 }
 
 .expandedBoardHeader h3 {
   color: var(--team-accent);
-  font-size: 12px;
+  font-size: 0.75rem;
   letter-spacing: 5px;
 }
 
 .expandedBoardHeader p {
   color: #bcb2a8;
   font-family: Georgia, serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   max-width: 520px;
   line-height: 1.7;
 }
 
 .bigSymbol {
-  font-size: 100px;
+  font-size: 6.25rem;
   color: var(--team-accent);
   opacity: .25;
 }
@@ -508,9 +509,11 @@
 .evidenceLabel {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
   margin: 30px 0;
   color: #c9bba9;
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 3px;
 }
 
@@ -583,13 +586,13 @@
 }
 
 .photoPlaceholder span {
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 1000;
   opacity: .8;
 }
 
 .photoPlaceholder small {
-  font-size: 7px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   color: #aaa;
 }
@@ -613,7 +616,7 @@
 
 .memberLabel span {
   display: block;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 1px;
   color: var(--pin-color);
   margin-bottom: 5px;
@@ -621,7 +624,7 @@
 
 .memberLabel strong {
   display: block;
-  font-size: 12px;
+  font-size: 0.875rem;
   letter-spacing: .5px;
 }
 
@@ -629,7 +632,7 @@
   display: block;
   margin-top: 5px;
   color: #aaa;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
 }
 
@@ -639,7 +642,7 @@
   padding: 6px 8px;
   border: 1px solid #ffffff30;
   color: #ccc;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 1px;
   transition: .2s;
 }
@@ -652,9 +655,11 @@
 .boardFooter {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
   border-top: 1px solid #ffffff24;
   padding-top: 20px;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   color: #91867b;
 }
@@ -711,7 +716,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   font-weight: 900;
 }
@@ -763,12 +768,12 @@
 }
 
 .dossierPlaceholder span {
-  font-size: 60px;
+  font-size: 3.75rem;
   font-weight: 900;
 }
 
 .dossierPlaceholder small {
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
 }
 
@@ -779,27 +784,27 @@
   color: white;
   background: #181819c9;
   padding: 7px;
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 2px;
 }
 
 .dossierEyebrow {
-  font-size: 8px;
+  font-size: 0.75rem;
   letter-spacing: 3px;
-  color: #826c4e;
+  color: #62533f;
   font-weight: 900;
 }
 
 .dossierDetails h2 {
   font-family: Georgia, serif;
-  font-size: clamp(23px, 4vw, 35px);
+  font-size: clamp(1.4375rem, 4vw, 2.1875rem);
   margin: 15px 0 6px;
   line-height: 1.1;
 }
 
 .characterName {
   color: #9e2929;
-  font-size: 9px;
+  font-size: 0.75rem;
   letter-spacing: 1.5px;
   font-weight: 900;
 }
@@ -820,14 +825,14 @@
 
 .detailRow span,
 .abilities > span {
-  font-size: 8px;
-  color: #8a7658;
+  font-size: 0.75rem;
+  color: #62533f;
   letter-spacing: 2px;
   font-weight: 900;
 }
 
 .detailRow strong {
-  font-size: 12px;
+  font-size: 0.875rem;
 }
 
 .detailRow .threatValue {
@@ -840,7 +845,7 @@
 
 .abilities p {
   font-family: Georgia, serif;
-  font-size: 13px;
+  font-size: 1rem;
   margin-top: 8px;
   line-height: 1.6;
 }
@@ -849,7 +854,7 @@
   border-top: 2px solid #8d7960;
   padding-top: 15px;
   color: #8d302b;
-  font-size: 8px;
+  font-size: 0.75rem;
 }
 
 /* ANIMATIONS */
@@ -937,7 +942,12 @@
 
   .eyebrow {
     letter-spacing: 2px;
-    font-size: 7px;
+    font-size: 0.75rem;
+  }
+
+  .roomLabel {
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
   .room {
@@ -952,7 +962,7 @@
   }
 
   .boardInfo h2 {
-    font-size: 13px;
+    font-size: 0.875rem;
   }
 
   .miniPhoto {
@@ -964,7 +974,7 @@
     padding: 15px;
     gap: 10px;
     flex-wrap: wrap;
-    font-size: 7px;
+    font-size: 0.75rem;
   }
 
   .footer span:nth-child(2) {
@@ -973,16 +983,18 @@
 
   .overlayHeader {
     padding: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .overlayStatus {
-    font-size: 7px;
+    font-size: 0.75rem;
     letter-spacing: 1px;
   }
 
   .backButton {
     padding: 10px;
-    font-size: 8px;
+    font-size: 0.75rem;
   }
 
   .expandedBoard {
@@ -992,11 +1004,11 @@
   }
 
   .bigSymbol {
-    font-size: 55px;
+    font-size: 3.4375rem;
   }
 
   .expandedBoardHeader p {
-    font-size: 12px;
+    font-size: 1rem;
   }
 
   .memberBoard {
@@ -1025,12 +1037,16 @@
   }
 
   .dossierTop {
-    font-size: 7px;
+    font-size: 0.75rem;
     padding-right: 35px;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
   }
 
   .dossierBottom {
-    font-size: 7px;
+    font-size: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
   }
 }
 

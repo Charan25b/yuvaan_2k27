@@ -4,10 +4,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import {
-  Card,
   CardHeader,
   CardTitle,
   CardDescription,
@@ -102,6 +99,15 @@ const MapDustParticles: React.FC = () => {
   );
 };
 
+const placeholderSponsorNames = new Set([
+  "National Technology Partner",
+  "Regional Innovation Board",
+  "Audio & Entertainment Collective",
+  "Campus Refreshment Brand",
+  "Gaming Gear Manufacturer",
+  "Youth Media Network",
+]);
+
 // --------------------------------------------------
 // SPONSORS PAGE
 // --------------------------------------------------
@@ -112,19 +118,23 @@ export default function SponsorsPage() {
   const headingRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
-  const titleSponsors = SPONSORS_DATA.filter(
+  const listedSponsors = SPONSORS_DATA.filter(
+    (sponsor) => !placeholderSponsorNames.has(sponsor.name)
+  );
+
+  const titleSponsors = listedSponsors.filter(
     (s) => s.tier === "Title Sponsor"
   );
 
-  const poweredBy = SPONSORS_DATA.filter(
+  const poweredBy = listedSponsors.filter(
     (s) => s.tier === "Powered By"
   );
 
-  const associates = SPONSORS_DATA.filter(
+  const associates = listedSponsors.filter(
     (s) => s.tier === "Associate Partner"
   );
 
-  const mediaPartners = SPONSORS_DATA.filter(
+  const mediaPartners = listedSponsors.filter(
     (s) => s.tier === "Media & Beverage Partner"
   );
 
@@ -222,7 +232,7 @@ export default function SponsorsPage() {
   return (
     <div
       ref={sceneRef}
-      className="font-merch-sans relative min-h-screen w-full overflow-hidden bg-[#d8be90] text-[#261607]"
+      className="sponsors-page font-merch-sans relative min-h-screen w-full overflow-hidden bg-[#d8be90] text-[#261607]"
     >
       {/* FONT SYSTEM */}
       <style>{`
@@ -234,6 +244,10 @@ export default function SponsorsPage() {
 
         .font-merch-sans {
           font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .sponsors-page .comic-tagline {
+          font-size: 0.75rem !important;
         }
 
         .rope-border {
@@ -281,7 +295,7 @@ export default function SponsorsPage() {
             <span className="h-[2px] w-12 sm:w-20 bg-gradient-to-r from-transparent to-[#5c160c]" />
 
             <span className="font-merch-display text-xs sm:text-sm font-extrabold tracking-[0.28em] text-[#5c160c] uppercase">
-              ✦ ALLIANCES OF THE GRAND LINE ✦
+              YUVAAN 2027 SPONSORS
             </span>
 
             <span className="h-[2px] w-12 sm:w-20 bg-gradient-to-l from-transparent to-[#5c160c]" />
@@ -299,18 +313,18 @@ export default function SponsorsPage() {
                 "drop-shadow(0 4px 0px #f6e3ba) drop-shadow(0 8px 16px rgba(45,20,4,0.45))",
             }}
           >
-            OUR ALLIANCES
+            SPONSORS
           </h1>
 
           <p className="font-merch-display mt-4 border-y border-[#5c3610]/40 bg-[#f4e2bc]/80 px-5 py-2 text-xs font-extrabold tracking-[0.15em] text-[#2e1805] uppercase shadow-sm sm:text-base">
-            THE FORCES BEHIND YUVAAN 2027
+            YUVAAN 2027
           </p>
 
-          <p className="mt-5 max-w-2xl text-sm font-semibold leading-relaxed text-[#39230d] sm:text-base">
-            Every great voyage needs a powerful alliance. Meet the
-            visionaries, innovators and partners making the grandest
-            celebration at IIIT Guwahati possible.
-          </p>
+          {listedSponsors.length === 0 && (
+            <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-[#39230d]">
+              No sponsor details are available yet.
+            </p>
+          )}
         </header>
 
         {/* SPONSOR TIERS */}
@@ -369,8 +383,8 @@ export default function SponsorsPage() {
                             }}
                           />
 
-                          <span className="relative z-10 font-merch-display text-[10px] font-bold tracking-[0.2em] text-[#80501c] uppercase">
-                            Grand Line Alliance
+                          <span className="relative z-10 font-merch-display text-xs font-bold tracking-[0.2em] text-[#80501c] uppercase">
+                            TITLE SPONSOR
                           </span>
 
                           <h3 className="font-merch-display relative z-10 mt-2 text-2xl font-black text-[#241304] sm:text-3xl">
@@ -385,8 +399,8 @@ export default function SponsorsPage() {
                               {sp.category}
                             </Badge>
 
-                            <span className="text-[10px] font-black tracking-widest text-[#80501c] uppercase">
-                              Chief Festival Presenter
+                            <span className="text-xs font-black tracking-widest text-[#80501c] uppercase">
+                              {sp.tier}
                             </span>
                           </div>
 
@@ -398,9 +412,9 @@ export default function SponsorsPage() {
                             {sp.description}
                           </p>
 
-                          <div className="mt-2 flex items-center gap-2 text-[10px] font-black tracking-[0.15em] text-[#80501c] uppercase">
+                          <div className="mt-2 flex items-center gap-2 text-xs font-black tracking-[0.15em] text-[#80501c] uppercase">
                             <span>✦</span>
-                            <span>Official Title Alliance</span>
+                            <span>{sp.tier}</span>
                             <span>✦</span>
                           </div>
                         </div>
@@ -459,8 +473,8 @@ export default function SponsorsPage() {
                             }}
                           />
 
-                          <span className="relative z-10 text-[9px] font-black tracking-widest text-[#80501c] uppercase">
-                            Powered Alliance
+                          <span className="relative z-10 text-xs font-black tracking-widest text-[#80501c] uppercase">
+                            POWERED BY
                           </span>
 
                           <span className="font-merch-display relative z-10 mt-1 text-xl font-black text-[#291607]">
@@ -482,8 +496,8 @@ export default function SponsorsPage() {
                           </CardDescription>
                         </CardHeader>
 
-                        <div className="mt-5 border-t border-[#8c6230]/40 pt-3 text-center text-[9px] font-black tracking-[0.2em] text-[#80501c] uppercase">
-                          ✦ Yuvaan 2027 Alliance ✦
+                        <div className="mt-5 border-t border-[#8c6230]/40 pt-3 text-center text-xs font-black tracking-[0.2em] text-[#80501c] uppercase">
+                          YUVAAN 2027
                         </div>
                       </div>
                     </div>
@@ -542,8 +556,8 @@ export default function SponsorsPage() {
                               }}
                             />
 
-                            <span className="relative z-10 text-[9px] font-black tracking-widest text-[#80501c] uppercase">
-                              Official Partner
+                            <span className="relative z-10 text-xs font-black tracking-widest text-[#80501c] uppercase">
+                              {sp.tier}
                             </span>
 
                             <span className="font-merch-display relative z-10 mt-1 text-lg font-black text-[#291607]">
@@ -553,7 +567,7 @@ export default function SponsorsPage() {
 
                           <CardHeader className="relative z-10 mt-3 p-0">
                             <span
-                              className="text-[10px] font-black tracking-wider uppercase"
+                              className="text-xs font-black tracking-wider uppercase"
                               style={{ color: style.accent }}
                             >
                               {sp.category}
@@ -563,13 +577,13 @@ export default function SponsorsPage() {
                               {sp.name}
                             </CardTitle>
 
-                            <CardDescription className="mt-1 text-xs font-semibold leading-relaxed text-[#543818]">
+                            <CardDescription className="mt-1 text-sm font-semibold leading-relaxed text-[#543818]">
                               {sp.description}
                             </CardDescription>
                           </CardHeader>
 
-                          <div className="mt-4 border-t border-[#8c6230]/40 pt-2 text-center text-[9px] font-black tracking-widest text-[#80501c] uppercase">
-                            ✦ Alliance Member ✦
+                          <div className="mt-4 border-t border-[#8c6230]/40 pt-2 text-center text-xs font-black tracking-widest text-[#80501c] uppercase">
+                            {sp.tier}
                           </div>
                         </div>
                       </div>
@@ -603,18 +617,15 @@ export default function SponsorsPage() {
                   comicStamp
                   className="text-xs"
                 >
-                  JOIN THE ALLIANCE
+                  SPONSOR YUVAAN
                 </Badge>
 
                 <h2 className="font-merch-display text-xl font-black text-[#291607] sm:text-3xl">
-                  Ready to Join Our Crew?
+                  Sponsorship enquiries
                 </h2>
 
-                <p className="max-w-xl text-sm font-semibold leading-relaxed text-[#543818]">
-                  Become a part of Yuvaan 2027. Connect with
-                  thousands of talented students from across
-                  Northeast India and make your brand part of
-                  something extraordinary.
+                <p className="max-w-xl text-base font-semibold leading-relaxed text-[#543818]">
+                  Contact us to discuss sponsorship for Yuvaan 2027.
                 </p>
               </div>
 
@@ -624,7 +635,7 @@ export default function SponsorsPage() {
                 size="lg"
                 className="shrink-0 font-merch-display font-black tracking-wider"
               >
-                JOIN THE ALLIANCE →
+                CONTACT THE TEAM →
               </Button>
             </div>
           </section>

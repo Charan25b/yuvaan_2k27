@@ -503,8 +503,8 @@ export default function GalleryPage() {
           <div className="mb-4 flex items-center gap-3">
             <span className="h-[2px] w-12 bg-gradient-to-r from-transparent to-[#b83232]" />
 
-            <span className="cyber-display text-[10px] font-bold tracking-[0.3em] text-[#e2b83f] uppercase sm:text-xs">
-              CYBERTRON // VISUAL ARCHIVE
+            <span className="cyber-display text-xs font-bold tracking-[0.3em] text-[#e2b83f] uppercase sm:text-xs">
+              YUVAAN // PHOTO ARCHIVE
             </span>
 
             <span className="h-[2px] w-12 bg-gradient-to-l from-transparent to-[#777bd0]" />
@@ -520,10 +520,8 @@ export default function GalleryPage() {
             <span className="h-1 w-3 bg-[#777bd0]" />
           </div>
 
-          <p className="mt-6 max-w-2xl text-sm font-medium leading-relaxed text-[#c0c8d0] sm:text-base">
-            Every moment tells a story. Explore the unforgettable
-            memories, electrifying performances and celebrations
-            that define Yuvaan at IIIT Guwahati.
+          <p className="mt-6 max-w-2xl text-base font-medium leading-relaxed text-[#c0c8d0]">
+            Browse the Yuvaan photo archive.
           </p>
 
           {/* CYBERTRONIAN STATUS STRIP */}
@@ -531,8 +529,8 @@ export default function GalleryPage() {
           <div className="mt-7 flex items-center gap-3 border border-[#89949e]/40 bg-[#141c27]/85 px-5 py-2.5 backdrop-blur-md">
             <span className="h-2 w-2 bg-[#b83232] shadow-[0_0_9px_#b83232]" />
 
-            <span className="cyber-display text-[9px] font-bold tracking-[0.2em] text-[#d5dce2] uppercase">
-              Visual Transmission Online
+            <span className="cyber-display text-xs font-bold tracking-[0.2em] text-[#d5dce2] uppercase">
+              PHOTO ARCHIVE
             </span>
 
             <span className="h-2 w-2 bg-[#777bd0] shadow-[0_0_9px_#777bd0]" />
@@ -547,11 +545,11 @@ export default function GalleryPage() {
               <span className="h-4 w-1 bg-[#b83232]" />
 
               <h2 className="cyber-display text-xs font-bold tracking-[0.15em] text-[#e2b83f] uppercase sm:text-sm">
-                Archive Selection
+                FILTER BY CATEGORY
               </h2>
             </div>
 
-            <span className="cyber-display text-[9px] font-bold tracking-wider text-[#aeb8c1] uppercase">
+            <span className="cyber-display text-xs font-bold tracking-wider text-[#aeb8c1] uppercase">
               {filteredItems.length} Images
             </span>
           </div>
@@ -565,7 +563,7 @@ export default function GalleryPage() {
                   key={category}
                   type="button"
                   onClick={() => setSelectedCategory(category)}
-                  className={`cyber-filter border px-4 py-2.5 text-[10px] font-extrabold tracking-wide uppercase sm:text-xs ${
+                  className={`cyber-filter border px-4 py-2.5 text-xs font-extrabold tracking-wide uppercase sm:text-xs ${
                     selected
                       ? "cyber-filter-active text-white"
                       : "border-[#89949e]/50 bg-[#18212c]/90 text-[#c0c8d0]"
@@ -629,8 +627,8 @@ export default function GalleryPage() {
               {/* HOVER INDICATOR */}
 
               <div className="pointer-events-none absolute inset-[7px] z-[4] flex items-center justify-center bg-[#090e18]/0 opacity-0 transition-all duration-300 group-hover:bg-[#090e18]/30 group-hover:opacity-100">
-                <div className="cyber-display border border-[#e2b83f]/70 bg-[#101722]/90 px-3 py-2 text-[9px] font-bold tracking-[0.2em] text-white uppercase">
-                  Open Archive
+                <div className="cyber-display border border-[#e2b83f]/70 bg-[#101722]/90 px-3 py-2 text-xs font-bold tracking-[0.2em] text-white uppercase">
+                  OPEN PHOTO
                 </div>
               </div>
             </button>
@@ -642,7 +640,7 @@ export default function GalleryPage() {
         {filteredItems.length === 0 && (
           <div className="border border-dashed border-[#89949e]/50 bg-[#18212c]/90 px-6 py-20 text-center">
             <p className="cyber-display text-xl font-black text-[#b83232]">
-              NO TRANSMISSIONS FOUND
+              NO PHOTOS FOUND
             </p>
 
             <button
@@ -660,8 +658,8 @@ export default function GalleryPage() {
         <div className="mt-16 flex items-center justify-center gap-3">
           <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#89949e]/50" />
 
-          <span className="cyber-display text-[9px] font-bold tracking-[0.25em] text-[#89949e] uppercase">
-            Yuvaan // End of Transmission
+          <span className="cyber-display text-xs font-bold tracking-[0.25em] text-[#89949e] uppercase">
+            Yuvaan // Photo Archive
           </span>
 
           <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#89949e]/50" />
@@ -676,7 +674,7 @@ export default function GalleryPage() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Cybertronian image viewer"
+          aria-label="Photo viewer"
           onClick={closeViewer}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -701,12 +699,12 @@ export default function GalleryPage() {
                 </div>
 
                 <div>
-                  <p className="cyber-display text-[9px] font-bold tracking-[0.2em] text-[#e2b83f] uppercase">
-                    Cybertron Visual Database
+                  <p className="cyber-display text-xs font-bold tracking-[0.2em] text-[#e2b83f] uppercase">
+                    Yuvaan Photo Archive
                   </p>
 
-                  <p className="mt-1 text-[8px] tracking-[0.15em] text-[#89949e] uppercase">
-                    Image Transmission Active
+                  <p className="mt-1 text-xs tracking-[0.15em] text-[#89949e] uppercase">
+                    PHOTO VIEWER
                   </p>
                 </div>
               </div>
@@ -754,7 +752,7 @@ export default function GalleryPage() {
               </button>
 
               <div className="flex flex-col items-center gap-1">
-                <span className="cyber-display text-[10px] font-bold tracking-[0.2em] text-[#e2b83f]">
+                <span className="cyber-display text-xs font-bold tracking-[0.2em] text-[#e2b83f]">
                   {String(activeIndex + 1).padStart(3, "0")}
                   <span className="mx-2 text-[#89949e]">/</span>
                   {String(filteredItems.length).padStart(3, "0")}

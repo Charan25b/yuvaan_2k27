@@ -21,7 +21,7 @@ const schedule: Record<number, Event[]> = {
       time: "09:00 AM",
       venue: "Main Auditorium",
       category: "Ceremony",
-      description: "Kick off the festival with the opening ceremony.",
+      description: "Opening ceremony.",
     },
     {
       id: 2,
@@ -29,7 +29,7 @@ const schedule: Record<number, Event[]> = {
       time: "10:30 AM",
       venue: "Innovation Hub",
       category: "Technology",
-      description: "The coding challenge officially starts.",
+      description: "Coding challenge.",
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ const schedule: Record<number, Event[]> = {
       time: "12:00 PM",
       venue: "Registration Arena",
       category: "Comic Con",
-      description: "Check in for the cosplay competition.",
+      description: "Cosplay competition check-in.",
     },
     {
       id: 4,
@@ -45,7 +45,7 @@ const schedule: Record<number, Event[]> = {
       time: "05:00 PM",
       venue: "Open Air Stage",
       category: "Music",
-      description: "An evening of live music and performances.",
+      description: "Live band performances.",
     },
   ],
   2: [
@@ -55,7 +55,7 @@ const schedule: Record<number, Event[]> = {
       time: "09:30 AM",
       venue: "Gaming Arena",
       category: "Gaming",
-      description: "Competitive gaming enters its final rounds.",
+      description: "Esports competition.",
     },
     {
       id: 6,
@@ -63,7 +63,7 @@ const schedule: Record<number, Event[]> = {
       time: "12:00 PM",
       venue: "Main Stage",
       category: "Comic Con",
-      description: "Showcase your favourite characters.",
+      description: "Cosplay presentations.",
     },
     {
       id: 7,
@@ -71,7 +71,7 @@ const schedule: Record<number, Event[]> = {
       time: "02:30 PM",
       venue: "Technical Arena",
       category: "Technology",
-      description: "Robotics teams compete in an exciting showdown.",
+      description: "Robotics competition.",
     },
     {
       id: 8,
@@ -79,7 +79,7 @@ const schedule: Record<number, Event[]> = {
       time: "06:00 PM",
       venue: "Open Air Stage",
       category: "Entertainment",
-      description: "The evening's headline performance.",
+      description: "Evening performance.",
     },
   ],
   3: [
@@ -89,7 +89,7 @@ const schedule: Record<number, Event[]> = {
       time: "10:00 AM",
       venue: "Gaming Arena",
       category: "Gaming",
-      description: "The final battle for the championship.",
+      description: "Esports final.",
     },
     {
       id: 10,
@@ -97,7 +97,7 @@ const schedule: Record<number, Event[]> = {
       time: "12:00 PM",
       venue: "Exhibition Hall",
       category: "Technology",
-      description: "Explore innovative student projects.",
+      description: "Student technology projects.",
     },
     {
       id: 11,
@@ -105,7 +105,7 @@ const schedule: Record<number, Event[]> = {
       time: "04:00 PM",
       venue: "Main Auditorium",
       category: "Ceremony",
-      description: "Celebrate the winners and participants.",
+      description: "Awards for winners and participants.",
     },
     {
       id: 12,
@@ -113,7 +113,7 @@ const schedule: Record<number, Event[]> = {
       time: "06:00 PM",
       venue: "Main Stage",
       category: "Ceremony",
-      description: "The final lap of the festival.",
+      description: "Festival closing.",
     },
   ],
 };
@@ -159,7 +159,7 @@ export default function SchedulePage() {
           </span>
           <span className={styles.live}>
             <span className={styles.liveDot} />
-            EVENT CONTROL
+            THREE-DAY PROGRAMME
           </span>
         </div>
 
@@ -172,8 +172,7 @@ export default function SchedulePage() {
               <span>RACE</span> IS ON.
             </h1>
             <p className={styles.heroDescription}>
-              Every event is a new lap. Explore the complete Yuvaan
-              schedule and choose your next destination.
+              Browse the Yuvaan schedule by day.
             </p>
           </div>
 
@@ -194,11 +193,11 @@ export default function SchedulePage() {
       <section className={styles.scheduleSection}>
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.sectionEyebrow}>THE ITINERARY</span>
+            <span className={styles.sectionEyebrow}>BY DAY</span>
             <h2>RACE SCHEDULE<span>.</span></h2>
           </div>
 
-          <p>SELECT A DAY TO EXPLORE THE CIRCUIT</p>
+          <p>SELECT A DAY</p>
         </div>
 
         <div className={styles.daySelector}>
@@ -219,7 +218,7 @@ export default function SchedulePage() {
 
         <div className={styles.trackHeader}>
           <div>
-            <span className={styles.sectionEyebrow}>LIVE CIRCUIT VIEW</span>
+            <span className={styles.sectionEyebrow}>CIRCUIT VIEW</span>
             <h2>THE TRACK<span>.</span></h2>
           </div>
 
@@ -336,7 +335,7 @@ export default function SchedulePage() {
 
       <footer className={styles.pageFooter}>
         <span>YUVAAN 2K27</span>
-        <span>END OF THE LINE. START OF THE EXPERIENCE.</span>
+        <span>SCHEDULE COMPLETE</span>
       </footer>
     </main>
   );
