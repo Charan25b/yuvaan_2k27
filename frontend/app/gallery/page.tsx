@@ -475,23 +475,6 @@ export default function GalleryPage() {
             <span className="h-1 w-3 bg-[#777bd0]" />
           </div>
 
-          <p className="mt-6 max-w-2xl text-sm font-medium leading-relaxed text-[#c0c8d0] sm:text-base">
-            Every moment tells a story. Explore the unforgettable
-            memories, electrifying performances and celebrations
-            that define Yuvaan at IIIT Guwahati.
-          </p>
-
-          {/* CYBERTRONIAN STATUS STRIP */}
-
-          <div className="mt-7 flex items-center gap-3 border border-[#89949e]/40 bg-[#141c27]/85 px-5 py-2.5 backdrop-blur-md">
-            <span className="h-2 w-2 bg-[#b83232] shadow-[0_0_9px_#b83232]" />
-
-            <span className="cyber-display text-[9px] font-bold tracking-[0.2em] text-[#d5dce2] uppercase">
-              Visual Transmission Online
-            </span>
-
-            <span className="h-2 w-2 bg-[#777bd0] shadow-[0_0_9px_#777bd0]" />
-          </div>
         </header>
 
         {/* CATEGORY FILTERS */}
@@ -610,17 +593,6 @@ export default function GalleryPage() {
           </div>
         )}
 
-        {/* FOOTER */}
-
-        <div className="mt-16 flex items-center justify-center gap-3">
-          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#89949e]/50" />
-
-          <span className="cyber-display text-[9px] font-bold tracking-[0.25em] text-[#89949e] uppercase">
-            Yuvaan // End of Transmission
-          </span>
-
-          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#89949e]/50" />
-        </div>
       </main>
 
       {/* ------------------------------------------------
@@ -660,9 +632,6 @@ export default function GalleryPage() {
                     Cybertron Visual Database
                   </p>
 
-                  <p className="mt-1 text-[8px] tracking-[0.15em] text-[#89949e] uppercase">
-                    Image Transmission Active
-                  </p>
                 </div>
               </div>
 

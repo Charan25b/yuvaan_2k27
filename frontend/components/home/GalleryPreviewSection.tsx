@@ -17,7 +17,6 @@ export function GalleryPreviewSection() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
               title="Snapshots of the Yuvaan Spirit"
-              description="From packed pro-night amphitheatre crowds to late-night hackathon coding sessions, experience the energy of previous festival editions."
               className="home-section-heading"
             />
             <Button href="/gallery" variant="gold" size="md" className="shrink-0">

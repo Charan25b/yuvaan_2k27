@@ -16,7 +16,6 @@ export function SponsorsPreviewSection() {
           <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
               title="Backed By Visionary Industry Partners"
-              description="Yuvaan 2027 is supported by forward-thinking organizations empowering collegiate engineering, design, arts, and student innovation."
               className="home-section-heading"
             />
             <Button href="/sponsors" variant="gold" size="md" className="shrink-0">

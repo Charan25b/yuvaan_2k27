@@ -26,12 +26,6 @@ export function AboutSection() {
               Yuvaan is the landmark annual gathering that unites colleges across Northeast India and beyond at IIIT Guwahati. Drawing from contemporary comic arts, vibrant character design, and cutting-edge engineering, the 2027 edition combines high-energy stage performances with deep technical challenges.
             </p>
 
-            <p className="text-sm text-[var(--color-text-muted)] leading-relaxed font-medium">
-              From 24-hour product hackathons in the computer labs to battle-of-the-bands
-              under the open amphitheatre floodlights, Yuvaan serves as a launchpad
-              for technical innovation and creative self-expression.
-            </p>
-
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button href="/team" variant="gold" size="md">
                 Meet Organizing Team &rarr;

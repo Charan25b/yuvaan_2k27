@@ -333,12 +333,6 @@ export default function TeamsPage() {
           THE <span>WAR ROOM</span>
         </h1>
 
-        <p>
-          Every organisation has its heroes.
-          <br />
-          Every organisation has its villains.
-        </p>
-
         <div className={styles.instruction}>
           <span className={styles.crosshair}>⌖</span>
           SELECT AN EVIDENCE BOARD TO INVESTIGATE
@@ -409,7 +403,6 @@ export default function TeamsPage() {
       {/* Bottom status */}
       <footer className={styles.footer}>
         <span>YUVAAN // PERSONNEL ARCHIVE</span>
-        <span>ALL IDENTITIES ARE UNDER SURVEILLANCE</span>
         <span>EST. 2027</span>
       </footer>
 

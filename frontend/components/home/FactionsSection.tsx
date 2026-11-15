@@ -77,7 +77,6 @@ export function FactionsSection() {
         <div className="flex flex-col gap-10">
           <SectionHeading
             title="Four Factions. One Festival Championship."
-            description="Every festival competitor belongs to one of the four legendary campus divisions. Points earned in hackathons, esports brackets, and cultural battles fuel each faction's standings."
             className="home-section-heading"
           />
 

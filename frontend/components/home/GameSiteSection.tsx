@@ -15,7 +15,6 @@ export function GameSiteSection() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-black/25 pb-6">
             <SectionHeading
               title="The Campus Quest Arena"
-              description="Scan campus checkpoints, challenge other attendees in quick mini-games, and earn points for your faction."
               className="home-section-heading"
             />
             <button

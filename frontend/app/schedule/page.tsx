@@ -179,10 +179,6 @@ export default function SchedulePage() {
               <br />
               <span>RACE</span> IS ON.
             </h1>
-            <p className={styles.heroDescription}>
-              Every event is a new lap. Explore the complete Yuvaan
-              schedule and choose your next destination.
-            </p>
           </div>
 
           <div className={styles.heroNumber}>
@@ -206,7 +202,6 @@ export default function SchedulePage() {
             <h2>RACE SCHEDULE<span>.</span></h2>
           </div>
 
-          <p>SELECT A DAY TO EXPLORE THE CIRCUIT</p>
         </div>
 
         <div className={styles.daySelector}>

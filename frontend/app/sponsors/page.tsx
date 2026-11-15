@@ -299,15 +299,6 @@ export default function SponsorsPage() {
             OUR ALLIANCES
           </h1>
 
-          <p className="font-merch-display mt-4 border-y border-[#5c3610]/40 bg-[#f4e2bc]/80 px-5 py-2 text-xs font-extrabold tracking-[0.15em] text-[#2e1805] uppercase shadow-sm sm:text-base">
-            THE FORCES BEHIND YUVAAN 2027
-          </p>
-
-          <p className="mt-5 max-w-2xl text-sm font-semibold leading-relaxed text-[#39230d] sm:text-base">
-            Every great voyage needs a powerful alliance. Meet the
-            visionaries, innovators and partners making the grandest
-            celebration at IIIT Guwahati possible.
-          </p>
         </header>
 
         {/* SPONSOR TIERS */}
