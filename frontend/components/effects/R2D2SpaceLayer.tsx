@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import styles from "./R2D2SpaceLayer.module.css";
@@ -119,19 +119,14 @@ function R2D2Model({
       const visibleWorldBottom = pageHeight - (visibleBottom - pageBounds.top) / zoom;
       const visibleWorldHeight = Math.max(0.6, visibleWorldTop - visibleWorldBottom);
       state.position.set(
-        THREE.MathUtils.randFloat(-pageWidth / 2 + 0.85, pageWidth / 2 - 0.85),
+        -pageWidth / 2 - 0.84,
         THREE.MathUtils.randFloat(
           visibleWorldBottom + Math.min(0.85, visibleWorldHeight * 0.25),
           visibleWorldTop - Math.min(0.85, visibleWorldHeight * 0.25),
         ),
         0,
       );
-      state.velocity.set(
-        THREE.MathUtils.randFloat(-1, 1),
-        THREE.MathUtils.randFloat(-1, 1),
-        0,
-      );
-      if (state.velocity.lengthSq() < 0.001) state.velocity.set(1, 0, 0);
+      state.velocity.set(1, THREE.MathUtils.randFloat(-0.35, 0.35), 0);
       state.velocity.normalize().multiplyScalar(CRUISE_SPEED);
       state.initialized = true;
     }
@@ -256,13 +251,13 @@ function LeftKeyLight({ flight }: { flight: React.RefObject<Flight> }) {
         intensity={3.2}
         color="#ffffff"
         castShadow
-        shadow-mapSize-width={1536}
-        shadow-mapSize-height={1536}
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
         shadow-camera-near={0.1}
         shadow-camera-far={20}
         shadow-bias={-0.00015}
         shadow-normalBias={0.02}
-        shadow-radius={3}
+        shadow-radius={2}
       />
     </group>
   );
@@ -283,6 +278,24 @@ function Scene({
 }) {
   return (
     <>
+      <Environment background={false} environmentIntensity={0.55} frames={1} resolution={64}>
+        <Lightformer
+          form="rect"
+          intensity={2.2}
+          color="#ffffff"
+          position={[-4, 3, 5]}
+          scale={[5, 4, 1]}
+          target={[0, 0, 0]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={0.8}
+          color="#dce7f3"
+          position={[4, 1, -3]}
+          scale={[4, 5, 1]}
+          target={[0, 0, 0]}
+        />
+      </Environment>
       <ambientLight intensity={0.38} color="#e8eef7" />
       <LeftKeyLight flight={flight} />
       <Suspense fallback={null}>
