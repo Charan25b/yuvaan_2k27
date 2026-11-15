@@ -9,7 +9,7 @@ export function useEventCanvas() {
     typeof window !== "undefined" ? window.innerWidth : 0
   );
   const [shuffleCount, setShuffleCount] = useState(0);
-  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<import("@/lib/data/festivalData").EventItem | null>(null);
   const [selectedComicData, setSelectedComicData] = useState<ComicBookData | null>(null);
 
   const isModalOpenRef = useRef(false);
