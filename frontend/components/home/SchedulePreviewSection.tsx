@@ -46,13 +46,11 @@ export function SchedulePreviewSection() {
   ];
 
   return (
-    <section data-home-section="schedule" className="py-14 sm:py-20 relative">
+    <section data-home-section="schedule" className="py-16 sm:py-24 relative">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 pb-6">
             <SectionHeading
-              badge="Festival Timeline"
-              badgeVariant="section-light"
               title="Three Days of Uninterrupted Action"
               description="A quick glance at key milestones across the 3-day schedule. View the full timeline for comprehensive venue alignments and hourly programs."
               className="home-section-heading"

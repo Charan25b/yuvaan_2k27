@@ -64,19 +64,15 @@ export function Navbar() {
 
   return (
     <>
-      <header ref={header} className={`${styles.header} ${pathname === "/" ? styles.dark : ""}`}
+      <header ref={header} className={styles.header}
         onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget as Node)) close();
         }}>
         <div className={styles.bar}>
           <Link href="/" onClick={close} className={styles.brand} aria-label="YUVAAN 2027 — IIIT Guwahati home">
-            {pathname === "/" ? (
-              <span className={styles.homeLogo}>
-                <Image src="/brand/yuvaan-logo.jpg" alt="" width={52} height={52} sizes="52px" />
-              </span>
-            ) : <span className={styles.emblem} aria-hidden="true">
-              <svg viewBox="0 0 24 32" fill="currentColor"><path d="M13 0 2 18h8L8 32l14-20h-9z" /></svg>
-            </span>}
+            <span className={styles.homeLogo}>
+              <Image src="/brand/yuvaan-logo.jpg" alt="" width={52} height={52} sizes="52px" />
+            </span>
             <span><span className={styles.wordmark}>YUVAAN <small>2027</small></span>
               <span className={styles.institute}>IIIT GUWAHATI</span></span>
           </Link>

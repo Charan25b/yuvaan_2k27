@@ -9,13 +9,11 @@ export function GameSiteSection() {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <section data-home-section="quest" className="py-14 sm:py-20 relative">
+    <section data-home-section="quest" className="py-16 sm:py-24 relative">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-black/25 pb-6">
             <SectionHeading
-              badge="Quest Arena · Interactive Game Site"
-              badgeVariant="highlight"
               title="The Campus Quest Arena"
               description="Scan campus checkpoints, challenge other attendees in quick mini-games, and earn points for your faction."
               className="home-section-heading"

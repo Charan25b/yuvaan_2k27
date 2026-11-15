@@ -717,6 +717,26 @@
   inset: 0;
 }
 
+.trackContainer :global(.race-track-message) {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  pointer-events: none;
+}
+
+.trackContainer :global(.race-track-message > div) {
+  width: 260px;
+  padding: 14px 20px;
+  border: 1px solid #e83b3b;
+  background: #171d23;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+}
+
 .trackContainer :global(.race-camera-controls) {
   position: absolute;
   top: 18px;
@@ -959,14 +979,5 @@
   .pageFooter {
     flex-direction: column;
     padding: 30px 6%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page *,
-  .page *::before,
-  .page *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
   }
 }

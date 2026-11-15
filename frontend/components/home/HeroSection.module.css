@@ -1,11 +1,9 @@
 .hero {
   --comic-duration: 32s;
   --comic-scale: 1.12;
-  --comic-y: 0px;
-  --brand-scale: 1;
-  --prelude-scale: 1;
-  --verse-scale: 1;
-  --satellite-y: 0px;
+  --comic-y: 96px;
+  --side-rail-fr: 0fr;
+  --side-rail-opacity: 0;
   position: relative;
   isolation: isolate;
   min-height: min(820px, calc(100svh - 96px));
@@ -27,7 +25,10 @@
 .artwork {
   inset: -100px -60px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns:
+    minmax(0, var(--side-rail-fr))
+    repeat(3, minmax(0, 1fr))
+    minmax(0, var(--side-rail-fr));
   gap: 12px;
   overflow: hidden;
   padding: 0 12px;
@@ -43,6 +44,11 @@
   overflow: hidden;
   border-inline: 4px solid #142039;
   background: #142039;
+}
+
+.rail:first-child,
+.rail:last-child {
+  opacity: var(--side-rail-opacity);
 }
 
 .track {
@@ -123,31 +129,22 @@ transform: translateY(-53px) scale(0.95);
 }
 
 .prelude {
-  margin-bottom: 2px;
-  transform: translateY(calc(var(--satellite-y) * -1)) scale(var(--prelude-scale));
-  transform-origin: center;
-  will-change: transform;
-  font-size: clamp(34px, 4.3vw, 62px);
+  margin-bottom: -0.1em;
+  font-size: clamp(42.5px, 5.375vw, 77.5px);
 }
 
 .brand {
-  transform: scale(var(--brand-scale));
-  transform-origin: center;
-  will-change: transform;
   color: #ffd43b;
-  font-size: clamp(100px, 19vw, 230px);
+  font-size: clamp(125px, 23.75vw, 287.5px);
   -webkit-text-stroke: 4px #142039;
   text-shadow: 6px 7px 0 #142039, 8px 9px 0 #f6f0df;
 }
 
 .verse {
   align-self: center;
-  margin-top: 2px;
+  margin-top: -0.1em;
   margin-right: 0;
-  transform: translateY(var(--satellite-y)) scale(var(--verse-scale));
-  transform-origin: center;
-  will-change: transform;
-  font-size: clamp(48px, 6.8vw, 94px);
+  font-size: clamp(60px, 8.5vw, 117.5px);
   white-space: nowrap;
 }
 
@@ -183,19 +180,19 @@ transform: translateY(-53px) scale(0.95);
 
 @keyframes comic-panels {
   from { transform: translateY(0); }
-  to { transform: translateY(-50%); }
+  to { transform: translateY(-20%); }
 }
 
 @media (max-width: 680px) {
   .hero {
     --comic-duration: 32s;
     --comic-scale: 1.12;
+    --comic-y: 42px;
     min-height: clamp(560px, calc(100svh - 82px), 780px);
   }
 
   .artwork {
     inset: -50px -20px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     padding-inline: 6px;
     transform: translateY(var(--comic-y)) rotate(-2deg) scale(var(--comic-scale));
@@ -203,10 +200,6 @@ transform: translateY(-53px) scale(0.95);
 
   .rail {
     border-inline-width: 3px;
-  }
-
-  .rail:nth-child(3) {
-    display: none;
   }
 
   .sequence {
@@ -238,19 +231,19 @@ transform: translateY(-53px) scale(0.95);
   }
 
   .brand {
-    font-size: clamp(70px, 22vw, 146px);
+    font-size: clamp(87.5px, 27.5vw, 182.5px);
     -webkit-text-stroke-width: 2px;
     text-shadow: 3px 4px 0 #142039, 5px 6px 0 #f6f0df;
   }
 
   .prelude {
-    font-size: clamp(26px, 7vw, 38px);
+    font-size: clamp(32.5px, 8.75vw, 47.5px);
   }
 
   .verse {
     align-self: center;
-    margin-top: 2px;
-    font-size: clamp(36px, 10vw, 54px);
+    margin-top: -0.1em;
+    font-size: clamp(45px, 12.5vw, 67.5px);
   }
 }
 
@@ -275,14 +268,10 @@ transform: translateY(-53px) scale(0.95);
   }
 
   .artwork {
-    transform: none;
+    transform: translateY(var(--comic-y)) rotate(-2deg) scale(var(--comic-scale));
     will-change: auto;
   }
 
-  .brand, .prelude, .verse {
-    transform: none;
-    will-change: auto;
-  }
 }
 
 .splash {
@@ -305,6 +294,33 @@ transform: translateY(-53px) scale(0.95);
   max-width: none;
   height: 160%;
   pointer-events: none;
+  display: block;
+}
+
+.bubbleOutline,
+.bubbleFill {
+  position: absolute;
+  display: block;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+.bubbleOutline {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: brightness(0);
+}
+
+.bubbleFill {
+  top: 2%;
+  left: 2%;
+  width: 96%;
+  height: 96%;
+  background: #f3322b;
+  -webkit-mask: url("/brand/hero-cloud-red.png") center / 100% 100% no-repeat;
+  mask: url("/brand/hero-cloud-red.png") center / 100% 100% no-repeat;
 }
 
 @media (max-width: 680px) {

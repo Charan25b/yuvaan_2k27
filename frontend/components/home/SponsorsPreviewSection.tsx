@@ -10,13 +10,11 @@ export function SponsorsPreviewSection() {
   const previewSponsors = SPONSORS_DATA.slice(0, 4);
 
   return (
-    <section data-home-section="sponsors" className="py-14 sm:py-20 relative overflow-hidden">
+    <section data-home-section="sponsors" className="py-16 sm:py-24 relative overflow-hidden">
       <Container>
         <div className="flex flex-col gap-10">
           <div className="home-section-rule flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b-2 border-[var(--color-border-dark)] pb-6">
             <SectionHeading
-              badge="Festival Partners"
-              badgeVariant="section-light"
               title="Backed By Visionary Industry Partners"
               description="Yuvaan 2027 is supported by forward-thinking organizations empowering collegiate engineering, design, arts, and student innovation."
               className="home-section-heading"

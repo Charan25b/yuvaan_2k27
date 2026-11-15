@@ -8,10 +8,10 @@ import {
   useState,
 } from "react";
 
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Html, Text, useGLTF } from "@react-three/drei";
+import { Text, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 
@@ -513,100 +513,21 @@ function RacingWorld({
   );
 }
 
-function HtmlMessage({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return (
-    <Html center>
-      <div
-        style={{
-          color: "white",
-          background: "#171d23",
-          border: "1px solid #e83b3b",
-          padding: "14px 20px",
-          width: "260px",
-          textAlign: "center",
-          fontSize: "12px",
-        }}
-      >
-        {children}
-      </div>
-    </Html>
-  );
-}
-
 function Circuit({
-  trackFile,
+  curve,
   events,
   selectedEvent,
   onEventChange,
   cameraMode,
 }: {
-  trackFile: string;
+  curve: THREE.CatmullRomCurve3 | null;
   events: Event[];
   selectedEvent: number;
   onEventChange: (index: number) => void;
   cameraMode: "overview" | "chase";
 }) {
-  const [svgText, setSvgText] = useState<string | null>(null);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    setSvgText(null);
-    setError(false);
-
-    fetch(`/tracks/${trackFile}.svg`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Track SVG not found");
-        }
-
-        return response.text();
-      })
-      .then((text) => {
-        if (!cancelled) {
-          setSvgText(text);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setError(true);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [trackFile]);
-
-  const curve = useMemo(() => {
-    if (!svgText) return null;
-
-    try {
-      return createTrackCurve(svgText);
-    } catch {
-      return null;
-    }
-  }, [svgText]);
-
-  if (error || (svgText && !curve)) {
-    return (
-      <HtmlMessage>
-        Could not load the circuit SVG. Check public/tracks.
-      </HtmlMessage>
-    );
-  }
-
   if (!curve) {
-    return (
-      <HtmlMessage>
-        PREPARING THE CIRCUIT...
-      </HtmlMessage>
-    );
+    return null;
   }
 
   return (
@@ -642,6 +563,59 @@ export default function RaceTrackScene({
   const [cameraMode, setCameraMode] = useState<
     "overview" | "chase"
   >("overview");
+  const [trackAsset, setTrackAsset] = useState<
+    | { trackFile: string; svgText: string }
+    | { trackFile: string; error: true }
+    | null
+  >(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch(`/tracks/${trackFile}.svg`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Track SVG not found");
+        }
+
+        return response.text();
+      })
+      .then((svgText) => {
+        if (!cancelled) {
+          setTrackAsset({ trackFile, svgText });
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTrackAsset({ trackFile, error: true });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [trackFile]);
+
+  const currentTrackAsset =
+    trackAsset?.trackFile === trackFile ? trackAsset : null;
+  const svgText =
+    currentTrackAsset && "svgText" in currentTrackAsset
+      ? currentTrackAsset.svgText
+      : null;
+  const trackLoadError =
+    currentTrackAsset !== null && "error" in currentTrackAsset;
+
+  const curve = useMemo(() => {
+    if (!svgText) return null;
+
+    try {
+      return createTrackCurve(svgText);
+    } catch {
+      return null;
+    }
+  }, [svgText]);
+
+  const trackError = trackLoadError || (svgText !== null && !curve);
 
   return (
     <div className="race-scene">
@@ -692,13 +666,27 @@ export default function RaceTrackScene({
           />
 
           <Circuit
-            trackFile={trackFile}
+            curve={curve}
             events={events}
             selectedEvent={selectedEvent}
             onEventChange={onEventChange}
             cameraMode={cameraMode}
           />
         </Canvas>
+
+        {!curve && (
+          <div
+            className="race-track-message"
+            role={trackError ? "alert" : "status"}
+            aria-live="polite"
+          >
+            <div>
+              {trackError
+                ? "Could not load the circuit SVG. Check public/tracks."
+                : "PREPARING THE CIRCUIT..."}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="race-event-strip">

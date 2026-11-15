@@ -29,6 +29,7 @@ function inkColor(distance: number) {
 
 export function PointerTrails() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const cursorRef = useRef<HTMLSpanElement>(null);
   const { enabled } = useMotion();
 
   useEffect(() => {
@@ -36,6 +37,7 @@ export function PointerTrails() {
     if (!canvas || !enabled) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const cursor = cursorRef.current;
     const fine = matchMedia("(any-hover: hover) and (any-pointer: fine)");
     const lowPower = navigator.hardwareConcurrency <= 4;
     let points: InkPoint[] = [];
@@ -51,6 +53,24 @@ export function PointerTrails() {
     let penWidth = MARKER_SETTINGS.desktop.width;
     let width = innerWidth;
     let height = innerHeight;
+
+    const hideCursor = () => {
+      if (!cursor) return;
+      cursor.dataset.visible = "false";
+      cursor.dataset.pressed = "false";
+    };
+    const showCursor = (point: Point, isInteractive: boolean) => {
+      if (!cursor || !fine.matches) return;
+      cursor.style.setProperty("--cursor-x", `${point.x}px`);
+      cursor.style.setProperty("--cursor-y", `${point.y}px`);
+      cursor.style.setProperty("--cursor-color", inkColor(distance));
+      cursor.dataset.interactive = String(isInteractive);
+      cursor.dataset.visible = "true";
+    };
+    const updateCursorCapability = () => {
+      document.documentElement.classList.toggle("trail-cursor-active", fine.matches);
+      if (!fine.matches) hideCursor();
+    };
 
     const lift = () => { target = null; pen = null; stroke++; };
     const clear = () => ctx.clearRect(0, 0, width, height);
@@ -93,8 +113,10 @@ export function PointerTrails() {
           // to distance, so the dry-ink texture never jitters while fading.
           const pressure = 1 - Math.min(step / delta / 3, .4);
           penWidth += (settings.width * pressure - penWidth) * .4;
+          const color = inkColor(distance);
+          cursor?.style.setProperty("--cursor-color", color);
           points.push({ ...pen, born: now, life: settings.lifetime, stroke,
-            width: penWidth * (1 + Math.sin(distance * .075) * .09), color: inkColor(distance) });
+            width: penWidth * (1 + Math.sin(distance * .075) * .09), color });
         }
       }
       points = points.filter((point) => now - point.born < point.life);
@@ -127,8 +149,17 @@ export function PointerTrails() {
     };
     const mouse = (event: PointerEvent) => {
       if (event.pointerType !== "mouse" || !fine.matches || touchId !== null || performance.now() < suppressMouseUntil) return;
-      if ((event.target as Element).closest(interactive)) { lift(); return; }
-      move({ x: event.clientX, y: event.clientY }, "desktop");
+      const point = { x: event.clientX, y: event.clientY };
+      const isInteractive = event.target instanceof Element && Boolean(event.target.closest(interactive));
+      showCursor(point, isInteractive);
+      if (isInteractive) { lift(); return; }
+      move(point, "desktop");
+    };
+    const pointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && fine.matches && cursor) cursor.dataset.pressed = "true";
+    };
+    const pointerUp = () => {
+      if (cursor) cursor.dataset.pressed = "false";
     };
     // Passive Touch Events keep delivering positions during native page scrolling.
     // We never preventDefault, capture a pointer, or change touch-action.
@@ -145,34 +176,60 @@ export function PointerTrails() {
       const touch = event.touches[0];
       if (touch.identifier === touchId) move({ x: touch.clientX, y: touch.clientY }, "touch");
     };
-    const visibility = () => { if (document.hidden) reset(); };
-    const leave = (event: PointerEvent) => { if (event.pointerType === "mouse" && !event.relatedTarget) lift(); };
-    const scroll = () => { if (mode === "desktop") lift(); };
+    const visibility = () => { if (document.hidden) { reset(); hideCursor(); } };
+    const leave = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && !event.relatedTarget) { lift(); hideCursor(); }
+    };
+    const scroll = () => {
+      if (mode === "desktop") {
+        lift();
+      } else if (touchId !== null) {
+        // Clear the touch trail once a gesture becomes page scrolling.
+        reset();
+      }
+    };
+    const blur = () => { reset(); hideCursor(); };
     resize();
+    updateCursorCapability();
+    fine.addEventListener("change", updateCursorCapability);
     window.addEventListener("resize", resize, { passive: true });
     window.addEventListener("pointermove", mouse, { passive: true });
+    window.addEventListener("pointerdown", pointerDown, { passive: true });
+    window.addEventListener("pointerup", pointerUp, { passive: true });
+    window.addEventListener("pointercancel", pointerUp, { passive: true });
     window.addEventListener("pointerout", leave, { passive: true });
     window.addEventListener("scroll", scroll, { passive: true });
     window.addEventListener("touchstart", startTouch, { passive: true });
     window.addEventListener("touchmove", moveTouch, { passive: true });
     window.addEventListener("touchend", endTouch, { passive: true });
     window.addEventListener("touchcancel", endTouch, { passive: true });
-    window.addEventListener("blur", reset);
+    window.addEventListener("blur", blur);
     document.addEventListener("visibilitychange", visibility);
     return () => {
       reset();
+      hideCursor();
+      fine.removeEventListener("change", updateCursorCapability);
+      document.documentElement.classList.remove("trail-cursor-active");
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", mouse);
+      window.removeEventListener("pointerdown", pointerDown);
+      window.removeEventListener("pointerup", pointerUp);
+      window.removeEventListener("pointercancel", pointerUp);
       window.removeEventListener("pointerout", leave);
       window.removeEventListener("scroll", scroll);
       window.removeEventListener("touchstart", startTouch);
       window.removeEventListener("touchmove", moveTouch);
       window.removeEventListener("touchend", endTouch);
       window.removeEventListener("touchcancel", endTouch);
-      window.removeEventListener("blur", reset);
+      window.removeEventListener("blur", blur);
       document.removeEventListener("visibilitychange", visibility);
     };
   }, [enabled]);
 
-  return <canvas ref={canvasRef} aria-hidden="true" className="pointer-trails" />;
+  return (
+    <>
+      <canvas ref={canvasRef} aria-hidden="true" className="pointer-trails" />
+      <span ref={cursorRef} aria-hidden="true" className="trail-cursor" />
+    </>
+  );
 }

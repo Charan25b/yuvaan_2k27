@@ -288,8 +288,8 @@ small,
 .comic-home [data-home-section]::before { z-index: 5; background: #fff; }
 
 .comic-home [data-home-section="intro"] {
-  padding-top: 104px;
-  padding-bottom: 104px;
+  padding-top: 120px;
+  padding-bottom: 120px;
   color: #f8f7f4;
   background-color: #111110;
   background-image: radial-gradient(ellipse at 50% 20%, rgba(255,255,255,.055), transparent 55%), repeating-linear-gradient(157deg, transparent 0 8px, rgba(255,255,255,.014) 9px 11px, transparent 12px 23px);
@@ -367,8 +367,8 @@ small,
 .comic-home [data-home-section="events"] .grid > div .rounded-xl.bg-white\/90 { border-radius: 0; box-shadow: none; }
 
 .comic-home [data-home-section="quest"] {
-  padding-top: 88px;
-  padding-bottom: 88px;
+  padding-top: 104px;
+  padding-bottom: 104px;
   background-color: var(--poster-orange);
   background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1px);
   background-size: 14px 14px;
@@ -515,8 +515,8 @@ body > footer [class*="bg-white"] p,
 body > footer [class*="bg-white"] span { color: #111110; }
 
 @media (max-width: 680px) {
-  .comic-home [data-home-section="intro"] { padding-top: 76px; padding-bottom: 76px; }
-  .comic-home [data-home-section="quest"] { padding-top: 70px; padding-bottom: 70px; }
+  .comic-home [data-home-section="intro"] { padding-top: 88px; padding-bottom: 88px; }
+  .comic-home [data-home-section="quest"] { padding-top: 82px; padding-bottom: 82px; }
   .comic-home [data-home-section="events"] .grid > div,
   .comic-home [data-home-section="sponsors"] .grid > div { transform: none; }
 }
@@ -825,6 +825,22 @@ a[class*="bg-[#121110]"]:hover {
   box-shadow: 6px 6px 0 #121110 !important;
 }
 
+/* Give yellow calls to action a visible comic-book shadow on dark sections. */
+.comic-home :is([data-home-section="intro"], [data-home-section="schedule"], [data-home-section="sponsors"])
+  :is(a, button)[class*="bg-[#F2AE30]"] {
+  box-shadow: 4px 4px 0 #4c94f6 !important;
+}
+.comic-home :is([data-home-section="intro"], [data-home-section="schedule"], [data-home-section="sponsors"])
+  :is(a, button)[class*="bg-[#F2AE30]"]:hover {
+  background-color: #f04b2b !important;
+  color: #fff !important;
+  box-shadow: 6px 6px 0 #4c94f6 !important;
+}
+.comic-home :is([data-home-section="intro"], [data-home-section="schedule"], [data-home-section="sponsors"])
+  :is(a, button)[class*="bg-[#F2AE30]"]:active {
+  box-shadow: 2px 2px 0 #4c94f6 !important;
+}
+
 
 /* Mobile */
 @media (prefers-reduced-motion: reduce) {
@@ -872,7 +888,47 @@ a[class*="bg-[#121110]"]:hover {
 }
 
 /* Decorative effects cannot receive input or create document overflow. */
-.pointer-trails { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+.pointer-trails {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.trail-cursor-active,
+.trail-cursor-active body,
+.trail-cursor-active body * {
+  cursor: none !important;
+}
+
+.trail-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #142039;
+  border-radius: 50%;
+  background: var(--cursor-color, #ffd43b);
+  box-shadow: 0 0 0 1px #fff8df;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--cursor-x, -100px), var(--cursor-y, -100px), 0)
+    translate(-50%, -50%) scale(var(--cursor-scale, 1));
+  transition:
+    opacity 100ms ease,
+    background-color 120ms linear,
+    filter 100ms ease,
+    transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.trail-cursor[data-visible="true"] { opacity: 1; }
+.trail-cursor[data-interactive="true"] { --cursor-scale: 1.3; }
+.trail-cursor[data-pressed="true"] { --cursor-scale: 0.78; filter: brightness(0.68); }
+
 :where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 3px solid #0284c7; outline-offset: 5px; }
 .skip-link { position: fixed; z-index: 100; top: 12px; left: 12px; padding: 12px 20px; background: #ffd43b; color: #142039; transform: translateY(-200%); }
 .skip-link:focus { transform: none; }
