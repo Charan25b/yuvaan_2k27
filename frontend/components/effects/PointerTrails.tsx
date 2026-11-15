@@ -105,7 +105,9 @@ export function PointerTrails() {
         const fresh = !pen;
         const previous = pen || target;
         const follow = 1 - Math.exp(-delta / MARKER_SETTINGS.followMs);
-        pen = { x: previous.x + (target.x - previous.x) * follow, y: previous.y + (target.y - previous.y) * follow };
+        pen = mode === "desktop"
+          ? target
+          : { x: previous.x + (target.x - previous.x) * follow, y: previous.y + (target.y - previous.y) * follow };
         const step = Math.hypot(pen.x - previous.x, pen.y - previous.y);
         if (fresh || step > .25) {
           distance += step;

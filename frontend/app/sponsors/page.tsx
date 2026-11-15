@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { R2D2SpaceLayer } from "@/components/effects/R2D2SpaceLayer";
 import styles from "./page.module.css";
 import { SPONSORS_DATA, type SponsorItem } from "@/lib/data/festivalData";
 
@@ -140,7 +141,7 @@ function SponsorDescription({ sponsor }: { sponsor: SponsorItem }) {
 
 function TitleSponsorCard({ sponsor, index }: { sponsor: SponsorItem; index: number }) {
   return (
-    <article className={styles.titleCard} data-tone="yellow">
+    <article className={styles.titleCard} data-tone="yellow" data-r2-block>
       <AnnouncementPanel label={sponsor.tier.toUpperCase()} large />
       <div className={styles.titleCardDetails}>
         <SponsorStatus sponsor={sponsor} />
@@ -167,6 +168,7 @@ function PartnerCard({
     <article
       className={styles.partnerCard}
       data-tone={featured ? "cyan" : "silver"}
+      data-r2-block
     >
       <AnnouncementPanel label={sponsor.tier.toUpperCase()} />
       <div className={styles.partnerCardDetails}>
@@ -196,11 +198,12 @@ export default function SponsorsPage() {
   );
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-sponsor-page>
       <div className={styles.background} aria-hidden="true">
         <StarField />
         <DeathStar />
       </div>
+      <R2D2SpaceLayer />
 
       <div className={styles.content}>
         <section className={styles.hero} aria-labelledby="sponsors-title">
@@ -252,7 +255,7 @@ export default function SponsorsPage() {
           )}
         </div>
 
-        <section className={styles.contactPanel} aria-labelledby="sponsor-contact-title">
+        <section className={styles.contactPanel} data-r2-block aria-labelledby="sponsor-contact-title">
           <div>
             <p className={styles.contactEyebrow}>SPONSOR YUVAAN</p>
             <h2 id="sponsor-contact-title">Sponsorship enquiries</h2>
@@ -265,6 +268,11 @@ export default function SponsorsPage() {
             </svg>
           </Link>
         </section>
+        <p className={styles.modelCredit}>
+          3D model: <a href="https://sketchfab.com/3d-models/r2d2-e9eca957d4224766b45c5ace176e13be" target="_blank" rel="noreferrer">R2D2 by Dudu Oliveira</a>
+          <span aria-hidden="true"> · </span>
+          <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>
+        </p>
       </div>
     </div>
   );

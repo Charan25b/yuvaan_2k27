@@ -1,0 +1,66 @@
+.layer {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.interactionLayer {
+  position: fixed;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.canvas {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+}
+
+.canvas canvas {
+  display: block;
+}
+
+.hitTarget {
+  position: fixed;
+  z-index: 1;
+  display: block;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  visibility: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hitTarget:hover {
+  cursor: grab;
+}
+
+.hitTarget:active,
+.dragging {
+  cursor: grabbing;
+}
+
+.hitTarget:focus-visible {
+  outline: 2px solid #86bdca;
+  outline-offset: 3px;
+}
+
+.fallback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
