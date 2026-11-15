@@ -32,7 +32,8 @@ const TEAMS: Team[] = [
     id: "technical",
     name: "Technical Team",
     faction: "THE HEROES",
-    description: "The minds behind the machines. The ones who keep the operation alive.",
+    description:
+      "The minds behind the machines. The ones who keep the operation alive.",
     color: "#173c59",
     accent: "#43c8ff",
     symbol: "⚡",
@@ -83,7 +84,8 @@ const TEAMS: Team[] = [
     id: "sponsorship",
     name: "Sponsorship Team",
     faction: "THE VILLAINS",
-    description: "They control the resources. Everyone has a price. Everything has a deal.",
+    description:
+      "They control the resources. Everyone has a price. Everything has a deal.",
     color: "#541b23",
     accent: "#ff454f",
     symbol: "☠",
@@ -134,7 +136,8 @@ const TEAMS: Team[] = [
     id: "design",
     name: "Design Team",
     faction: "THE ILLUSIONISTS",
-    description: "They bend perception. Reality is simply a matter of presentation.",
+    description:
+      "They bend perception. Reality is simply a matter of presentation.",
     color: "#38234e",
     accent: "#c18bff",
     symbol: "✦",
@@ -165,7 +168,8 @@ const TEAMS: Team[] = [
     id: "marketing",
     name: "Marketing Team",
     faction: "THE MANIPULATORS",
-    description: "They control the narrative. The world sees what they want it to see.",
+    description:
+      "They control the narrative. The world sees what they want it to see.",
     color: "#594020",
     accent: "#ffbd55",
     symbol: "◈",
@@ -196,7 +200,8 @@ const TEAMS: Team[] = [
     id: "management",
     name: "Management Team",
     faction: "THE OVERLORDS",
-    description: "Every move is calculated. Every operation has a mastermind.",
+    description:
+      "Every move is calculated. Every operation has a mastermind.",
     color: "#34383c",
     accent: "#d7d7d7",
     symbol: "♛",
@@ -427,8 +432,16 @@ export default function TeamsPage() {
           <div className={styles.boardBackdrop} />
 
           <header className={styles.overlayHeader}>
-            <button className={styles.backButton} onClick={closeTeam}>
-              ← BACK TO WAR ROOM
+            {/* Themed security exit control */}
+            <button
+              type="button"
+              className={styles.securityExit}
+              onClick={closeTeam}
+              aria-label="Return to War Room"
+            >
+              <span className={styles.exitIndicator} />
+              <span className={styles.exitText}>← RETURN TO WAR ROOM</span>
+              <span className={styles.exitCode}>ESC / 00</span>
             </button>
 
             <div className={styles.overlayStatus}>
@@ -455,7 +468,8 @@ export default function TeamsPage() {
             <div className={styles.evidenceLabel}>
               <span>KNOWN ASSOCIATES</span>
               <span>
-                {String(activeTeam.members.length).padStart(2, "0")} RECORDS FOUND
+                {String(activeTeam.members.length).padStart(2, "0")} RECORDS
+                FOUND
               </span>
             </div>
 
@@ -480,7 +494,9 @@ export default function TeamsPage() {
                     ) : (
                       <div className={styles.photoPlaceholder}>
                         <span>{getInitials(member.name)}</span>
-                        <small>SUBJECT {String(member.id).padStart(3, "0")}</small>
+                        <small>
+                          SUBJECT {String(member.id).padStart(3, "0")}
+                        </small>
                       </div>
                     )}
 
@@ -552,6 +568,7 @@ export default function TeamsPage() {
                 </span>
 
                 <h2>{activeMember.alias}</h2>
+
                 <p className={styles.characterName}>
                   CHARACTER: {activeMember.character.toUpperCase()}
                 </p>
