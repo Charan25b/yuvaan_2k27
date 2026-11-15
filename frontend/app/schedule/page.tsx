@@ -231,11 +231,7 @@ export default function SchedulePage() {
             <h2>THE TRACK<span>.</span></h2>
           </div>
 
-          <span className={styles.trackName}>
-            {["SUZUKA", "SPA-FRANCORCHAMPS", "RED BULL RING"][
-              activeDay - 1
-            ]}
-          </span>
+          <span className={styles.trackName}>MONZA</span>
         </div>
 
         <div className={styles.trackContainer}>
