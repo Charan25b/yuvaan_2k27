@@ -134,9 +134,9 @@ const sectorColors = [
 ];
 
 const tracks: Record<number, string> = {
-  1: "suzuka",
-  2: "spa",
-  3: "red-bull-ring",
+  1: "monza",
+  2: "monza",
+  3: "monza",
 };
 
 export default function SchedulePage() {
