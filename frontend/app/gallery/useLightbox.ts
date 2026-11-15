@@ -33,6 +33,15 @@ export function useLightbox<T>(items: T[]) {
     };
   }, [activeIndex, close, next, previous]);
 
-  const activeItem = activeIndex !== null ? items[activeIndex] : null;
-  return { activeIndex, activeItem, setActiveIndex, close, next, previous };
+  const safeActiveIndex =
+    activeIndex !== null && activeIndex < items.length ? activeIndex : null;
+  const activeItem = safeActiveIndex !== null ? items[safeActiveIndex] : null;
+  return {
+    activeIndex: safeActiveIndex,
+    activeItem,
+    setActiveIndex,
+    close,
+    next,
+    previous,
+  };
 }
