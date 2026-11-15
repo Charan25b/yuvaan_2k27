@@ -1,10 +1,11 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type TouchEvent } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { GALLERY_DATA, type GalleryItem } from "@/lib/data/festivalData";
+import { useLightbox } from "./useLightbox";
 
 type GalleryFilter = "All" | GalleryItem["category"];
 
@@ -21,10 +22,36 @@ export default function GalleryPage() {
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const headingRef = useRef<HTMLDivElement | null>(null);
   const galleryRef = useRef<HTMLDivElement | null>(null);
+  const touchStartX = useRef<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<GalleryFilter>("All");
   const filteredItems = GALLERY_DATA.filter(
     (item) => selectedCategory === "All" || item.category === selectedCategory
   );
+  const lightboxItems = filteredItems.filter((item) => Boolean(item.imageSrc));
+  const {
+    activeIndex,
+    activeItem,
+    setActiveIndex,
+    close: closeViewer,
+    next: nextImage,
+    previous: previousImage,
+  } = useLightbox(lightboxItems);
+
+  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    const startX = touchStartX.current;
+    touchStartX.current = null;
+    if (startX === null) return;
+
+    const difference = event.changedTouches[0].clientX - startX;
+    if (Math.abs(difference) > 50) {
+      if (difference < 0) nextImage();
+      else previousImage();
+    }
+  };
 
   // --------------------------------------------------
   // GSAP ENTRANCE
@@ -461,46 +488,134 @@ export default function GalleryPage() {
           aria-live="polite"
           className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4"
         >
-          {filteredItems.map((item, index) => (
-            <div
-              key={item.id}
-              className="cyber-frame relative aspect-square"
-            >
-              <div className={`cyber-image-well ${item.imageSrc ? "" : "photo-well"}`}>
-                {item.imageSrc ? (
-                  <Image
-                    src={item.imageSrc}
-                    alt={item.imageAlt ?? ""}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="cyber-image object-cover"
-                  />
-                ) : (
-                  <div className="photo-frame-art" aria-hidden="true">
-                    <span className="photo-number">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="photo-mark">+</span>
-                  </div>
-                )}
-              </div>
+          {filteredItems.map((item, index) => {
+            const lightboxIndex = lightboxItems.findIndex(
+              (photo) => photo.id === item.id
+            );
+            const frame = (
+              <>
+                <div
+                  className={`cyber-image-well ${item.imageSrc ? "" : "photo-well"}`}
+                >
+                  {item.imageSrc ? (
+                    <Image
+                      src={item.imageSrc}
+                      alt={item.imageAlt ?? item.title}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="cyber-image object-cover"
+                    />
+                  ) : (
+                    <div className="photo-frame-art" aria-hidden="true">
+                      <span className="photo-number">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="photo-mark">+</span>
+                    </div>
+                  )}
+                </div>
 
-              <span className="cyber-corner cyber-corner-tl" />
-              <span className="cyber-corner cyber-corner-br" />
-              <span className="cyber-rivet cyber-rivet-tl" />
-              <span className="cyber-rivet cyber-rivet-tr" />
-              <span className="cyber-rivet cyber-rivet-bl" />
-              <span className="cyber-rivet cyber-rivet-br" />
+                <span className="cyber-corner cyber-corner-tl" />
+                <span className="cyber-corner cyber-corner-br" />
+                <span className="cyber-rivet cyber-rivet-tl" />
+                <span className="cyber-rivet cyber-rivet-tr" />
+                <span className="cyber-rivet cyber-rivet-bl" />
+                <span className="cyber-rivet cyber-rivet-br" />
 
-              <div className="cyber-energy-strip">
-                <span className="cyber-energy-red" />
-                <span className="cyber-energy-gold" />
-                <span className="cyber-energy-blue" />
+                <div className="cyber-energy-strip" aria-hidden="true">
+                  <span className="cyber-energy-red" />
+                  <span className="cyber-energy-gold" />
+                  <span className="cyber-energy-blue" />
+                </div>
+              </>
+            );
+
+            return item.imageSrc ? (
+              <button
+                key={item.id}
+                type="button"
+                className="cyber-frame relative aspect-square cursor-zoom-in text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e2b83f]"
+                aria-label={`View ${item.title}`}
+                onClick={() => setActiveIndex(lightboxIndex)}
+              >
+                {frame}
+              </button>
+            ) : (
+              <div key={item.id} className="cyber-frame relative aspect-square">
+                {frame}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </main>
+
+      {activeItem?.imageSrc && activeIndex !== null && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo viewer"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#05080d]/95 p-3 backdrop-blur-sm sm:p-6"
+          onClick={closeViewer}
+        >
+          <div
+            className="relative flex h-[min(82vh,850px)] w-full max-w-6xl flex-col border border-[#89949e]/50 bg-[#111820] p-3 shadow-2xl sm:p-5"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between border-b border-[#89949e]/30 pb-3">
+              <p className="cyber-display text-[10px] font-bold tracking-[0.18em] text-[#e2b83f] uppercase sm:text-xs">
+                {activeItem.title}
+              </p>
+              <button
+                type="button"
+                onClick={closeViewer}
+                aria-label="Close photo viewer"
+                autoFocus
+                className="flex h-9 w-9 items-center justify-center border border-[#89949e]/60 text-xl text-white transition hover:border-[#e2b83f] hover:text-[#e2b83f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e2b83f]"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div
+              className="relative min-h-0 flex-1 touch-pan-y bg-[#090e16]"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <Image
+                key={activeItem.id}
+                src={activeItem.imageSrc}
+                alt={activeItem.imageAlt ?? activeItem.title}
+                fill
+                priority
+                sizes="100vw"
+                className="object-contain p-2 sm:p-5"
+              />
+            </div>
+
+            <div className="mt-3 flex items-center justify-between border-t border-[#89949e]/30 pt-3">
+              <button
+                type="button"
+                onClick={previousImage}
+                aria-label="Previous photo"
+                className="flex h-10 w-12 items-center justify-center border border-[#89949e]/50 text-2xl text-white transition hover:border-[#e2b83f] hover:text-[#e2b83f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e2b83f]"
+              >
+                &#8249;
+              </button>
+              <span className="cyber-display text-[10px] font-bold tracking-[0.18em] text-[#c0c8d0]">
+                {String(activeIndex + 1).padStart(2, "0")} / {String(lightboxItems.length).padStart(2, "0")}
+              </span>
+              <button
+                type="button"
+                onClick={nextImage}
+                aria-label="Next photo"
+                className="flex h-10 w-12 items-center justify-center border border-[#89949e]/50 text-2xl text-white transition hover:border-[#e2b83f] hover:text-[#e2b83f] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e2b83f]"
+              >
+                &#8250;
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

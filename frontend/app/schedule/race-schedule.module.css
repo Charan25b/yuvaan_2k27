@@ -409,6 +409,17 @@
     0 15px 30px #49372a20;
 }
 
+.trackLoading {
+  display: grid;
+  min-height: 560px;
+  place-items: center;
+  background: #a8dce5;
+  color: var(--brown);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
 .legend {
   display: flex;
   gap: 25px;
@@ -935,6 +946,10 @@
   }
 
   .trackContainer {
+    min-height: 480px;
+  }
+
+  .trackLoading {
     min-height: 480px;
   }
 

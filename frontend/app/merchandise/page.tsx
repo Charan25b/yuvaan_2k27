@@ -288,10 +288,6 @@ export default function MerchandisePage() {
             MERCHANDISE
           </h1>
 
-          {/* Subtitle Pill */}
-          <p className="font-merch-display mt-3 border-y border-[#5c3610]/40 bg-[#f4e2bc]/75 px-5 py-1 text-xs sm:text-base md:text-lg font-extrabold tracking-[0.2em] text-[#2e1805] uppercase backdrop-blur-[2px] shadow-sm">
-            OFFICIAL FESTIVAL MERCHANDISE
-          </p>
         </header>
 
         {/* Featured merchandise cards */}

@@ -423,8 +423,7 @@ export default function ContactPage() {
               </div>
 
               <p className="text-xs text-pink-100/80 leading-relaxed mb-4">
-                Bongora, Guwahati, Assam 781015. Use the link below for directions
-                to the IIIT Guwahati campus.
+                Bongora, Guwahati, Assam 781015.
               </p>
 
               <div className="flex flex-wrap gap-3">
@@ -481,8 +480,7 @@ export default function ContactPage() {
                     THANK YOU FOR CONTACTING YUVAAN
                   </h3>
                   <p className="mt-2 text-sm text-pink-100/90">
-                    Your message has been received. Our team will get back to you
-                    as soon as possible.
+                    Our team will get back to you as soon as possible.
                   </p>
                 </div>
               ) : (

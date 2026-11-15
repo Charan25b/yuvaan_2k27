@@ -119,7 +119,15 @@ export function PointerTrails() {
             width: penWidth * (1 + Math.sin(distance * .075) * .09), color });
         }
       }
-      points = points.filter((point) => now - point.born < point.life);
+      let firstLivePoint = 0;
+      while (
+        firstLivePoint < points.length &&
+        now - points[firstLivePoint].born >= points[firstLivePoint].life
+      ) {
+        firstLivePoint++;
+      }
+      if (firstLivePoint > 0) points.splice(0, firstLivePoint);
+
       const cap = lowPower ? 48 : settings.maxPoints;
       if (points.length > cap) points.splice(0, points.length - cap);
       clear();

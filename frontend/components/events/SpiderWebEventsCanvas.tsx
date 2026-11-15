@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { EventItem } from "@/lib/data/festivalData";
-import { ComicBookData } from "./types";
 import {
   PhysicalCard,
   PhysicalWebMidpoint,
@@ -10,73 +9,26 @@ import {
 } from "./physics";
 import { generateWebChains } from "./layoutGenerator";
 import { drawWebStrands, drawComicCard } from "./canvasRenderer";
+import { findCardAtPoint } from "./hitTesting";
 import { OpenComicBookModal } from "./OpenComicBookModal";
+import { useEventCanvas } from "./useEventCanvas";
 
 interface SpiderWebEventsCanvasProps {
   events: EventItem[];
 }
 
 export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [viewportWidth, setViewportWidth] = useState(0);
-  const [shuffleCount, setShuffleCount] = useState(0);
+  const {
+    canvasRef,
+    viewportWidth,
+    shuffleCount,
+    selectedEvent,
+    setSelectedEvent,
+    selectedComicData,
+    setSelectedComicData,
+  } = useEventCanvas();
 
-  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
-  const [selectedComicData, setSelectedComicData] =
-    useState<ComicBookData | null>(null);
-
-  const isModalOpenRef = useRef(false);
   const hoveredEventIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    isModalOpenRef.current = Boolean(selectedEvent && selectedComicData);
-  }, [selectedEvent, selectedComicData]);
-
-  // Viewport sizing and keyboard shortcut.
-  useEffect(() => {
-    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
-
-    setViewportWidth(window.innerWidth);
-
-    const onResize = () => {
-      if (resizeTimer) clearTimeout(resizeTimer);
-
-      resizeTimer = setTimeout(() => {
-        setViewportWidth(window.innerWidth);
-      }, 150);
-    };
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (
-        (e.key === "r" || e.key === "R") &&
-        !e.ctrlKey &&
-        !e.metaKey &&
-        !isModalOpenRef.current
-      ) {
-        const target = e.target as HTMLElement | null;
-
-        if (
-          target &&
-          (target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.isContentEditable)
-        ) {
-          return;
-        }
-
-        setShuffleCount((count) => count + 1);
-      }
-    };
-
-    window.addEventListener("resize", onResize);
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      if (resizeTimer) clearTimeout(resizeTimer);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -210,37 +162,19 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
       activeDragCard = null;
       activeDragMidpoint = null;
 
-      // Check cards from front to back.
-      for (const chain of chains) {
-        for (let i = chain.cards.length - 1; i >= 0; i--) {
-          const card = chain.cards[i];
+      const card = findCardAtPoint(chains, pos.x, pos.y);
+      if (card) {
+        activeDragCard = card;
+        dragPointerOffset = { x: pos.x - card.x, y: pos.y - card.y };
 
-          const dx = pos.x - card.x;
-          const dy = pos.y - card.y;
+        canvas.style.cursor = "grabbing";
 
-          const cos = Math.cos(-card.angle);
-          const sin = Math.sin(-card.angle);
+        try {
+          canvas.setPointerCapture(e.pointerId);
+        } catch {}
 
-          const localX = dx * cos - dy * sin;
-          const localY = dx * sin + dy * cos;
-
-          if (
-            Math.abs(localX) <= card.cardWidth / 2 &&
-            Math.abs(localY) <= card.cardHeight / 2
-          ) {
-            activeDragCard = card;
-            dragPointerOffset = { x: dx, y: dy };
-
-            canvas.style.cursor = "grabbing";
-
-            try {
-              canvas.setPointerCapture(e.pointerId);
-            } catch {}
-
-            requestRender();
-            return;
-          }
-        }
+        requestRender();
+        return;
       }
 
       // Check draggable web midpoints.
@@ -309,31 +243,8 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
         activeDragMidpoint.vy = 0;
       }
 
-      // Find hovered card.
-      let foundHover: string | null = null;
-
-      for (const chain of chains) {
-        for (const card of chain.cards) {
-          const dx = pos.x - card.x;
-          const dy = pos.y - card.y;
-
-          const cos = Math.cos(-card.angle);
-          const sin = Math.sin(-card.angle);
-
-          const localX = dx * cos - dy * sin;
-          const localY = dx * sin + dy * cos;
-
-          if (
-            Math.abs(localX) <= card.cardWidth / 2 &&
-            Math.abs(localY) <= card.cardHeight / 2
-          ) {
-            foundHover = card.comic.event.id;
-            break;
-          }
-        }
-
-        if (foundHover) break;
-      }
+      const hoveredCard = findCardAtPoint(chains, pos.x, pos.y);
+      const foundHover = hoveredCard?.comic.event.id ?? null;
 
       const hoverChanged =
         foundHover !== hoveredEventIdRef.current;
@@ -426,7 +337,7 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
         cancelAnimationFrame(frameId);
       }
     };
-  }, [events, viewportWidth, shuffleCount]);
+  }, [events, viewportWidth, shuffleCount, canvasRef, setSelectedEvent, setSelectedComicData]);
 
   return (
     <div className="relative w-full p-0 m-0 overflow-x-hidden flex justify-center select-none">

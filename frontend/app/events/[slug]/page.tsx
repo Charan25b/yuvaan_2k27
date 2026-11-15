@@ -64,7 +64,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             <div className="lg:col-span-8 flex flex-col gap-8">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <Badge variant="primary" comicStamp>
+                  <Badge variant="primary">
                     {event.category}
                   </Badge>
                   <Badge variant="gold">
@@ -152,7 +152,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               {/* Prize Pool Card */}
               <div className="p-6 rounded-2xl bg-[var(--tint-gold)] border-2 border-[var(--color-border-dark)] comic-shadow flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <Badge variant="gold" comicStamp className="text-xs">
+                  <Badge variant="gold" className="text-xs">
                     ★ PRIZE PURSE
                   </Badge>
                   <span className="text-xl">🏆</span>

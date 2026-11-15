@@ -55,13 +55,16 @@ export function OpenComicBookModal({
 
   useEffect(() => {
     if (isOpen && isMounted) {
-      setBookState("closed");
-      setTurningPage(0);
       if (closeTimerRef.current) {
         clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
       }
       openTimersRef.current.forEach(clearTimeout);
+
+      const resetTimer = setTimeout(() => {
+        setBookState("closed");
+        setTurningPage(0);
+      }, 0);
 
       // Perfectly paced timing intervals for opening prologue pages
       const t1 = setTimeout(() => {
@@ -78,20 +81,25 @@ export function OpenComicBookModal({
         setBookState("opened");
       }, 800);
 
-      openTimersRef.current = [t1, t2, t3, t4, t5, t6, t7];
+      openTimersRef.current = [resetTimer, t1, t2, t3, t4, t5, t6, t7];
 
       return () => {
         openTimersRef.current.forEach(clearTimeout);
       };
     } else if (!isOpen && isMounted) {
       openTimersRef.current.forEach(clearTimeout);
-      setBookState("closed");
-      setTurningPage(0);
+      const resetTimer = setTimeout(() => {
+        setBookState("closed");
+        setTurningPage(0);
+      }, 0);
       const unmountTimer = setTimeout(() => {
         setIsMounted(false);
       }, 20);
 
-      return () => clearTimeout(unmountTimer);
+      return () => {
+        clearTimeout(resetTimer);
+        clearTimeout(unmountTimer);
+      };
     }
   }, [isOpen, isMounted]);
 
@@ -271,7 +279,7 @@ export function OpenComicBookModal({
             }}
           >
             <div className="bg-[#FFCC00] border-2 border-[#1C1917] px-3 py-1 font-black text-xs uppercase self-start shadow-[3px_3px_0px_#1C1917] text-[#1C1917]">
-              YUVAAN '27 • ISSUE #{displayedComic.issueNumber.toString().padStart(2, "0")}
+              YUVAAN &apos;27 • ISSUE #{displayedComic.issueNumber.toString().padStart(2, "0")}
             </div>
             <div className="text-center my-auto">
               <h1 className="text-3xl sm:text-4xl font-black uppercase text-[#FFFDF7] tracking-wider drop-shadow-[3px_3px_0px_#1C1917] mb-2">

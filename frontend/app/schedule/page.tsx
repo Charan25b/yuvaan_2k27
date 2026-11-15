@@ -1,7 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import RaceTrackScene from "../../components/schedule/RaceTrack";
+
+const RaceTrackScene = dynamic(
+  () => import("../../components/schedule/RaceTrack"),
+  {
+    ssr: false,
+    loading: () => <div className={styles.trackLoading}>PREPARING THE CIRCUIT...</div>,
+  }
+);
 import styles from "./race-schedule.module.css";
 
 type Event = {
@@ -21,7 +29,7 @@ const schedule: Record<number, Event[]> = {
       time: "09:00 AM",
       venue: "Main Auditorium",
       category: "Ceremony",
-      description: "Opening ceremony.",
+      description: "Kick off the festival with the opening ceremony.",
     },
     {
       id: 2,
@@ -29,7 +37,7 @@ const schedule: Record<number, Event[]> = {
       time: "10:30 AM",
       venue: "Innovation Hub",
       category: "Technology",
-      description: "Coding challenge.",
+      description: "The coding challenge officially starts.",
     },
     {
       id: 3,
@@ -37,7 +45,7 @@ const schedule: Record<number, Event[]> = {
       time: "12:00 PM",
       venue: "Registration Arena",
       category: "Comic Con",
-      description: "Cosplay competition check-in.",
+      description: "Check in for the cosplay competition.",
     },
     {
       id: 4,
@@ -45,7 +53,7 @@ const schedule: Record<number, Event[]> = {
       time: "05:00 PM",
       venue: "Open Air Stage",
       category: "Music",
-      description: "Live band performances.",
+      description: "An evening of live music and performances.",
     },
   ],
   2: [
@@ -55,7 +63,7 @@ const schedule: Record<number, Event[]> = {
       time: "09:30 AM",
       venue: "Gaming Arena",
       category: "Gaming",
-      description: "Esports competition.",
+      description: "Competitive gaming enters its final rounds.",
     },
     {
       id: 6,
@@ -63,7 +71,7 @@ const schedule: Record<number, Event[]> = {
       time: "12:00 PM",
       venue: "Main Stage",
       category: "Comic Con",
-      description: "Cosplay presentations.",
+      description: "Showcase your favourite characters.",
     },
     {
       id: 7,
@@ -71,7 +79,7 @@ const schedule: Record<number, Event[]> = {
       time: "02:30 PM",
       venue: "Technical Arena",
       category: "Technology",
-      description: "Robotics competition.",
+      description: "Robotics teams compete in an exciting showdown.",
     },
     {
       id: 8,
@@ -79,7 +87,7 @@ const schedule: Record<number, Event[]> = {
       time: "06:00 PM",
       venue: "Open Air Stage",
       category: "Entertainment",
-      description: "Evening performance.",
+      description: "The evening's headline performance.",
     },
   ],
   3: [
@@ -89,7 +97,7 @@ const schedule: Record<number, Event[]> = {
       time: "10:00 AM",
       venue: "Gaming Arena",
       category: "Gaming",
-      description: "Esports final.",
+      description: "The final battle for the championship.",
     },
     {
       id: 10,
@@ -97,7 +105,7 @@ const schedule: Record<number, Event[]> = {
       time: "12:00 PM",
       venue: "Exhibition Hall",
       category: "Technology",
-      description: "Student technology projects.",
+      description: "Explore innovative student projects.",
     },
     {
       id: 11,
@@ -105,7 +113,7 @@ const schedule: Record<number, Event[]> = {
       time: "04:00 PM",
       venue: "Main Auditorium",
       category: "Ceremony",
-      description: "Awards for winners and participants.",
+      description: "Celebrate the winners and participants.",
     },
     {
       id: 12,
@@ -113,7 +121,7 @@ const schedule: Record<number, Event[]> = {
       time: "06:00 PM",
       venue: "Main Stage",
       category: "Ceremony",
-      description: "Festival closing.",
+      description: "The final lap of the festival.",
     },
   ],
 };
@@ -126,9 +134,9 @@ const sectorColors = [
 ];
 
 const tracks: Record<number, string> = {
-  1: "suzuka",
-  2: "spa",
-  3: "red-bull-ring",
+  1: "monza",
+  2: "monza",
+  3: "monza",
 };
 
 export default function SchedulePage() {
@@ -159,7 +167,7 @@ export default function SchedulePage() {
           </span>
           <span className={styles.live}>
             <span className={styles.liveDot} />
-            THREE-DAY PROGRAMME
+            EVENT CONTROL
           </span>
         </div>
 
@@ -171,9 +179,6 @@ export default function SchedulePage() {
               <br />
               <span>RACE</span> IS ON.
             </h1>
-            <p className={styles.heroDescription}>
-              Browse the Yuvaan schedule by day.
-            </p>
           </div>
 
           <div className={styles.heroNumber}>
@@ -193,11 +198,10 @@ export default function SchedulePage() {
       <section className={styles.scheduleSection}>
         <div className={styles.sectionHeading}>
           <div>
-            <span className={styles.sectionEyebrow}>BY DAY</span>
+            <span className={styles.sectionEyebrow}>THE ITINERARY</span>
             <h2>RACE SCHEDULE<span>.</span></h2>
           </div>
 
-          <p>SELECT A DAY</p>
         </div>
 
         <div className={styles.daySelector}>
@@ -218,15 +222,11 @@ export default function SchedulePage() {
 
         <div className={styles.trackHeader}>
           <div>
-            <span className={styles.sectionEyebrow}>CIRCUIT VIEW</span>
+            <span className={styles.sectionEyebrow}>LIVE CIRCUIT VIEW</span>
             <h2>THE TRACK<span>.</span></h2>
           </div>
 
-          <span className={styles.trackName}>
-            {["SUZUKA", "SPA-FRANCORCHAMPS", "RED BULL RING"][
-              activeDay - 1
-            ]}
-          </span>
+          <span className={styles.trackName}>MONZA</span>
         </div>
 
         <div className={styles.trackContainer}>
@@ -335,7 +335,7 @@ export default function SchedulePage() {
 
       <footer className={styles.pageFooter}>
         <span>YUVAAN 2K27</span>
-        <span>SCHEDULE COMPLETE</span>
+        <span>END OF THE LINE. START OF THE EXPERIENCE.</span>
       </footer>
     </main>
   );

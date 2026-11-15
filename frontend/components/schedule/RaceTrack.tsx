@@ -13,7 +13,15 @@ import type { CSSProperties } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+import { useMotion } from "@/components/effects/useMotion";
+import {
+  createRoadGeometry,
+  createTrackCurve,
+  getTrackCurvature,
+  getTrackSide,
+  TRACK_WIDTH,
+  KERB_WIDTH,
+} from "./trackGeometry";
 
 type Event = {
   id: number;
@@ -46,128 +54,6 @@ const SECTOR_NAMES = [
   "SECTOR 04",
 ];
 
-const TRACK_WIDTH = 1.0;
-const KERB_WIDTH = 0.40;
-
-function createTrackCurve(svgText: string) {
-  const loader = new SVGLoader();
-  const parsed = loader.parse(svgText);
-
-  const subPaths = parsed.paths.flatMap(
-    (path) => path.subPaths
-  );
-
-  if (!subPaths.length) {
-    throw new Error("No track path found in SVG.");
-  }
-
-  const sourcePath = [...subPaths].sort(
-    (a, b) => b.getLength() - a.getLength()
-  )[0];
-
-  const svgPoints = sourcePath.getSpacedPoints(1800);
-
-  const points = svgPoints.map(
-    (point) =>
-      new THREE.Vector3(
-        (point.x - 250) * 0.18,
-        0,
-        -(point.y - 250) * 0.18
-      )
-  );
-
-  return new THREE.CatmullRomCurve3(
-    points,
-    true,
-    "centripetal",
-    0.02
-  );
-}
-
-function createRoadGeometry(
-  curve: THREE.CatmullRomCurve3,
-  start: number,
-  end: number,
-  segments: number,
-  halfWidth: number,
-  height: number
-) {
-  const vertices: number[] = [];
-  const indices: number[] = [];
-
-  for (let i = 0; i <= segments; i++) {
-    const t = start + (end - start) * (i / segments);
-
-    const point = curve.getPointAt(t);
-    const tangent = curve.getTangentAt(t).normalize();
-
-    const side = new THREE.Vector3(
-      -tangent.z,
-      0,
-      tangent.x
-    ).normalize();
-
-    const left = point.clone().addScaledVector(side, halfWidth);
-    const right = point.clone().addScaledVector(side, -halfWidth);
-
-    left.y += height;
-    right.y += height;
-
-    vertices.push(
-      left.x, left.y, left.z,
-      right.x, right.y, right.z
-    );
-
-    if (i < segments) {
-      const current = i * 2;
-
-      indices.push(
-        current,
-        current + 2,
-        current + 1,
-        current + 1,
-        current + 2,
-        current + 3
-      );
-    }
-  }
-
-  const geometry = new THREE.BufferGeometry();
-
-  geometry.setAttribute(
-    "position",
-    new THREE.Float32BufferAttribute(vertices, 3)
-  );
-
-  geometry.setIndex(indices);
-  geometry.computeVertexNormals();
-
-  return geometry;
-}
-
-function getTrackCurvature(
-  curve: THREE.CatmullRomCurve3,
-  t: number
-) {
-  const before = curve
-    .getTangentAt((t - 0.006 + 1) % 1)
-    .normalize();
-
-  const after = curve
-    .getTangentAt((t + 0.006) % 1)
-    .normalize();
-
-  return before.angleTo(after);
-}
-
-function getTrackSide(tangent: THREE.Vector3) {
-  return new THREE.Vector3(
-    -tangent.z,
-    0,
-    tangent.x
-  ).normalize();
-}
-
 function Track({ curve }: { curve: THREE.CatmullRomCurve3 }) {
   const roadGeometry = useMemo(
     () =>
@@ -175,7 +61,7 @@ function Track({ curve }: { curve: THREE.CatmullRomCurve3 }) {
         curve,
         0,
         1,
-        2000,
+        900,
         TRACK_WIDTH,
         0.12
       ),
@@ -202,8 +88,8 @@ function Track({ curve }: { curve: THREE.CatmullRomCurve3 }) {
       [-1, 1].map((direction) => {
         const points: THREE.Vector3[] = [];
 
-        for (let i = 0; i <= 1200; i++) {
-          const t = i / 1200;
+        for (let i = 0; i <= 480; i++) {
+          const t = i / 480;
           const point = curve.getPointAt(t);
           const tangent = curve.getTangentAt(t);
           const side = getTrackSide(tangent);
@@ -226,7 +112,7 @@ function Track({ curve }: { curve: THREE.CatmullRomCurve3 }) {
 
         return new THREE.TubeGeometry(
           edgeCurve,
-          1200,
+          480,
           0.035,
           6,
           true
@@ -290,7 +176,7 @@ function TrackKerbs({
       color: string;
     }[] = [];
 
-    const samples = 1200;
+    const samples = 480;
 
     for (let i = 3; i < samples - 3; i += 4) {
       const t = i / samples;
@@ -430,12 +316,14 @@ function RacingWorld({
   selectedEvent,
   onEventChange,
   cameraMode,
+  motionEnabled,
 }: {
   curve: THREE.CatmullRomCurve3;
   events: Event[];
   selectedEvent: number;
   onEventChange: (index: number) => void;
   cameraMode: "overview" | "chase";
+  motionEnabled: boolean;
 }) {
   const carRef = useRef<THREE.Group>(null);
   const progress = useRef(0);
@@ -448,7 +336,7 @@ function RacingWorld({
   }, [selectedEvent]);
 
   useFrame((state, delta) => {
-    if (!carRef.current) return;
+    if (!carRef.current || !motionEnabled) return;
 
     progress.current =
       (progress.current + delta * 0.055) % 1;
@@ -519,12 +407,14 @@ function Circuit({
   selectedEvent,
   onEventChange,
   cameraMode,
+  motionEnabled,
 }: {
   curve: THREE.CatmullRomCurve3 | null;
   events: Event[];
   selectedEvent: number;
   onEventChange: (index: number) => void;
   cameraMode: "overview" | "chase";
+  motionEnabled: boolean;
 }) {
   if (!curve) {
     return null;
@@ -548,6 +438,7 @@ function Circuit({
         selectedEvent={selectedEvent}
         onEventChange={onEventChange}
         cameraMode={cameraMode}
+        motionEnabled={motionEnabled}
       />
     </>
   );
@@ -563,11 +454,26 @@ export default function RaceTrackScene({
   const [cameraMode, setCameraMode] = useState<
     "overview" | "chase"
   >("overview");
+  const { enabled: motionEnabled } = useMotion();
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
   const [trackAsset, setTrackAsset] = useState<
     | { trackFile: string; svgText: string }
     | { trackFile: string; error: true }
     | null
   >(null);
+
+  useEffect(() => {
+    const element = canvasContainerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { rootMargin: "200px" }
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -619,6 +525,7 @@ export default function RaceTrackScene({
 
   return (
     <div className="race-scene">
+      <p className="race-track-attribution">Track layout: Monza · MIT licensed SVG</p>
       <div className="race-camera-controls">
         <button
           className={
@@ -639,9 +546,10 @@ export default function RaceTrackScene({
         </button>
       </div>
 
-      <div className="race-canvas">
+      <div ref={canvasContainerRef} className="race-canvas">
         <Canvas
           shadows
+          frameloop={motionEnabled && isVisible ? "always" : "demand"}
           camera={{
             position: [0, 88, 65],
             fov: 45,
@@ -671,6 +579,7 @@ export default function RaceTrackScene({
             selectedEvent={selectedEvent}
             onEventChange={onEventChange}
             cameraMode={cameraMode}
+            motionEnabled={motionEnabled && isVisible}
           />
         </Canvas>
 
@@ -722,5 +631,3 @@ export default function RaceTrackScene({
     </div>
   );
 }
-
-useGLTF.preload("/models/mcqueen/scene.gltf");
