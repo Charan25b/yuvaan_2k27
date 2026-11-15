@@ -425,8 +425,16 @@ export default function TeamsPage() {
           <div className={styles.boardBackdrop} />
 
           <header className={styles.overlayHeader}>
-            <button className={styles.backButton} onClick={closeTeam}>
-              ← BACK TO WAR ROOM
+            {/* Themed security exit control */}
+            <button
+              type="button"
+              className={styles.securityExit}
+              onClick={closeTeam}
+              aria-label="Return to War Room"
+            >
+              <span className={styles.exitIndicator} />
+              <span className={styles.exitText}>← RETURN TO WAR ROOM</span>
+              <span className={styles.exitCode}>ESC / 00</span>
             </button>
 
             <div className={styles.overlayStatus}>
@@ -453,7 +461,8 @@ export default function TeamsPage() {
             <div className={styles.evidenceLabel}>
               <span>KNOWN ASSOCIATES</span>
               <span>
-                {String(activeTeam.members.length).padStart(2, "0")} RECORDS FOUND
+                {String(activeTeam.members.length).padStart(2, "0")} RECORDS
+                FOUND
               </span>
             </div>
 
@@ -478,7 +487,9 @@ export default function TeamsPage() {
                     ) : (
                       <div className={styles.photoPlaceholder}>
                         <span>{getInitials(member.name)}</span>
-                        <small>SUBJECT {String(member.id).padStart(3, "0")}</small>
+                        <small>
+                          SUBJECT {String(member.id).padStart(3, "0")}
+                        </small>
                       </div>
                     )}
 
@@ -550,6 +561,7 @@ export default function TeamsPage() {
                 </span>
 
                 <h2>{activeMember.alias}</h2>
+
                 <p className={styles.characterName}>
                   CHARACTER: {activeMember.character.toUpperCase()}
                 </p>

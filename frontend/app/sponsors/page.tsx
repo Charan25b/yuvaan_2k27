@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { SPONSORS_DATA } from "@/lib/data/festivalData";
+import {
+  SPONSORS_DATA,
+  type SponsorItem,
+} from "@/lib/data/festivalData";
 
 // --------------------------------------------------
 // GOLD DUST PARTICLES
@@ -108,6 +111,30 @@ const placeholderSponsorNames = new Set([
   "Youth Media Network",
 ]);
 
+const sponsorPlaceholders: SponsorItem[] = [
+  {
+    id: "placeholder-title",
+    name: "Title sponsor to be announced",
+    tier: "Title Sponsor",
+    description: "Sponsor details to be confirmed.",
+    category: "PLACEHOLDER",
+  },
+  {
+    id: "placeholder-powered-by",
+    name: "Powered by sponsor to be announced",
+    tier: "Powered By",
+    description: "Sponsor details to be confirmed.",
+    category: "PLACEHOLDER",
+  },
+  {
+    id: "placeholder-event-partner",
+    name: "Event partner to be announced",
+    tier: "Associate Partner",
+    description: "Sponsor details to be confirmed.",
+    category: "PLACEHOLDER",
+  },
+];
+
 // --------------------------------------------------
 // SPONSORS PAGE
 // --------------------------------------------------
@@ -118,9 +145,12 @@ export default function SponsorsPage() {
   const headingRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
-  const listedSponsors = SPONSORS_DATA.filter(
+  const confirmedSponsors = SPONSORS_DATA.filter(
     (sponsor) => !placeholderSponsorNames.has(sponsor.name)
   );
+  const listedSponsors = confirmedSponsors.length
+    ? confirmedSponsors
+    : sponsorPlaceholders;
 
   const titleSponsors = listedSponsors.filter(
     (s) => s.tier === "Title Sponsor"
@@ -320,9 +350,9 @@ export default function SponsorsPage() {
             YUVAAN 2027
           </p>
 
-          {listedSponsors.length === 0 && (
+          {confirmedSponsors.length === 0 && (
             <p className="mt-5 max-w-2xl text-base font-semibold leading-relaxed text-[#39230d]">
-              No sponsor details are available yet.
+              Placeholder listings. Sponsor details are to be confirmed.
             </p>
           )}
         </header>
