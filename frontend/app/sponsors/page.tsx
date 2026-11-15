@@ -4,10 +4,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import {
-  Card,
   CardHeader,
   CardTitle,
   CardDescription,
@@ -325,7 +322,7 @@ export default function SponsorsPage() {
               <div className="flex items-center justify-center gap-4 sm:justify-start">
                 <Badge
                   variant="gold"
-                  comicStamp
+                  
                   className="text-xs"
                 >
                   ★ TIER 1
@@ -418,7 +415,7 @@ export default function SponsorsPage() {
               <div className="flex items-center justify-center gap-4 sm:justify-start">
                 <Badge
                   variant="cyan"
-                  comicStamp
+                  
                   className="text-xs"
                 >
                   ⚡ TIER 2
@@ -499,7 +496,7 @@ export default function SponsorsPage() {
               <div className="flex items-center justify-center gap-4 sm:justify-start">
                 <Badge
                   variant="primary"
-                  comicStamp
+                  
                   className="text-xs"
                 >
                   ✦ TIER 3
@@ -600,7 +597,7 @@ export default function SponsorsPage() {
               <div className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
                 <Badge
                   variant="gold"
-                  comicStamp
+                  
                   className="text-xs"
                 >
                   JOIN THE ALLIANCE

@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
@@ -50,19 +50,19 @@ export default function GalleryPage() {
 
   const closeViewer = () => setActiveIndex(null);
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setActiveIndex((current) => {
       if (current === null || !filteredItems.length) return current;
       return (current + 1) % filteredItems.length;
     });
-  };
+  }, [filteredItems.length]);
 
-  const previousImage = () => {
+  const previousImage = useCallback(() => {
     setActiveIndex((current) => {
       if (current === null || !filteredItems.length) return current;
       return (current - 1 + filteredItems.length) % filteredItems.length;
     });
-  };
+  }, [filteredItems.length]);
 
   // --------------------------------------------------
   // KEYBOARD CONTROLS
@@ -86,7 +86,7 @@ export default function GalleryPage() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeIndex, filteredItems.length]);
+  }, [activeIndex, filteredItems.length, nextImage, previousImage]);
 
   // --------------------------------------------------
   // GSAP ENTRANCE
@@ -138,7 +138,8 @@ export default function GalleryPage() {
       event.changedTouches[0].clientX - touchStartX.current;
 
     if (Math.abs(difference) > 50) {
-      difference < 0 ? nextImage() : previousImage();
+      if (difference < 0) nextImage();
+      else previousImage();
     }
 
     touchStartX.current = null;

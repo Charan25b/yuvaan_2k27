@@ -22,7 +22,6 @@ export type BadgeVariant =
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
-  comicStamp?: boolean;
   className?: string;
   children: React.ReactNode;
 }
@@ -50,7 +49,6 @@ const variantStyles: Record<BadgeVariant, string> = {
 
 export function Badge({
   variant = "cream",
-  comicStamp = false,
   className = "",
   children,
   ...props

@@ -30,7 +30,7 @@ export function SectionHeading({
     >
       {badge && (
         <div className="flex items-center gap-2">
-          <Badge variant={badgeVariant} comicStamp>
+          <Badge variant={badgeVariant}>
             ✦ {badge}
           </Badge>
           {subtitle && (

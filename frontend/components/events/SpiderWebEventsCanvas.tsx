@@ -18,7 +18,9 @@ interface SpiderWebEventsCanvasProps {
 
 export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [viewportWidth, setViewportWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
   const [shuffleCount, setShuffleCount] = useState(0);
 
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
@@ -35,8 +37,6 @@ export function SpiderWebEventsCanvas({ events }: SpiderWebEventsCanvasProps) {
   // Viewport sizing and keyboard shortcut.
   useEffect(() => {
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
-
-    setViewportWidth(window.innerWidth);
 
     const onResize = () => {
       if (resizeTimer) clearTimeout(resizeTimer);
