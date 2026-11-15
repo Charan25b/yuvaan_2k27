@@ -1,4 +1,3 @@
-
 .page {
   --bg: #101114;
   --paper: #e4d5b8;
@@ -101,12 +100,6 @@
   margin-right: 9px;
   box-shadow: 0 0 12px #ff4545;
   animation: blink 1.5s infinite;
-}
-
-.accessLevel strong {
-  color: #e34a4e;
-  margin-left: 7px;
-  font-size: 14px;
 }
 
 /* INTRO */
@@ -272,7 +265,6 @@
   opacity: .18;
 }
 
-
 .boardPhotos {
   display: flex;
   gap: 12px;
@@ -323,7 +315,6 @@
   height: 100%;
   object-fit: cover;
 }
-
 
 .boardInfo {
   position: absolute;
@@ -405,6 +396,10 @@
   position: fixed;
   inset: 0;
   z-index: 30;
+  top: var(--site-header-height, 80px);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #101114;
   overflow-y: auto;
   animation: boardEnter .55s cubic-bezier(.2,.8,.2,1) both;
@@ -420,41 +415,90 @@
   opacity: .25;
 }
 
+/* CLASSIFIED FILE HEADER */
+
 .overlayHeader {
   position: relative;
   z-index: 2;
+
+  width: min(1150px, calc(100% - 40px));
+  box-sizing: border-box;
+  margin: 25px auto 0;
+  padding: 0 40px 18px;
+
   display: flex;
+  flex-direction: row-reverse;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 6%;
-  border-bottom: 1px solid #ffffff16;
+  gap: 16px;
+
+  border-bottom: none;
+  pointer-events: none;
 }
 
-.backButton {
-  background: transparent;
-  border: 1px solid #ffffff3a;
-  color: #ddd;
-  padding: 12px 18px;
+.securityExit {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 13px 17px;
+  background: linear-gradient(135deg, #52191d, #1c1011);
+  border: 1px solid #d4474d;
+  color: #ffe1dc;
+
   font-size: 10px;
-  letter-spacing: 2px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+
   cursor: pointer;
-  transition: .2s;
+  pointer-events: auto;
+
+  box-shadow: 0 0 18px #e52d3235;
+  transition: .25s ease;
 }
 
-.backButton:hover {
-  border-color: var(--team-accent);
-  color: var(--team-accent);
+.securityExit:hover {
+  background: #922c32;
+  border-color: #ff7777;
+  box-shadow: 0 0 25px #ff303060;
+  transform: translateY(-2px);
+}
+
+.exitIndicator {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #ff4141;
+  box-shadow: 0 0 10px #ff3030;
+  animation: blink 1.2s infinite;
+}
+
+.exitText,
+.exitCode {
+  white-space: nowrap;
+}
+
+.exitCode {
+  padding-left: 10px;
+  border-left: 1px solid #a64b4b;
+  color: #bd7777;
+  font-size: 8px;
 }
 
 .overlayStatus {
   font-size: 9px;
   letter-spacing: 2px;
   color: #999;
+  pointer-events: none;
 }
+
+/* EXPANDED BOARD */
 
 .expandedBoard {
   max-width: 1150px;
-  margin: 50px auto;
+  box-sizing: border-box;
+  margin: 0 auto 50px;
   padding: 40px;
   position: relative;
   background:
@@ -912,8 +956,13 @@
   }
 
   .expandedBoard {
-    margin: 25px 20px;
+    margin: 0 20px 25px;
     padding: 25px;
+  }
+
+  .overlayHeader {
+    width: calc(100% - 40px);
+    padding: 0 25px 16px;
   }
 }
 
@@ -972,7 +1021,10 @@
   }
 
   .overlayHeader {
-    padding: 15px;
+    width: calc(100% - 20px);
+    margin-top: 15px;
+    padding: 0 12px 14px;
+    gap: 8px;
   }
 
   .overlayStatus {
@@ -980,13 +1032,19 @@
     letter-spacing: 1px;
   }
 
-  .backButton {
+  .securityExit {
     padding: 10px;
+    gap: 7px;
     font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .exitCode {
+    display: none;
   }
 
   .expandedBoard {
-    margin: 15px 10px;
+    margin: 0 10px 15px;
     padding: 18px;
     border-width: 7px;
   }
