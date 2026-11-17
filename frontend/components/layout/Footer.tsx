@@ -113,8 +113,6 @@ export function Footer() {
         <div className="mt-8 pt-6 border-t-2 border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-bold text-[var(--color-text-muted)]">
           <p className="flex items-center gap-2">
             <span>&copy; {currentYear} Yuvaan, IIIT Guwahati.</span>
-            <span className="hidden sm:inline">&bull;</span>
-            <span className="text-[var(--color-text-dark)]">Festival Foundation v1.0</span>
           </p>
           <div className="flex items-center gap-4 text-xs">
             <Link href="/" className="hover:text-[var(--color-ember)] transition-colors">

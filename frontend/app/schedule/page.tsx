@@ -1,7 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
-import RaceTrackScene from "../../components/schedule/RaceTrack";
+
+const RaceTrackScene = dynamic(
+  () => import("../../components/schedule/RaceTrack"),
+  {
+    ssr: false,
+    loading: () => <div className={styles.trackLoading}>PREPARING THE CIRCUIT...</div>,
+  }
+);
 import styles from "./race-schedule.module.css";
 
 type Event = {
@@ -126,9 +134,9 @@ const sectorColors = [
 ];
 
 const tracks: Record<number, string> = {
-  1: "suzuka",
-  2: "spa",
-  3: "red-bull-ring",
+  1: "monza",
+  2: "monza",
+  3: "monza",
 };
 
 export default function SchedulePage() {
@@ -171,10 +179,6 @@ export default function SchedulePage() {
               <br />
               <span>RACE</span> IS ON.
             </h1>
-            <p className={styles.heroDescription}>
-              Every event is a new lap. Explore the complete Yuvaan
-              schedule and choose your next destination.
-            </p>
           </div>
 
           <div className={styles.heroNumber}>
@@ -198,7 +202,6 @@ export default function SchedulePage() {
             <h2>RACE SCHEDULE<span>.</span></h2>
           </div>
 
-          <p>SELECT A DAY TO EXPLORE THE CIRCUIT</p>
         </div>
 
         <div className={styles.daySelector}>
@@ -223,11 +226,7 @@ export default function SchedulePage() {
             <h2>THE TRACK<span>.</span></h2>
           </div>
 
-          <span className={styles.trackName}>
-            {["SUZUKA", "SPA-FRANCORCHAMPS", "RED BULL RING"][
-              activeDay - 1
-            ]}
-          </span>
+          <span className={styles.trackName}>MONZA</span>
         </div>
 
         <div className={styles.trackContainer}>

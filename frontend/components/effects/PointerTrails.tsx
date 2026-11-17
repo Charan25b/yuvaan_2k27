@@ -105,7 +105,9 @@ export function PointerTrails() {
         const fresh = !pen;
         const previous = pen || target;
         const follow = 1 - Math.exp(-delta / MARKER_SETTINGS.followMs);
-        pen = { x: previous.x + (target.x - previous.x) * follow, y: previous.y + (target.y - previous.y) * follow };
+        pen = mode === "desktop"
+          ? target
+          : { x: previous.x + (target.x - previous.x) * follow, y: previous.y + (target.y - previous.y) * follow };
         const step = Math.hypot(pen.x - previous.x, pen.y - previous.y);
         if (fresh || step > .25) {
           distance += step;
@@ -119,7 +121,15 @@ export function PointerTrails() {
             width: penWidth * (1 + Math.sin(distance * .075) * .09), color });
         }
       }
-      points = points.filter((point) => now - point.born < point.life);
+      let firstLivePoint = 0;
+      while (
+        firstLivePoint < points.length &&
+        now - points[firstLivePoint].born >= points[firstLivePoint].life
+      ) {
+        firstLivePoint++;
+      }
+      if (firstLivePoint > 0) points.splice(0, firstLivePoint);
+
       const cap = lowPower ? 48 : settings.maxPoints;
       if (points.length > cap) points.splice(0, points.length - cap);
       clear();

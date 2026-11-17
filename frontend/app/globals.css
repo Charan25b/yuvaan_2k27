@@ -905,8 +905,8 @@ a[class*="bg-[#121110]"]:hover {
 
 .trail-cursor {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: var(--cursor-y, -100px);
+  left: var(--cursor-x, -100px);
   z-index: 9999;
   width: 14px;
   height: 14px;
@@ -916,8 +916,7 @@ a[class*="bg-[#121110]"]:hover {
   box-shadow: 0 0 0 1px #fff8df;
   opacity: 0;
   pointer-events: none;
-  transform: translate3d(var(--cursor-x, -100px), var(--cursor-y, -100px), 0)
-    translate(-50%, -50%) scale(var(--cursor-scale, 1));
+  transform: translate(-50%, -50%) scale(var(--cursor-scale, 1));
   transition:
     opacity 100ms ease,
     background-color 120ms linear,
@@ -943,4 +942,18 @@ html { scroll-padding-top: 112px; }
 .section-reveal[data-reveal="pending"] { opacity: 0; transform: translateY(24px); }
 @media (prefers-reduced-motion: reduce) {
   .section-reveal[data-reveal="pending"] { opacity: 1; transform: none; }
+}
+body:has(.team-page),
+body:has(.gallery-page) {
+  min-height: auto;
+}
+
+body:has(.team-page) > #main-content,
+body:has(.gallery-page) > #main-content {
+  flex: 0 0 auto;
+}
+
+body:has(.team-page) > footer,
+body:has(.gallery-page) > footer {
+  margin-top: 0;
 }

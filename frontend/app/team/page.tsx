@@ -32,14 +32,14 @@ const TEAMS: Team[] = [
     id: "technical",
     name: "Technical Team",
     faction: "THE HEROES",
-    description: "The minds behind the machines. The ones who keep the operation alive.",
+    description: "Technical setup and systems.",
     color: "#173c59",
     accent: "#43c8ff",
     symbol: "⚡",
     members: [
       {
         id: 1,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE ARCHITECT",
         character: "Iron Man",
         role: "Technical Team",
@@ -49,7 +49,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 2,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE STRATEGIST",
         character: "Doctor Strange",
         role: "Technical Team",
@@ -59,7 +59,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 3,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE INVENTOR",
         character: "Shuri",
         role: "Technical Team",
@@ -69,7 +69,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 4,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE GUARDIAN",
         character: "Spider-Man",
         role: "Technical Team",
@@ -83,14 +83,14 @@ const TEAMS: Team[] = [
     id: "sponsorship",
     name: "Sponsorship Team",
     faction: "THE VILLAINS",
-    description: "They control the resources. Everyone has a price. Everything has a deal.",
+    description: "Sponsorship and partner outreach.",
     color: "#541b23",
     accent: "#ff454f",
     symbol: "☠",
     members: [
       {
         id: 5,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE PUPPET MASTER",
         character: "Loki",
         role: "Sponsorship Team",
@@ -100,7 +100,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 6,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE MASTER MIND",
         character: "Lex Luthor",
         role: "Sponsorship Team",
@@ -110,7 +110,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 7,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE CHAOS AGENT",
         character: "Joker",
         role: "Sponsorship Team",
@@ -120,7 +120,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 8,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE OVERLORD",
         character: "Thanos",
         role: "Sponsorship Team",
@@ -134,14 +134,14 @@ const TEAMS: Team[] = [
     id: "design",
     name: "Design Team",
     faction: "THE ILLUSIONISTS",
-    description: "They bend perception. Reality is simply a matter of presentation.",
+    description: "Design and visual identity.",
     color: "#38234e",
     accent: "#c18bff",
     symbol: "✦",
     members: [
       {
         id: 9,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE ILLUSIONIST",
         character: "Mysterio",
         role: "Design Team",
@@ -151,7 +151,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 10,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE ENCHANTRESS",
         character: "Scarlet Witch",
         role: "Design Team",
@@ -165,14 +165,14 @@ const TEAMS: Team[] = [
     id: "marketing",
     name: "Marketing Team",
     faction: "THE MANIPULATORS",
-    description: "They control the narrative. The world sees what they want it to see.",
+    description: "Marketing and communications.",
     color: "#594020",
     accent: "#ffbd55",
     symbol: "◈",
     members: [
       {
         id: 11,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE SHOWMAN",
         character: "Green Goblin",
         role: "Marketing Team",
@@ -182,7 +182,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 12,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE TRICKSTER",
         character: "Harley Quinn",
         role: "Marketing Team",
@@ -196,14 +196,14 @@ const TEAMS: Team[] = [
     id: "management",
     name: "Management Team",
     faction: "THE OVERLORDS",
-    description: "Every move is calculated. Every operation has a mastermind.",
+    description: "Festival operations and coordination.",
     color: "#34383c",
     accent: "#d7d7d7",
     symbol: "♛",
     members: [
       {
         id: 13,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE COMMANDER",
         character: "Darth Vader",
         role: "Management Team",
@@ -213,7 +213,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 14,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE MASTER PLAN",
         character: "Doctor Doom",
         role: "Management Team",
@@ -227,14 +227,14 @@ const TEAMS: Team[] = [
     id: "content",
     name: "Content Team",
     faction: "THE STORYTELLERS",
-    description: "They write the stories that shape the battlefield.",
+    description: "Festival writing and communications.",
     color: "#4b2932",
     accent: "#ff8d9d",
     symbol: "✎",
     members: [
       {
         id: 15,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE NARRATOR",
         character: "Riddler",
         role: "Content Team",
@@ -244,7 +244,7 @@ const TEAMS: Team[] = [
       },
       {
         id: 16,
-        name: "Add Member Name",
+        name: "Name unavailable",
         alias: "THE CHAOS WRITER",
         character: "Deadpool",
         role: "Content Team",
@@ -257,7 +257,7 @@ const TEAMS: Team[] = [
 ];
 
 function getInitials(name: string) {
-  if (name.startsWith("Add Member")) return "??";
+  if (name === "Name unavailable") return "—";
 
   return name
     .split(" ")
@@ -295,31 +295,11 @@ export default function TeamsPage() {
   }, [activeMember]);
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} team-page`}>
       {/* Background atmosphere */}
       <div className={styles.noise} />
       <div className={styles.vignette} />
       <div className={styles.scanlines} />
-
-      {/* Top HUD */}
-      <header className={styles.topbar}>
-        <div className={styles.logo}>
-          <span className={styles.logoMark}>Y</span>
-          <div>
-            <strong>YUVAAN</strong>
-            <small>THE UNDERGROUND</small>
-          </div>
-        </div>
-
-        <div className={styles.systemStatus}>
-          <span className={styles.liveDot} />
-          HEADQUARTERS ONLINE
-        </div>
-
-        <div className={styles.accessLevel}>
-          ACCESS LEVEL <strong>09</strong>
-        </div>
-      </header>
 
       {/* Main heading */}
       <section className={styles.intro}>
@@ -334,14 +314,12 @@ export default function TeamsPage() {
         </h1>
 
         <p>
-          Every organisation has its heroes.
-          <br />
-          Every organisation has its villains.
+          Choose a team to view its roster.
         </p>
 
         <div className={styles.instruction}>
           <span className={styles.crosshair}>⌖</span>
-          SELECT AN EVIDENCE BOARD TO INVESTIGATE
+          SELECT A TEAM BOARD
         </div>
       </section>
 
@@ -349,8 +327,8 @@ export default function TeamsPage() {
       <section className={styles.room}>
         <div className={styles.roomLabel}>
           <span>SECTOR 01</span>
-          <span>PERSONNEL SURVEILLANCE</span>
-          <span>CAM 04 // LIVE</span>
+          <span>TEAM ROSTER</span>
+          <span>YUVAAN 2K27</span>
         </div>
 
         <div className={styles.roomWalls}>
@@ -372,27 +350,24 @@ export default function TeamsPage() {
                 <span className={styles.boardStatus}>● LIVE</span>
               </div>
 
-              <div className={styles.boardSymbol}>{team.symbol}</div>
-
-              <div className={styles.boardPhotos}>
+              <div className={styles.boardPhotos} aria-hidden="true">
                 {team.members.slice(0, 3).map((member, i) => (
                   <div
                     key={member.id}
                     className={`${styles.miniPhoto} ${styles[`mini${i}`]}`}
                   >
-                    {member.photo ? (
-                      <img src={member.photo} alt={member.name} />
-                    ) : (
-                      <span>{getInitials(member.name)}</span>
-                    )}
+                    {member.photo && <img src={member.photo} alt="" />}
                   </div>
                 ))}
               </div>
 
+              <div className={styles.boardSymbol} aria-hidden="true">
+                {team.symbol}
+              </div>
+
               <div className={styles.boardInfo}>
-                <span>{team.faction}</span>
                 <h2>{team.name}</h2>
-                <p>{team.members.length} REGISTERED SUBJECTS</p>
+                <p>{team.members.length} MEMBERS</p>
               </div>
 
               <div className={styles.boardPin} />
@@ -406,13 +381,6 @@ export default function TeamsPage() {
         </div>
       </section>
 
-      {/* Bottom status */}
-      <footer className={styles.footer}>
-        <span>YUVAAN // PERSONNEL ARCHIVE</span>
-        <span>ALL IDENTITIES ARE UNDER SURVEILLANCE</span>
-        <span>EST. 2027</span>
-      </footer>
-
       {/* TEAM BOARD ZOOM */}
       {activeTeam && (
         <section
@@ -424,20 +392,23 @@ export default function TeamsPage() {
             } as CSSProperties
           }
         >
-          <div className={styles.boardBackdrop} />
-
-          <header className={styles.overlayHeader}>
-            <button className={styles.backButton} onClick={closeTeam}>
-              ← BACK TO WAR ROOM
-            </button>
-
-            <div className={styles.overlayStatus}>
-              <span className={styles.liveDot} />
-              ACCESSING PERSONNEL FILES
-            </div>
-          </header>
+          <button
+            type="button"
+            className={styles.boardBackdrop}
+            onClick={closeTeam}
+            aria-label="Close team file"
+          />
 
           <div className={styles.expandedBoard}>
+            <button
+              type="button"
+              className={styles.fileClose}
+              onClick={closeTeam}
+              aria-label="Close team file"
+            >
+              &times;
+            </button>
+
             <div className={styles.expandedBoardHeader}>
               <div>
                 <span className={styles.fileNumber}>
@@ -448,14 +419,16 @@ export default function TeamsPage() {
                 <h3>{activeTeam.faction}</h3>
                 <p>{activeTeam.description}</p>
               </div>
-
-              <div className={styles.bigSymbol}>{activeTeam.symbol}</div>
+              <div className={styles.bigSymbol} aria-hidden="true">
+                {activeTeam.symbol}
+              </div>
             </div>
 
             <div className={styles.evidenceLabel}>
               <span>KNOWN ASSOCIATES</span>
               <span>
-                {String(activeTeam.members.length).padStart(2, "0")} RECORDS FOUND
+                {String(activeTeam.members.length).padStart(2, "0")} RECORDS
+                FOUND
               </span>
             </div>
 
@@ -480,7 +453,9 @@ export default function TeamsPage() {
                     ) : (
                       <div className={styles.photoPlaceholder}>
                         <span>{getInitials(member.name)}</span>
-                        <small>SUBJECT {String(member.id).padStart(3, "0")}</small>
+                        <small>
+                          SUBJECT {String(member.id).padStart(3, "0")}
+                        </small>
                       </div>
                     )}
 
@@ -552,6 +527,7 @@ export default function TeamsPage() {
                 </span>
 
                 <h2>{activeMember.alias}</h2>
+
                 <p className={styles.characterName}>
                   CHARACTER: {activeMember.character.toUpperCase()}
                 </p>

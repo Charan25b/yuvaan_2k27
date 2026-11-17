@@ -51,9 +51,13 @@ export interface TeamMember {
 export interface GalleryItem {
   id: string;
   title: string;
+  /** Drives the gallery filter; available filter buttons are derived from item categories. */
   category: "Pro-Nites & Concerts" | "Competitions" | "Campus Life" | "Exhibitions";
   year: string;
   caption: string;
+  /** Public asset path to show the photo when it is available. */
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
 export interface FactionPreview {

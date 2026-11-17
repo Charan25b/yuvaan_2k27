@@ -17,10 +17,27 @@ export function Navbar() {
   const pathname = usePathname();
   const [openPath, setOpenPath] = useState<string | null>(null);
   const [gameModalOpen, setGameModalOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   const header = useRef<HTMLElement>(null);
   const menuOpen = openPath === pathname;
   const close = () => setOpenPath(null);
+
+  useEffect(() => {
+    let previousY = window.scrollY;
+    const onScroll = () => {
+      const currentY = Math.max(window.scrollY, 0);
+      if (menuOpen || currentY === 0 || currentY < previousY) {
+        setIsHidden(false);
+      } else if (currentY > previousY) {
+        setIsHidden(true);
+      }
+      previousY = currentY;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [menuOpen]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -64,7 +81,7 @@ export function Navbar() {
 
   return (
     <>
-      <header ref={header} className={styles.header}
+      <header ref={header} className={`${styles.header} ${isHidden && !menuOpen ? styles.headerHidden : ""}`}
         onBlur={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget as Node)) close();
         }}>
